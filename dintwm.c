@@ -85,20 +85,25 @@ void tile(void)
 		}
 		if (wnr < nmaster) {
 			winheight =
-			    (screen->Height - mwiny - (screen->BarHeight - 1)) / (MIN(wincount, nmaster) -
-							wnr);
+			    (screen->Height - mwiny -
+			     (screen->BarHeight - 1)) / (MIN(wincount,
+							     nmaster) - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx, (screen->BarHeight - 1) - winy + mwiny,
-					mwinwidth +
-					((screen->WBorRight - 1) -
-					 (screen->WBorLeft - 1)), winheight);
+			ChangeWindowBox(window, winx,
+					(screen->BarHeight - 1) - winy + mwiny,
+					mwinwidth + ((screen->WBorRight - 1) -
+						     (screen->WBorLeft - 1)),
+					winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			mwiny += winheight;
 		} else {
-			winheight = (screen->Height - nwiny - (screen->BarHeight - 1)) / (wincount - wnr);
+			winheight =
+			    (screen->Height - nwiny -
+			     (screen->BarHeight - 1)) / (wincount - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx + mwinwidth, (screen->BarHeight - 1) - winy + nwiny,
+			ChangeWindowBox(window, winx + mwinwidth,
+					(screen->BarHeight - 1) - winy + nwiny,
 					screen->Width - mwinwidth +
 					((screen->WBorRight - 1) -
 					 (screen->WBorLeft - 1)), winheight);
@@ -183,70 +188,74 @@ void fibonacci(int s)
 {
 	unsigned int wnr, wincount, winx, winy, winwidth, winheight;
 
-        lockbasescreen(&ilock, &screen);
+	lockbasescreen(&ilock, &screen);
 
-        for (wincount = 0, window = screen->FirstWindow; window;
-             window = window->NextWindow, wincount++) {
-                if ((skip = skipper(window)) == 1) {
-                        wincount--;
-                        continue;
-                }
-        }
+	for (wincount = 0, window = screen->FirstWindow; window;
+	     window = window->NextWindow, wincount++) {
+		if ((skip = skipper(window)) == 1) {
+			wincount--;
+			continue;
+		}
+	}
 
 	winx = 0;
 	winy = 0;
 	winwidth = screen->Width;
 	winheight = screen->Height;
-	
-        for (wnr = 0, window = screen->FirstWindow; window;
-             window = window->NextWindow) {
-                if ((skip = skipper(window)) == 1) {
-                        wnr--;
-                        continue;
-                }
 
-		if((wnr % 2 && winheight / 2 > ((screen->WBorRight - 1) - (screen->WBorLeft - 1)))
-		   || (!(wnr % 2) && winwidth / 2 > ((screen->WBorRight - 1) - (screen->WBorLeft - 1)))) {
-			if(wnr < wincount - 1) {
-				if(wnr % 2)
+	for (wnr = 0, window = screen->FirstWindow; window;
+	     window = window->NextWindow) {
+		if ((skip = skipper(window)) == 1) {
+			wnr--;
+			continue;
+		}
+
+		if ((wnr % 2
+		     && winheight / 2 >
+		     ((screen->WBorRight - 1) - (screen->WBorLeft - 1)))
+		    || (!(wnr % 2)
+			&& winwidth / 2 >
+			((screen->WBorRight - 1) - (screen->WBorLeft - 1)))) {
+			if (wnr < wincount - 1) {
+				if (wnr % 2)
 					winheight /= 2;
 				else
 					winwidth /= 2;
-				if((wnr % 4) == 2 && !s)
+				if ((wnr % 4) == 2 && !s)
 					winx += winwidth;
-				else if((wnr % 4) == 3 && !s)
+				else if ((wnr % 4) == 3 && !s)
 					winy += winheight;
 			}
-			if((wnr % 4) == 0) {
-				if(s)
+			if ((wnr % 4) == 0) {
+				if (s)
 					winy += winheight;
 				else
 					winy -= winheight;
-			}
-			else if((wnr % 4) == 1)
+			} else if ((wnr % 4) == 1)
 				winx += winwidth;
-			else if((wnr % 4) == 2)
+			else if ((wnr % 4) == 2)
 				winy += winheight;
-			else if((wnr % 4) == 3) {
-				if(s)
+			else if ((wnr % 4) == 3) {
+				if (s)
 					winx += winwidth;
 				else
 					winx -= winwidth;
 			}
-			if(wnr == 0)
-			{
-				if(wincount != 1)
-					winwidth = (screen->Width * fact) / 1000;
+			if (wnr == 0) {
+				if (wincount != 1)
+					winwidth =
+					    (screen->Width * fact) / 1000;
 				winy = 0;
-			}
-			else if(wnr == 1)
+			} else if (wnr == 1)
 				winwidth = screen->Width - winwidth;
 			wnr++;
 		}
-                BeginRefresh(window);
-                ChangeWindowBox(window, winx, winy, winwidth + ((screen->WBorRight - 1) - (screen->WBorLeft - 1)), winheight);
-                EndRefresh(window, TRUE);
-                RefreshWindowFrame(window);
+		BeginRefresh(window);
+		ChangeWindowBox(window, winx, winy,
+				winwidth + ((screen->WBorRight - 1) -
+					    (screen->WBorLeft - 1)), winheight);
+		EndRefresh(window, TRUE);
+		RefreshWindowFrame(window);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
