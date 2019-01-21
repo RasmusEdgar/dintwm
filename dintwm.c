@@ -24,20 +24,6 @@ struct Window *window;
 static const int nmaster = 1;
 static const int fact = 530;
 
-struct Flagarray {
-	unsigned long hexflag;
-	char flagname[14];
-};
-
-static struct Flagarray flagarray[] = {
-	{0x00000100, "BACKDROP"},
-	{0x00000400, "GIMMEZEROZERO"},
-	{0x00000800, "BORDERLESS"},
-	{0x00002000, "WINDOWACTIVE"},
-	{0x02000000, "WBENCHWINDOW"},
-	{0x10000000, "ZOOMED"}
-};
-
 int main(void)
 {
 	dwindle();
