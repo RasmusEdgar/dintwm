@@ -24,11 +24,30 @@ struct Window *window;
 static const int nmaster = 1;
 static const int fact = 530;
 
-int main(void)
+int main(int argc, char *argv[])
 {
-	dwindle();
+	if (argc >= 3) {
+		printf("Only one argument at the time please.\n");
+		exit(1);
+	}
+	if (strcmp("-d", argv[1]) == 0)
+		dwindle();
+	else if (strcmp("-g", argv[1]) == 0)
+		hgrid();
+	else if (strcmp("-t", argv[1]) == 0)
+		tile();
+	else if (strcmp("-s", argv[1]) == 0)
+		spiral();
+	else if (strcmp("-h", argv[1]) == 0 || argv[1] == 0)
+		printf("%s\n%s\n%s\n%s\n%s\n%s\n",
+			"Options:",
+			"-d: Fibonacci dwindle",
+			"-g: Horizontal grid",
+			"-t: Tile with left master",
+			"-s: Fibonacci spiral",
+			"-h: This message");
 
-	return 0;
+	exit (0);
 }
 
 int skipper(struct Window *window)
