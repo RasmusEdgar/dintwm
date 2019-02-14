@@ -20,15 +20,21 @@ int skipper(struct Window *window);
 struct Screen *screen;
 unsigned long ilock;
 int skip = 0;
+int topgap = 0;
 struct Window *window;
 static const int nmaster = 1;
 static const int fact = 530;
 
 int main(int argc, char *argv[])
 {
-	if (argc >= 3) {
-		printf("Only one argument at the time please.\n");
+	lockbasescreen(&ilock, &screen);
+
+	if (argc >= 3 && strcmp("-b", argv[2]) != 0) {
+		printf("-b is only allowed as extra argument.\n");
+		unlockbasescreen(&ilock, &screen);
 		exit(1);
+	} else if ( strcmp("-b", argv[2]) == 0) {
+		topgap = screen->BarHeight - 1;
 	}
 	if (strcmp("-d", argv[1]) == 0)
 		dwindle();
@@ -39,14 +45,16 @@ int main(int argc, char *argv[])
 	else if (strcmp("-s", argv[1]) == 0)
 		spiral();
 	else if (strcmp("-h", argv[1]) == 0 || argv[1] == 0)
-		printf("%s\n%s\n%s\n%s\n%s\n%s\n",
+		printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 			"Options:",
 			"-d: Fibonacci dwindle",
 			"-g: Horizontal grid",
 			"-t: Tile with left master",
 			"-s: Fibonacci spiral",
+			"<other arg> -b: Add workbench bar gap",
 			"-h: This message");
 
+	unlockbasescreen(&ilock, &screen);
 	exit (0);
 }
 
@@ -68,7 +76,6 @@ void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
-	lockbasescreen(&ilock, &screen);
 	// count windows
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) ;
@@ -91,11 +98,11 @@ void tile(void)
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
-			     (screen->BarHeight - 1)) / (MIN(wincount,
+			     topgap) / (MIN(wincount,
 							     nmaster) - wnr);
 			BeginRefresh(window);
 			ChangeWindowBox(window, winx,
-					(screen->BarHeight - 1) - winy + mwiny,
+					topgap - winy + mwiny,
 					mwinwidth + ((screen->WBorRight - 1) -
 						     (screen->WBorLeft - 1)),
 					winheight);
@@ -105,10 +112,10 @@ void tile(void)
 		} else {
 			winheight =
 			    (screen->Height - nwiny -
-			     (screen->BarHeight - 1)) / (wincount - wnr);
+			     topgap) / (wincount - wnr);
 			BeginRefresh(window);
 			ChangeWindowBox(window, winx + mwinwidth,
-					(screen->BarHeight - 1) - winy + nwiny,
+					topgap - winy + nwiny,
 					screen->Width - mwinwidth +
 					((screen->WBorRight - 1) -
 					 (screen->WBorLeft - 1)), winheight);
@@ -117,7 +124,6 @@ void tile(void)
 			nwiny += winheight;
 		}
 	}
-	unlockbasescreen(&ilock, &screen);
 }
 
 void hgrid(void)
@@ -126,7 +132,6 @@ void hgrid(void)
 	int winwidth = 0;
 	int ntop = 0, nbottom = 0, winx = 0, winy = 0;
 
-	lockbasescreen(&ilock, &screen);
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -148,11 +153,11 @@ void hgrid(void)
 			winwidth = screen->Width / wincount;
 			winx = wnr == 1 ? screen->Width / wincount : 0;
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx, winy,
+			ChangeWindowBox(window, winx, topgap - winy,
 					winwidth +
 					((screen->WBorRight - 1) -
 					 (screen->WBorLeft - 1)),
-					screen->Height);
+					topgap - screen->Height);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 		} else {
@@ -163,11 +168,11 @@ void hgrid(void)
 				ChangeWindowBox(window,
 						winx +
 						wnr * screen->Width / ntop,
-						winy,
+						topgap - winy,
 						screen->Width / ntop +
 						((screen->WBorRight - 1) -
 						 (screen->WBorLeft - 1)),
-						screen->Height / 2);
+						(screen->Height / 2) - topgap);
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
 			} else {
@@ -186,14 +191,11 @@ void hgrid(void)
 			}
 		}
 	}
-	unlockbasescreen(&ilock, &screen);
 }
 
 void fibonacci(int s)
 {
 	unsigned int wnr, wincount, winx, winy, winwidth, winheight;
-
-	lockbasescreen(&ilock, &screen);
 
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
@@ -204,9 +206,9 @@ void fibonacci(int s)
 	}
 
 	winx = 0;
-	winy = 0;
+	winy = topgap;
 	winwidth = screen->Width;
-	winheight = screen->Height;
+	winheight = screen->Height - topgap;
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow) {
@@ -250,7 +252,7 @@ void fibonacci(int s)
 				if (wincount != 1)
 					winwidth =
 					    (screen->Width * fact) / 1000;
-				winy = 0;
+				winy = topgap;
 			} else if (wnr == 1)
 				winwidth = screen->Width - winwidth;
 			wnr++;
@@ -262,7 +264,6 @@ void fibonacci(int s)
 		EndRefresh(window, TRUE);
 		RefreshWindowFrame(window);
 	}
-	unlockbasescreen(&ilock, &screen);
 }
 
 void dwindle(void)
