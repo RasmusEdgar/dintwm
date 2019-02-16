@@ -7,6 +7,8 @@
 #include <proto/dos.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
+//#define CWB(WIN, X, Y, W, H)	(ChangeWindowBox(WIN, X, Y, W + ((screen->WBorRight - 1) - (screen->WBorLeft - 1)), H))
+//#define CWB(WIN, X, Y, W, H)	(ChangeWindowBox(WIN, X, Y, W, H))
 
 void tile(void);
 void hgrid(void);
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
 		printf("-b is only allowed as extra argument.\n");
 		unlockbasescreen(&ilock, &screen);
 		exit(1);
-	} else if ( strcmp("-b", argv[2]) == 0) {
+	} else if (strcmp("-b", argv[2]) == 0) {
 		topgap = screen->BarHeight - 1;
 	}
 	if (strcmp("-d", argv[1]) == 0)
@@ -46,16 +48,16 @@ int main(int argc, char *argv[])
 		spiral();
 	else if (strcmp("-h", argv[1]) == 0 || argv[1] == 0)
 		printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-			"Options:",
-			"-d: Fibonacci dwindle",
-			"-g: Horizontal grid",
-			"-t: Tile with left master",
-			"-s: Fibonacci spiral",
-			"<other arg> -b: Add workbench bar gap",
-			"-h: This message");
+		       "Options:",
+		       "-d: Fibonacci dwindle",
+		       "-g: Horizontal grid",
+		       "-t: Tile with left master",
+		       "-s: Fibonacci spiral",
+		       "<other arg> -b: Add workbench bar gap",
+		       "-h: This message");
 
 	unlockbasescreen(&ilock, &screen);
-	exit (0);
+	exit(0);
 }
 
 int skipper(struct Window *window)
@@ -95,17 +97,17 @@ void tile(void)
 			wnr--;
 			continue;
 		}
+		BeginRefresh(window);
+		window->Flags &= ~(WFLG_SIZEGADGET|WFLG_SIZEBBOTTOM|WFLG_CLOSEGADGET);
+		window->Flags = BORDERLESS;
+		EndRefresh(window, TRUE);
+		RefreshWindowFrame(window);
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
-			     topgap) / (MIN(wincount,
-							     nmaster) - wnr);
+			     topgap) / (MIN(wincount, nmaster) - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx,
-					topgap - winy + mwiny,
-					mwinwidth + ((screen->WBorRight - 1) -
-						     (screen->WBorLeft - 1)),
-					winheight);
+			ChangeWindowBox(window, winx, topgap - winy + mwiny, mwinwidth, winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			mwiny += winheight;
@@ -114,11 +116,7 @@ void tile(void)
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx + mwinwidth,
-					topgap - winy + nwiny,
-					screen->Width - mwinwidth +
-					((screen->WBorRight - 1) -
-					 (screen->WBorLeft - 1)), winheight);
+			ChangeWindowBox(window, winx + mwinwidth, topgap - winy + nwiny, screen->Width - mwinwidth, winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			nwiny += winheight;
@@ -154,9 +152,7 @@ void hgrid(void)
 			winx = wnr == 1 ? screen->Width / wincount : 0;
 			BeginRefresh(window);
 			ChangeWindowBox(window, winx, topgap - winy,
-					winwidth +
-					((screen->WBorRight - 1) -
-					 (screen->WBorLeft - 1)),
+					winwidth,
 					topgap - screen->Height);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
@@ -169,9 +165,7 @@ void hgrid(void)
 						winx +
 						wnr * screen->Width / ntop,
 						topgap - winy,
-						screen->Width / ntop +
-						((screen->WBorRight - 1) -
-						 (screen->WBorLeft - 1)),
+						screen->Width / ntop,
 						(screen->Height / 2) - topgap);
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
@@ -182,9 +176,7 @@ void hgrid(void)
 							ntop) * screen->Width /
 						nbottom,
 						winy + screen->Height / 2,
-						screen->Width / nbottom +
-						((screen->WBorRight - 1) -
-						 (screen->WBorLeft - 1)),
+						screen->Width / nbottom,
 						screen->Height / 2);
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
@@ -258,9 +250,7 @@ void fibonacci(int s)
 			wnr++;
 		}
 		BeginRefresh(window);
-		ChangeWindowBox(window, winx, winy,
-				winwidth + ((screen->WBorRight - 1) -
-					    (screen->WBorLeft - 1)), winheight);
+		ChangeWindowBox(window, winx, winy, winwidth, winheight);
 		EndRefresh(window, TRUE);
 		RefreshWindowFrame(window);
 	}
