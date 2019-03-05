@@ -1,6 +1,6 @@
 # dintwm
 
-Tiling window manager for AmigaOS 3.1.x
+Tiling window "manager" for AmigaOS 3.1.x.
 
 ## Building from source
 
@@ -37,3 +37,13 @@ With a gap for the workbench titlebar.
 ```
 dintwm -g -b
 ``` 
+
+## TODO
+
+- Create an optional Dintwm commodity to enable hotkeys
+- Make dintwm dynamical, by saving position of windows before tiling.
+- Float -> Tile -> Float behaviour
+
+## Note
+
+Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included. 
