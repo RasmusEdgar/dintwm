@@ -7,8 +7,6 @@
 #include <proto/dos.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
-//#define CWB(WIN, X, Y, W, H)	(ChangeWindowBox(WIN, X, Y, W + ((screen->WBorRight - 1) - (screen->WBorLeft - 1)), H))
-//#define CWB(WIN, X, Y, W, H)	(ChangeWindowBox(WIN, X, Y, W, H))
 
 void tile(void);
 void hgrid(void);
@@ -97,11 +95,6 @@ void tile(void)
 			wnr--;
 			continue;
 		}
-		BeginRefresh(window);
-		window->Flags &= ~(WFLG_SIZEGADGET|WFLG_SIZEBBOTTOM|WFLG_CLOSEGADGET);
-		window->Flags = BORDERLESS;
-		EndRefresh(window, TRUE);
-		RefreshWindowFrame(window);
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
