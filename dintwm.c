@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
 		       "-s: Fibonacci spiral",
 		       "<other arg> -b: Add workbench bar gap",
 		       "-h: This message");
+	else
+		printf("%s\n", "Unknown argument. Check -h for help");
 
 	unlockbasescreen(&ilock, &screen);
 	exit(0);
