@@ -26,27 +26,40 @@ struct Window *window;
 static const int nmaster = 1;
 static const int fact = 530;
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
-        int i = 0;
+	int i = 0;
 
 	lockbasescreen(&ilock, &screen);
 
-        if (argv[1] == 0) printusage();
+	if (argv[1] == 0)
+		printusage();
 
-        for (i=1;i<argc;i++) {
-	    if (argv[i][0]=='-')
-	        switch (argv[i][1]) {
-                case 'b': topgap = screen->BarHeight - 1;
-	        case 'd': dwindle(); break;
-	        case 'g': hgrid(); break;
-	        case 'h': printusage(); break;
-	        case 't': tile(); break;
-	        case 's': spiral(); break;
-	        default: printusage();
-	     }
-	     else printusage();
-        }
+	for (i = 1; i < argc; i++) {
+		if (argv[i][0] == '-')
+			switch (argv[i][1]) {
+			case 'b':
+				topgap = screen->BarHeight - 1;
+			case 'd':
+				dwindle();
+				break;
+			case 'g':
+				hgrid();
+				break;
+			case 'h':
+				printusage();
+				break;
+			case 't':
+				tile();
+				break;
+			case 's':
+				spiral();
+				break;
+			default:
+				printusage();
+		} else
+			printusage();
+	}
 
 	unlockbasescreen(&ilock, &screen);
 	exit(0);
@@ -54,14 +67,13 @@ int main(int argc, char ** argv)
 
 void printusage(void)
 {
-     printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-         "Options:",
-         "-d: Fibonacci dwindle",
-         "-g: Horizontal grid",
-         "-t: Tile with left master",
-         "-s: Fibonacci spiral",
-         "<other arg> -b: Add workbench bar gap",
-         "-h: This message");
+	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+	       "Options:",
+	       "-d: Fibonacci dwindle",
+	       "-g: Horizontal grid",
+	       "-t: Tile with left master",
+	       "-s: Fibonacci spiral",
+	       "<other arg> -b: Add workbench bar gap", "-h: This message");
 }
 
 int skipper(struct Window *window)
@@ -106,7 +118,8 @@ void tile(void)
 			    (screen->Height - mwiny -
 			     topgap) / (MIN(wincount, nmaster) - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx, topgap - winy + mwiny, mwinwidth, winheight);
+			ChangeWindowBox(window, winx, topgap - winy + mwiny,
+					mwinwidth, winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			mwiny += winheight;
@@ -115,7 +128,9 @@ void tile(void)
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx + mwinwidth, topgap - winy + nwiny, screen->Width - mwinwidth, winheight);
+			ChangeWindowBox(window, winx + mwinwidth,
+					topgap - winy + nwiny,
+					screen->Width - mwinwidth, winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			nwiny += winheight;
@@ -151,8 +166,7 @@ void hgrid(void)
 			winx = wnr == 1 ? screen->Width / wincount : 0;
 			BeginRefresh(window);
 			ChangeWindowBox(window, winx, topgap - winy,
-					winwidth,
-					topgap - screen->Height);
+					winwidth, topgap - screen->Height);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 		} else {
