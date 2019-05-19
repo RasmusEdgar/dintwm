@@ -13,6 +13,7 @@ void hgrid(void);
 void fibonacci(int);
 void spiral(void);
 void dwindle(void);
+void printusage(void);
 void lockbasescreen(unsigned long *ilock, struct Screen **screen);
 void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
 int skipper(struct Window *window);
@@ -25,39 +26,42 @@ struct Window *window;
 static const int nmaster = 1;
 static const int fact = 530;
 
-int main(int argc, char *argv[])
+int main(int argc, char ** argv)
 {
+        int i = 0;
+
 	lockbasescreen(&ilock, &screen);
 
-	if (argc >= 3 && strcmp("-b", argv[2]) != 0) {
-		printf("-b is only allowed as extra argument.\n");
-		unlockbasescreen(&ilock, &screen);
-		exit(1);
-	} else if (strcmp("-b", argv[2]) == 0) {
-		topgap = screen->BarHeight - 1;
-	}
-	if (strcmp("-d", argv[1]) == 0)
-		dwindle();
-	else if (strcmp("-g", argv[1]) == 0)
-		hgrid();
-	else if (strcmp("-t", argv[1]) == 0)
-		tile();
-	else if (strcmp("-s", argv[1]) == 0)
-		spiral();
-	else if (strcmp("-h", argv[1]) == 0 || argv[1] == 0)
-		printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-		       "Options:",
-		       "-d: Fibonacci dwindle",
-		       "-g: Horizontal grid",
-		       "-t: Tile with left master",
-		       "-s: Fibonacci spiral",
-		       "<other arg> -b: Add workbench bar gap",
-		       "-h: This message");
-	else
-		printf("%s\n", "Unknown argument. Check -h for help");
+        if (argv[1] == 0) printusage();
+
+        for (i=1;i<argc;i++) {
+	    if (argv[i][0]=='-')
+	        switch (argv[i][1]) {
+                case 'b': topgap = screen->BarHeight - 1;
+	        case 'd': dwindle(); break;
+	        case 'g': hgrid(); break;
+	        case 'h': printusage(); break;
+	        case 't': tile(); break;
+	        case 's': spiral(); break;
+	        default: printusage();
+	     }
+	     else printusage();
+        }
 
 	unlockbasescreen(&ilock, &screen);
 	exit(0);
+}
+
+void printusage(void)
+{
+     printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+         "Options:",
+         "-d: Fibonacci dwindle",
+         "-g: Horizontal grid",
+         "-t: Tile with left master",
+         "-s: Fibonacci spiral",
+         "<other arg> -b: Add workbench bar gap",
+         "-h: This message");
 }
 
 int skipper(struct Window *window)
