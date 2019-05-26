@@ -24,7 +24,7 @@ int skip = 0;
 int topgap = 0;
 struct Window *window;
 static const int nmaster = 1;
-static const int fact = 530;
+static const int fact = 550;
 
 int main(int argc, char **argv)
 {
@@ -36,10 +36,12 @@ int main(int argc, char **argv)
 		printusage();
 
 	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-')
+		if (argv[i][0] == '-') {
+			if (argv[i][1] == 'b') {
+				topgap = screen->BarHeight - 1;
+			}
 			switch (argv[i][1]) {
 			case 'b':
-				topgap = screen->BarHeight - 1;
 			case 'd':
 				dwindle();
 				break;
@@ -57,6 +59,7 @@ int main(int argc, char **argv)
 				break;
 			default:
 				printusage();
+			}
 		} else
 			printusage();
 	}
@@ -166,7 +169,7 @@ void hgrid(void)
 			winx = wnr == 1 ? screen->Width / wincount : 0;
 			BeginRefresh(window);
 			ChangeWindowBox(window, winx, topgap - winy,
-					winwidth, topgap - screen->Height);
+					winwidth, screen->Height - topgap);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 		} else {
