@@ -32,8 +32,9 @@ int main(int argc, char **argv)
 
 	lockbasescreen(&ilock, &screen);
 
-	if (argv[1] == 0)
+	if (argv[1] == 0) {
 		printusage();
+	}
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
@@ -97,18 +98,23 @@ void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
+
 	// count windows
 	for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++) ;
+	     window = window->NextWindow, wincount++);
+
 	if (wincount == 0) {
 		return;
 	}
+
 	// remove count for workbench window
 	wincount--;
-	if (wincount > nmaster)
+
+	if (wincount > nmaster) {
 		mwinwidth = nmaster ? (screen->Width * fact) / 1000 : 0;
-	else
+	} else {
 		mwinwidth = screen->Width;
+	}
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wnr++) {
@@ -155,8 +161,9 @@ void hgrid(void)
 		}
 	}
 
-	if (wincount == 0)
+	if (wincount == 0) {
 		return;
+	}
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wnr++) {
@@ -232,37 +239,43 @@ void fibonacci(int s)
 			&& winwidth / 2 >
 			((screen->WBorRight - 1) - (screen->WBorLeft - 1)))) {
 			if (wnr < wincount - 1) {
-				if (wnr % 2)
+				if (wnr % 2) {
 					winheight /= 2;
-				else
+				} else {
 					winwidth /= 2;
-				if ((wnr % 4) == 2 && !s)
+				}
+				if ((wnr % 4) == 2 && !s) {
 					winx += winwidth;
-				else if ((wnr % 4) == 3 && !s)
+				} else if ((wnr % 4) == 3 && !s) {
 					winy += winheight;
+				}
 			}
 			if ((wnr % 4) == 0) {
-				if (s)
+				if (s) {
 					winy += winheight;
-				else
+				} else {
 					winy -= winheight;
-			} else if ((wnr % 4) == 1)
+				}
+			} else if ((wnr % 4) == 1) {
 				winx += winwidth;
-			else if ((wnr % 4) == 2)
+			} else if ((wnr % 4) == 2) {
 				winy += winheight;
-			else if ((wnr % 4) == 3) {
-				if (s)
+			} else if ((wnr % 4) == 3) {
+				if (s) {
 					winx += winwidth;
-				else
+				} else {
 					winx -= winwidth;
+				}
 			}
 			if (wnr == 0) {
-				if (wincount != 1)
+				if (wincount != 1) {
 					winwidth =
 					    (screen->Width * fact) / 1000;
 				winy = topgap;
-			} else if (wnr == 1)
+				}
+			} else if (wnr == 1) {
 				winwidth = screen->Width - winwidth;
+			}
 			wnr++;
 		}
 		BeginRefresh(window);
