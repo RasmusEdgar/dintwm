@@ -22,6 +22,7 @@ struct Screen *screen;
 unsigned long ilock;
 int skip = 0;
 int topgap = 0;
+int optarg = 0;
 struct Window *window;
 static const int nmaster = 1;
 static const int fact = 550;
@@ -36,13 +37,30 @@ int main(int argc, char **argv)
 		printusage();
 	}
 
+	// Optional arguments
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
-			if (argv[i][1] == 'b') {
-				topgap = screen->BarHeight - 1;
-			}
 			switch (argv[i][1]) {
 			case 'b':
+				topgap = screen->BarHeight - 1;
+				optarg = 1;
+				break;
+			case 'B':
+				topgap = argv[i][2] ? atoi(&argv[i][2]) : atoi(&argv[i][3]);
+				optarg = 1;
+				break;
+			}
+		}
+	}
+
+	// Arguments
+	for (i = 1; i < argc; i++) {
+		if (argv[i][0] == '-') {
+			switch (argv[i][1]) {
+			case 'b':
+				break;
+			case 'B':
+				break;
 			case 'd':
 				dwindle();
 				break;
@@ -59,10 +77,13 @@ int main(int argc, char **argv)
 				spiral();
 				break;
 			default:
-				printusage();
+				if (optarg == 0) {
+					printusage();
+				}
 			}
-		} else
+		} else if (optarg == 0) {
 			printusage();
+		}
 	}
 
 	unlockbasescreen(&ilock, &screen);
@@ -71,13 +92,15 @@ int main(int argc, char **argv)
 
 void printusage(void)
 {
-	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 	       "Options:",
 	       "-d: Fibonacci dwindle",
 	       "-g: Horizontal grid",
 	       "-t: Tile with left master",
 	       "-s: Fibonacci spiral",
-	       "<other arg> -b: Add workbench bar gap", "-h: This message");
+	       "<other arg> -b: Add workbench bar gap",
+	       "<other arg> -B<int>: Add custom top gap",
+	       "-h: This message");
 }
 
 int skipper(struct Window *window)
