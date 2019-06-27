@@ -8,108 +8,131 @@
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 
-void tile(void);
-void hgrid(void);
-void fibonacci(int);
-void spiral(void);
-void dwindle(void);
-void printusage(void);
-void lockbasescreen(unsigned long *ilock, struct Screen **screen);
-void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
-int skipper(struct Window *window);
+static void tile(void);
+static void hgrid(void);
+static void fibonacci(int);
+static void spiral(void);
+static void dwindle(void);
+static void printusage(int, int);
+static void lockbasescreen(unsigned long *ilock, struct Screen **screen);
+static void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
+static int skipper(struct Window *window);
 
-struct Screen *screen;
-unsigned long ilock;
-int skip = 0;
-int topgap = 0;
-int optarg = 0;
-struct Window *window;
+static struct Screen *screen;
+static unsigned long ilock;
+static int skip = 0;
+static int topgap = 0;
+static struct Window *window;
 static const int nmaster = 1;
 static const int fact = 550;
 
 int main(int argc, char **argv)
 {
-	int i = 0;
+	int i = 0, optnum = 0, optargerr = 0;
+	char margopt = 'a';
 
 	lockbasescreen(&ilock, &screen);
 
-	if (argv[1] == 0) {
-		printusage();
-	}
-
-	// Optional arguments
+	// Get optional and main argument
 	for (i = 1; i < argc; i++) {
+		if (argv[i][0] == '\0') {
+			printf ("%s\n","Dintwm needs arguments");
+			printusage(0, optnum);
+			exit(EXIT_FAILURE);
+		}	
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
 			case 'b':
-				topgap = screen->BarHeight - 1;
-				optarg = 1;
+				if (optargerr == 0 && topgap == 0) {
+					topgap = screen->BarHeight -1;
+				} else {
+					optargerr = 1;
+				}
 				break;
 			case 'B':
-				topgap = argv[i][2] ? atoi(&argv[i][2]) : atoi(&argv[i][3]);
-				optarg = 1;
-				break;
-			}
-		}
-	}
-
-	// Arguments
-	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-') {
-			switch (argv[i][1]) {
-			case 'b':
-				break;
-			case 'B':
-				break;
-			case 'd':
-				dwindle();
-				break;
-			case 'g':
-				hgrid();
-				break;
-			case 'h':
-				printusage();
-				break;
-			case 't':
-				tile();
-				break;
-			case 's':
-				spiral();
+				if (optargerr == 0 && topgap == 0) {
+					topgap = argv[i][2] != '\0' ? atoi(&argv[i][2]) : atoi(&argv[i][3]);
+					if (topgap > screen->Height || topgap < 0) {
+						optargerr = 2;
+					}
+				} else {
+					optargerr = 1;
+				}
 				break;
 			default:
-				if (optarg == 0) {
-					printusage();
-				}
+                               	margopt = margopt == 'a' ? argv[i][1] : 'x';
+				break;
 			}
-		} else if (optarg == 0) {
-			printusage();
+		} else {
+			if (topgap == 0) {
+				optnum = i;
+				margopt = 'x';
+				break;
+			}
+		}
+		if (optargerr >= 1 && margopt != 'x') {
+			margopt = 'x';		
 		}
 	}
+
+	switch (margopt) {
+		case 'd':
+			dwindle();
+			break;
+		case 'g':
+			hgrid();
+			break;
+		case 'h':
+			printusage(0, optnum);
+			break;
+		case 't':
+			tile();
+			break;
+		case 's':
+			spiral();
+			break;
+		default:
+			printusage(optargerr, optnum);
+	}
+
 
 	unlockbasescreen(&ilock, &screen);
 	exit(0);
 }
 
-void printusage(void)
+static void printusage(int m, int optnum)
 {
-	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-	       "Options:",
-	       "-d: Fibonacci dwindle",
-	       "-g: Horizontal grid",
-	       "-t: Tile with left master",
-	       "-s: Fibonacci spiral",
-	       "<other arg> -b: Add workbench bar gap",
-	       "<other arg> -B<int>: Add custom top gap",
-	       "-h: This message");
+
+	switch (m) {
+		case 1:
+			printf("%s\n","Too many optional, main arguments or unknown option");
+			break;
+		case 2:
+			printf("%s\n","Custom topgap is either too big or too small.");
+			break;
+		case 3:
+			printf("%s %d\n","Unknown option in position", optnum);
+			break;
+		default:
+			printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+				"Options:",
+				"-d: Fibonacci dwindle",
+				"-g: Horizontal grid",
+				"-t: Tile with left master",
+				"-s: Fibonacci spiral",
+				"<other arg> -b: Add workbench bar gap",
+				"<other arg> -B<int>: Add custom top gap",
+				"-h: This message");
+	}
 }
 
-int skipper(struct Window *window)
+static int skipper(struct Window *window)
 {
 	if (window->Flags & BACKDROP) {
 		return 1;
 	}
 
-	if (strcmp("Workbench", window->Title) == 0) {
+	if (strcmp("Workbench", (const char *)window->Title) == 0) {
 		return 1;
 	}
 
@@ -117,7 +140,7 @@ int skipper(struct Window *window)
 
 }
 
-void tile(void)
+static void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
@@ -134,7 +157,7 @@ void tile(void)
 	wincount--;
 
 	if (wincount > nmaster) {
-		mwinwidth = nmaster ? (screen->Width * fact) / 1000 : 0;
+		mwinwidth = nmaster != 0 ? (screen->Width * fact) / 1000 : 0;
 	} else {
 		mwinwidth = screen->Width;
 	}
@@ -170,11 +193,11 @@ void tile(void)
 	}
 }
 
-void hgrid(void)
+static void hgrid(void)
 {
-	unsigned int wincount, wnr;
+	unsigned int wincount, wnr, ntop = 0, nbottom = 0;
 	int winwidth = 0;
-	int ntop = 0, nbottom = 0, winx = 0, winy = 0;
+	int winx = 0, winy = 0;
 
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
@@ -231,9 +254,10 @@ void hgrid(void)
 	}
 }
 
-void fibonacci(int s)
+static void fibonacci(int s)
 {
-	unsigned int wnr, wincount, winx, winy, winwidth, winheight;
+	unsigned int wnr, wincount, winx, winwidth, winheight;
+	int winy;
 
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
@@ -255,26 +279,26 @@ void fibonacci(int s)
 			continue;
 		}
 
-		if ((wnr % 2
+		if ((wnr % 2 != 0
 		     && winheight / 2 >
 		     ((screen->WBorRight - 1) - (screen->WBorLeft - 1)))
-		    || (!(wnr % 2)
+		    || (wnr % 2 == 0
 			&& winwidth / 2 >
 			((screen->WBorRight - 1) - (screen->WBorLeft - 1)))) {
 			if (wnr < wincount - 1) {
-				if (wnr % 2) {
+				if (wnr % 2 != 0) {
 					winheight /= 2;
 				} else {
 					winwidth /= 2;
 				}
-				if ((wnr % 4) == 2 && !s) {
+				if ((wnr % 4) == 2 && s == 0) {
 					winx += winwidth;
-				} else if ((wnr % 4) == 3 && !s) {
+				} else if ((wnr % 4) == 3 && s == 0) {
 					winy += winheight;
 				}
 			}
 			if ((wnr % 4) == 0) {
-				if (s) {
+				if (s != 0) {
 					winy += winheight;
 				} else {
 					winy -= winheight;
@@ -284,7 +308,7 @@ void fibonacci(int s)
 			} else if ((wnr % 4) == 2) {
 				winy += winheight;
 			} else if ((wnr % 4) == 3) {
-				if (s) {
+				if (s != 0) {
 					winx += winwidth;
 				} else {
 					winx -= winwidth;
@@ -308,23 +332,23 @@ void fibonacci(int s)
 	}
 }
 
-void dwindle(void)
+static void dwindle(void)
 {
 	fibonacci(1);
 }
 
-void spiral(void)
+static void spiral(void)
 {
 	fibonacci(0);
 }
 
-void lockbasescreen(unsigned long *ilock, struct Screen **screen)
+static void lockbasescreen(unsigned long *ilock, struct Screen **screen)
 {
 	*ilock = LockIBase(0L);
 	*screen = LockPubScreen(NULL);
 }
 
-void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
+static void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
 {
 	UnlockPubScreen(NULL, *screen);
 	UnlockIBase(*ilock);
