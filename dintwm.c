@@ -1,24 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <proto/graphics.h>
-#include <proto/intuition.h>
-#include <proto/dos.h>
-
-#define MIN(A, B)               ((A) < (B) ? (A) : (B))
-
-static void tile(void);
-static void hgrid(void);
-static void fibonacci(int);
-static void spiral(void);
-static void dwindle(void);
-static void printusage(int, int);
-static void lockbasescreen(unsigned long *ilock, struct Screen **screen);
-static void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
-static int skipper(struct Window *window);
+#include "dintwm.h"
 
 static struct Screen *screen;
+static struct Library *iconbase;
 static unsigned long ilock;
 static int skip = 0;
 static int topgap = 0;
@@ -30,16 +13,19 @@ int main(int argc, char **argv)
 {
 	int i = 0, optnum = 0, optargerr = 0;
 	char margopt = 'a';
+	const unsigned char **ttypes;
+	
+	iconbase = OpenLibrary("icon.library",37);
+	ttypes = ArgArrayInit( argc, (const unsigned char **)argv );
 
-	lockbasescreen(&ilock, &screen);
 
 	// Get optional and main argument
 	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '\0') {
+		/*if (argv[i][0] == '\0') {
 			printf ("%s\n","Dintwm needs arguments");
 			printusage(0, optnum);
 			exit(EXIT_FAILURE);
-		}	
+		}*/
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
 			case 'b':
@@ -92,18 +78,21 @@ int main(int argc, char **argv)
 			spiral();
 			break;
 		default:
-			printusage(optargerr, optnum);
+			if(optargerr < 0) {
+				printusage(optargerr, optnum);
+			} else {
+				commo();
+			}
 	}
 
 
-	unlockbasescreen(&ilock, &screen);
 	exit(0);
 }
 
-static void printusage(int m, int optnum)
+void printusage(int err, int optnum)
 {
 
-	switch (m) {
+	switch (err) {
 		case 1:
 			printf("%s\n","Too many optional, main arguments or unknown option");
 			break;
@@ -126,7 +115,7 @@ static void printusage(int m, int optnum)
 	}
 }
 
-static int skipper(struct Window *window)
+int skipper(struct Window *window)
 {
 	if (window->Flags & BACKDROP) {
 		return 1;
@@ -140,11 +129,12 @@ static int skipper(struct Window *window)
 
 }
 
-static void tile(void)
+void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
 
+	lockbasescreen(&ilock, &screen);
 	// count windows
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++);
@@ -191,14 +181,16 @@ static void tile(void)
 			nwiny += winheight;
 		}
 	}
+	unlockbasescreen(&ilock, &screen);
 }
 
-static void hgrid(void)
+void hgrid(void)
 {
 	unsigned int wincount, wnr, ntop = 0, nbottom = 0;
 	int winwidth = 0;
 	int winx = 0, winy = 0;
 
+	lockbasescreen(&ilock, &screen);
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -252,13 +244,15 @@ static void hgrid(void)
 			}
 		}
 	}
+	unlockbasescreen(&ilock, &screen);
 }
 
-static void fibonacci(int s)
+void fibonacci(int s)
 {
 	unsigned int wnr, wincount, winx, winwidth, winheight;
 	int winy;
 
+	lockbasescreen(&ilock, &screen);
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -330,25 +324,26 @@ static void fibonacci(int s)
 		EndRefresh(window, TRUE);
 		RefreshWindowFrame(window);
 	}
+	unlockbasescreen(&ilock, &screen);
 }
 
-static void dwindle(void)
+void dwindle(void)
 {
 	fibonacci(1);
 }
 
-static void spiral(void)
+void spiral(void)
 {
 	fibonacci(0);
 }
 
-static void lockbasescreen(unsigned long *ilock, struct Screen **screen)
+void lockbasescreen(unsigned long *ilock, struct Screen **screen)
 {
 	*ilock = LockIBase(0L);
 	*screen = LockPubScreen(NULL);
 }
 
-static void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
+void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
 {
 	UnlockPubScreen(NULL, *screen);
 	UnlockIBase(*ilock);
