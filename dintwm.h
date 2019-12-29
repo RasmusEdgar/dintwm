@@ -12,6 +12,10 @@
 #include <stdio.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
+#define KEY_TILE "rawkey control lshift t"
+#define KEY_HGRID "rawkey control lshift g"
+#define KEY_SPIRAL "rawkey control lshift f"
+#define KEY_DWINDLE "rawkey control lshift d"
 
 // dintwm main functions
 void tile(void);
@@ -25,4 +29,4 @@ void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
 int skipper(struct Window *window);
 
 // commodity headers
-int commo(void);
+int commo(unsigned char **ttypes);

@@ -13,11 +13,15 @@ int main(int argc, char **argv)
 {
 	int i = 0, optnum = 0, optargerr = 0;
 	char margopt = 'a';
-	const unsigned char **ttypes;
+	unsigned char **ttypes;
+	char *tt_value;
 	
 	iconbase = OpenLibrary("icon.library",37);
-	ttypes = ArgArrayInit( argc, (const unsigned char **)argv );
+	ttypes = ArgArrayInit(argc, (const unsigned char **)argv );
+	if(iconbase)        CloseLibrary(iconbase);
 
+	if ((tt_value = FindToolType(ttypes, "FISSEJUICE")) != NULL)
+		if (MatchToolValue(tt_value, "Mums")) printf("%s\n",tt_value);
 
 	// Get optional and main argument
 	for (i = 1; i < argc; i++) {
@@ -81,7 +85,11 @@ int main(int argc, char **argv)
 			if(optargerr < 0) {
 				printusage(optargerr, optnum);
 			} else {
-				commo();
+				if(ttypes == NULL) {
+				commo(NULL);
+				} else {
+				commo(ttypes);
+				}
 			}
 	}
 
