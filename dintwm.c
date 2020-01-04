@@ -2,6 +2,8 @@
 
 static struct Screen *screen;
 static struct Library *iconbase;
+static struct Library *cxbase;
+static struct DiskObject *diskobj;
 static unsigned long ilock;
 static int skip = 0;
 static int topgap = 0;
@@ -13,15 +15,37 @@ int main(int argc, char **argv)
 {
 	int i = 0, optnum = 0, optargerr = 0;
 	char margopt = 'a';
-	unsigned char **ttypes;
-	char *tt_value;
+	char * result;
+	//unsigned char **ttypes;
+	size_t p_length;
+	BPTR fh;
+	UBYTE  namebuffer[1024];
 	
-	iconbase = OpenLibrary("icon.library",37);
-	ttypes = ArgArrayInit(argc, (const unsigned char **)argv );
-	if(iconbase)        CloseLibrary(iconbase);
-
-	if ((tt_value = FindToolType(ttypes, "FISSEJUICE")) != NULL)
-		if (MatchToolValue(tt_value, "Mums")) printf("%s\n",tt_value);
+	if ((argc == 0 ) || (argv[1][0] == 'P')) {
+		if(!(cxbase = OpenLibrary((unsigned char *)"commodities.library",37))) {
+			exit(EXIT_FAILURE);
+		}
+		if(!(iconbase = OpenLibrary((unsigned char *)"icon.library",37))) {
+			exit(EXIT_FAILURE);
+		}
+		//ttypes = ArgArrayInit(argc, argv );
+		diskobj = GetDiskObject("dintwm");
+		/*fh = Open("pre-debug.txt", MODE_NEWFILE);	
+		if (fh) {
+			printf("lala\n");
+			result = FindToolType(diskobj->do_ToolTypes, "POPKEY_TILE");
+			//p_length = strlen((const char *)&result);
+			//strncpy(namebuffer, result, p_length);
+			//printf("%s\n", result);
+			FPuts(fh, result);
+		}
+		Close(fh);*/
+		commo(diskobj->do_ToolTypes);
+		ArgArrayDone();
+		CloseLibrary(cxbase);
+		CloseLibrary(iconbase);
+		exit(0);
+	}
 
 	// Get optional and main argument
 	for (i = 1; i < argc; i++) {
@@ -84,12 +108,6 @@ int main(int argc, char **argv)
 		default:
 			if(optargerr < 0) {
 				printusage(optargerr, optnum);
-			} else {
-				if(ttypes == NULL) {
-				commo(NULL);
-				} else {
-				commo(ttypes);
-				}
 			}
 	}
 
