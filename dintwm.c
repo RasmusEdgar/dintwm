@@ -13,18 +13,12 @@ int main(int argc, char **argv)
 	int i = 0, optnum = 0, optargerr = 0;
 	char margopt = 'a';
 	
-	if ((argc == 0 ) || (argv[1][0] == 'P')) {
+	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
 		commo();
 		exit(0);
 	}
 
-	// Get optional and main argument
 	for (i = 1; i < argc; i++) {
-		/*if (argv[i][0] == '\0') {
-			printf ("%s\n","Dintwm needs arguments");
-			printusage(0, optnum);
-			exit(EXIT_FAILURE);
-		}*/
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
 			case 'b':
