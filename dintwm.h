@@ -13,16 +13,18 @@
 //#include <workbench/startup.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
-#define KEY_TILE "rawkey control lshift t"
-#define KEY_HGRID "rawkey control lshift g"
-#define KEY_SPIRAL "rawkey control lshift f"
-#define KEY_DWINDLE "rawkey control lshift d"
 
 // Commodity info
 
 #define COMMODITY_NAME "DintWM commodity"
 #define COMMODITY_TITLE "Sets up hotkeys for DintWM"
 #define COMMODITY_DESC "To change hotkeys edit source"
+#define KEY_TILE "rawkey control lshift t"
+#define KEY_HGRID "rawkey control lshift g"
+#define KEY_SPIRAL "rawkey control lshift f"
+#define KEY_DWINDLE "rawkey control lshift d"
+#define KEY_ARRAY_SIZE 4
+
 
 // dintwm main functions
 void tile(void);
@@ -36,5 +38,5 @@ void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
 int skipper(struct Window *window);
 
 // commodity headers
-int commo(unsigned char **ttypes);
+int commo(void);
 //struct Library      *WorkbenchBase;

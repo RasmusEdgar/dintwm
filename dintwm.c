@@ -1,9 +1,6 @@
 #include "dintwm.h"
 
 static struct Screen *screen;
-static struct Library *iconbase;
-static struct Library *cxbase;
-static struct DiskObject *diskobj;
 static unsigned long ilock;
 static int skip = 0;
 static int topgap = 0;
@@ -15,35 +12,9 @@ int main(int argc, char **argv)
 {
 	int i = 0, optnum = 0, optargerr = 0;
 	char margopt = 'a';
-	char * result;
-	//unsigned char **ttypes;
-	size_t p_length;
-	BPTR fh;
-	UBYTE  namebuffer[1024];
 	
 	if ((argc == 0 ) || (argv[1][0] == 'P')) {
-		if(!(cxbase = OpenLibrary((unsigned char *)"commodities.library",37))) {
-			exit(EXIT_FAILURE);
-		}
-		if(!(iconbase = OpenLibrary((unsigned char *)"icon.library",37))) {
-			exit(EXIT_FAILURE);
-		}
-		//ttypes = ArgArrayInit(argc, argv );
-		diskobj = GetDiskObject("dintwm");
-		/*fh = Open("pre-debug.txt", MODE_NEWFILE);	
-		if (fh) {
-			printf("lala\n");
-			result = FindToolType(diskobj->do_ToolTypes, "POPKEY_TILE");
-			//p_length = strlen((const char *)&result);
-			//strncpy(namebuffer, result, p_length);
-			//printf("%s\n", result);
-			FPuts(fh, result);
-		}
-		Close(fh);*/
-		commo(diskobj->do_ToolTypes);
-		ArgArrayDone();
-		CloseLibrary(cxbase);
-		CloseLibrary(iconbase);
+		commo();
 		exit(0);
 	}
 
