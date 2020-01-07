@@ -3,10 +3,10 @@
 static struct Screen *screen;
 static unsigned long ilock;
 static int skip = 0;
-static int topgap = 0;
 static struct Window *window;
 static const int nmaster = 1;
 static const int fact = 550;
+short rc;
 
 int main(int argc, char **argv)
 {
@@ -14,8 +14,10 @@ int main(int argc, char **argv)
 	char margopt = 'a';
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
-		commo();
-		exit(0);
+		if((rc = commo()) == 0) {
+			exit(EXIT_SUCCESS);
+		}
+		exit(EXIT_FAILURE);
 	}
 
 	for (i = 1; i < argc; i++) {
@@ -77,7 +79,7 @@ int main(int argc, char **argv)
 	}
 
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 void printusage(int err, int optnum)
