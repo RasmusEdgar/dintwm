@@ -40,6 +40,7 @@ void lockbasescreen(unsigned long *ilock, struct Screen **screen);
 void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
 int skipper(struct Window *window);
 int topgap;
+char * include_wtype;
 
 // commodity headers
 int commo(void);

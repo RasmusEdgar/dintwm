@@ -15,6 +15,7 @@ int main(int argc, char **argv)
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
 		if((rc = commo()) == 0) {
+			free(include_wtype);
 			exit(EXIT_SUCCESS);
 		}
 		exit(EXIT_FAILURE);
@@ -79,6 +80,7 @@ int main(int argc, char **argv)
 	}
 
 
+	free(include_wtype);
 	exit(EXIT_SUCCESS);
 }
 
@@ -118,6 +120,10 @@ int skipper(struct Window *window)
 		return 1;
 	}
 
+	if (strcmp(include_wtype, (const char *)window->Title) != 0) {
+		return 1;
+	}
+
 	return 0;
 
 }
@@ -129,15 +135,22 @@ void tile(void)
 
 	lockbasescreen(&ilock, &screen);
 	// count windows
+	/*for (wincount = 0, window = screen->FirstWindow; window;
+	     window = window->NextWindow, wincount++);*/
 	for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++);
+	     window = window->NextWindow, wincount++) {
+		if ((skip = skipper(window)) == 1) {
+			wincount--;
+			continue;
+		}
+	}
 
 	if (wincount == 0) {
 		return;
 	}
 
 	// remove count for workbench window
-	wincount--;
+	//wincount--;
 
 	if (wincount > nmaster) {
 		mwinwidth = nmaster != 0 ? (screen->Width * fact) / 1000 : 0;
@@ -220,7 +233,7 @@ void hgrid(void)
 						wnr * screen->Width / ntop,
 						topgap - winy,
 						screen->Width / ntop,
-						(screen->Height / 2) - topgap);
+						(screen->Height - topgap) / 2);
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
 			} else {
@@ -229,9 +242,9 @@ void hgrid(void)
 						winx + (wnr -
 							ntop) * screen->Width /
 						nbottom,
-						winy + screen->Height / 2,
+						topgap + winy + screen->Height / 2,
 						screen->Width / nbottom,
-						screen->Height / 2);
+						(screen->Height - topgap) / 2);
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
 			}
