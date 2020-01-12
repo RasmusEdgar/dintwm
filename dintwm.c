@@ -15,7 +15,6 @@ int main(int argc, char **argv)
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
 		if((rc = commo()) == 0) {
-			free(include_wtype);
 			exit(EXIT_SUCCESS);
 		}
 		exit(EXIT_FAILURE);
@@ -79,8 +78,7 @@ int main(int argc, char **argv)
 			}
 	}
 
-
-	free(include_wtype);
+	
 	exit(EXIT_SUCCESS);
 }
 
@@ -353,4 +351,22 @@ void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
 {
 	UnlockPubScreen(NULL, *screen);
 	UnlockIBase(*ilock);
+}
+
+void freemem(void)
+{
+	int i;
+	if(include_wtype) {
+		free(include_wtype);
+	}
+	if(topgap) {
+		free(topgap);
+	}
+
+        for( i = 0 ; i < (sizeof(keys)); i++) {
+                if(keys[i].rawcombo) {
+			free(keys[i].rawcombo);
+		}
+        }
+        free(keys);
 }

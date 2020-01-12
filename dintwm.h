@@ -23,7 +23,7 @@
 #define KEY_HGRID "rawkey control lshift g"
 #define KEY_SPIRAL "rawkey control lshift f"
 #define KEY_DWINDLE "rawkey control lshift d"
-#define KEY_ARRAY_SIZE 4
+//#define KEY_ARRAY_SIZE 4
 #define DEFAULT_TOPGAP 0
 #define KEYTYPE 1
 #define OPTTYPE 2
@@ -38,8 +38,9 @@ void dwindle(void);
 void printusage(int, int);
 void lockbasescreen(unsigned long *ilock, struct Screen **screen);
 void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
+void freemem(void);
 int skipper(struct Window *window);
-int topgap;
+int * topgap;
 char * include_wtype;
 
 // commodity headers
