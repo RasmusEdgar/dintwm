@@ -32,17 +32,29 @@
 // dintwm main functions
 void tile(void);
 void hgrid(void);
-void fibonacci(int);
 void spiral(void);
 void dwindle(void);
-void printusage(int, int);
-void lockbasescreen(unsigned long *ilock, struct Screen **screen);
-void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
-void freemem(void);
-int skipper(struct Window *window);
-int * topgap;
+int topgap;
 char * include_wtype;
 
 // commodity headers
 int commo(void);
-//struct Library      *WorkbenchBase;
+
+struct Optdef {
+	const char* optname;
+        unsigned long cxint;
+	const char* defaultval;
+	int tt_type;
+};
+
+struct Popkeys {
+        char * restrict rawcombo;
+};
+
+struct Keyfuncdef {
+        void (*func)(void);
+};
+	
+struct Popkeys* keys;
+struct Opts* opts;
+

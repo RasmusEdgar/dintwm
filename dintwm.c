@@ -1,5 +1,10 @@
 #include "dintwm.h"
 
+static void fibonacci(int);
+static void printusage(int, int);
+static void lockbasescreen(unsigned long *ilock, struct Screen **screen);
+static void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
+static int skipper(struct Window *window);
 static struct Screen *screen;
 static unsigned long ilock;
 static int skip = 0;
@@ -78,7 +83,6 @@ int main(int argc, char **argv)
 			}
 	}
 
-	
 	exit(EXIT_SUCCESS);
 }
 
@@ -135,6 +139,7 @@ void tile(void)
 	// count windows
 	/*for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++);*/
+	printf("Reached tile\n");
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -147,6 +152,7 @@ void tile(void)
 		return;
 	}
 
+	printf("Reached tile 1\n");
 	// remove count for workbench window
 	//wincount--;
 
@@ -162,6 +168,7 @@ void tile(void)
 			wnr--;
 			continue;
 		}
+	printf("Reached tile 2\n");
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
@@ -173,6 +180,7 @@ void tile(void)
 			RefreshWindowFrame(window);
 			mwiny += winheight;
 		} else {
+	printf("Reached tile 3\n");
 			winheight =
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
@@ -185,6 +193,7 @@ void tile(void)
 			nwiny += winheight;
 		}
 	}
+	printf("Reached tile 4\n");
 	unlockbasescreen(&ilock, &screen);
 }
 
@@ -351,22 +360,4 @@ void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
 {
 	UnlockPubScreen(NULL, *screen);
 	UnlockIBase(*ilock);
-}
-
-void freemem(void)
-{
-	int i;
-	if(include_wtype) {
-		free(include_wtype);
-	}
-	if(topgap) {
-		free(topgap);
-	}
-
-        for( i = 0 ; i < (sizeof(keys)); i++) {
-                if(keys[i].rawcombo) {
-			free(keys[i].rawcombo);
-		}
-        }
-        free(keys);
 }
