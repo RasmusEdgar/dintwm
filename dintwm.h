@@ -35,7 +35,7 @@ void hgrid(void);
 void spiral(void);
 void dwindle(void);
 int topgap;
-char * include_wtype;
+char * exclude_wtype;
 
 // commodity headers
 int commo(void);

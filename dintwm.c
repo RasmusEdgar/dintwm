@@ -122,7 +122,8 @@ int skipper(struct Window *window)
 		return 1;
 	}
 
-	if (strcmp(include_wtype, (const char *)window->Title) != 0) {
+	printf("wtype: %s\n", exclude_wtype);
+	if (strcmp(exclude_wtype, (const char *)window->Title) == 0) {
 		return 1;
 	}
 
@@ -139,7 +140,6 @@ void tile(void)
 	// count windows
 	/*for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++);*/
-	printf("Reached tile\n");
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -152,7 +152,6 @@ void tile(void)
 		return;
 	}
 
-	printf("Reached tile 1\n");
 	// remove count for workbench window
 	//wincount--;
 
@@ -168,7 +167,6 @@ void tile(void)
 			wnr--;
 			continue;
 		}
-	printf("Reached tile 2\n");
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
@@ -180,7 +178,6 @@ void tile(void)
 			RefreshWindowFrame(window);
 			mwiny += winheight;
 		} else {
-	printf("Reached tile 3\n");
 			winheight =
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
@@ -193,7 +190,6 @@ void tile(void)
 			nwiny += winheight;
 		}
 	}
-	printf("Reached tile 4\n");
 	unlockbasescreen(&ilock, &screen);
 }
 
