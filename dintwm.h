@@ -23,6 +23,7 @@
 #define KEY_HGRID "rawkey control lshift g"
 #define KEY_SPIRAL "rawkey control lshift f"
 #define KEY_DWINDLE "rawkey control lshift d"
+#define TT_MAX_LENGTH 257
 //#define KEY_ARRAY_SIZE 4
 #define DEFAULT_TOPGAP 0
 #define KEYTYPE 1
@@ -55,6 +56,5 @@ struct Keyfuncdef {
         void (*func)(void);
 };
 	
-struct Popkeys* keys;
 struct Opts* opts;
 
