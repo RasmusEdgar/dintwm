@@ -149,6 +149,7 @@ void tile(void)
 	}
 
 	if (wincount == 0) {
+		unlockbasescreen(&ilock, &screen);
 		return;
 	}
 
@@ -209,6 +210,7 @@ void hgrid(void)
 	}
 
 	if (wincount == 0) {
+		unlockbasescreen(&ilock, &screen);
 		return;
 	}
 

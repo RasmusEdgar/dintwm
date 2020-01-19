@@ -47,6 +47,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	size_t tt_length = 0;
 	size_t arrsizes;
 	struct Popkeys* keys;
+       	char * tt_optvalue;
 
 	keys = malloc(sizeof(*defopts) * sizeof(*keys));
 
@@ -55,31 +56,39 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	exclude_wtype = calloc(TT_MAX_LENGTH, sizeof(char));
 
 	for (i = 0; i < arrsizes ; ++i) {
-        	char * tt_optvalue;
 		CxObj *filter;
+		tt_length = FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname) ? strlen((const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) : 0;
 
-		if((tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) == NULL) {
+		//if(!FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) {
+		if(tt_length == 0) {
 			if(defopts[i].tt_type == KEYTYPE ) {
 				tt_length = strlen(defopts[i].defaultval)+1;
 				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof keys[i].rawcombo);
 				strncpy(keys[i].rawcombo, defopts[i].defaultval, tt_length);
 				printf("Default keys: %s\n", keys[i].rawcombo);
 			} 
-		} else if (defopts[i].tt_type == KEYTYPE) {
-			keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof keys[i].rawcombo);
-			strncpy(keys[i].rawcombo, (const char *)tt_optvalue, strlen(tt_optvalue)+1);
-			printf("Custom keys: %s\n", keys[i].rawcombo);
-		} else if(defopts[i].tt_type == OPTTYPE ) {
-			switch (defopts[i].cxint) {
-				case 900: 	
-					topgap = atoi((const char *)tt_optvalue);
-					printf("topgap: %d\n", topgap);
-					break;
-				case 901:
-					strncpy(exclude_wtype, (const char *)tt_optvalue, strlen(tt_optvalue)+1);
-					printf("inc_wtype: %s\n", exclude_wtype);
-					break;
+		} else {
+			tt_optvalue = malloc(TT_MAX_LENGTH * sizeof *tt_optvalue);
+			strncpy(tt_optvalue,(const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname), tt_length+1);
+
+			if (tt_length != 0 && defopts[i].tt_type == KEYTYPE) {
+				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof keys[i].rawcombo);
+				strncpy(keys[i].rawcombo, (const char *)tt_optvalue, strlen(tt_optvalue)+1);
+				printf("Custom keys: %s\n", keys[i].rawcombo);
+			} else if(tt_length != 0 && defopts[i].tt_type == OPTTYPE ) {
+				switch (defopts[i].cxint) {
+					case 900: 	
+						topgap = atoi((const char *)tt_optvalue);
+						printf("topgap: %d\n", topgap);
+						break;
+					case 901:
+						strncpy(exclude_wtype, (const char *)tt_optvalue, strlen(tt_optvalue)+1);
+						printf("inc_wtype: %s\n", exclude_wtype);
+						break;
+				}
 			}
+			free(tt_optvalue); 
+			tt_optvalue = NULL;
 		}
 	
 		
@@ -97,10 +106,9 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 				rc = TRUE;
 			}
 		}
-		//free(keys[i].rawcombo);
+		tt_length = 0;
 	}
 	free(keys);
- 
 	return rc;
 }
  
