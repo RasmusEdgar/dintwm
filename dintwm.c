@@ -260,7 +260,7 @@ void hgrid(void)
 
 void fibonacci(int s)
 {
-	unsigned int wnr, wincount, winx, winwidth, winheight;
+	int wnr, wincount, winx, winwidth, winheight;
 	int winy;
 
 	lockbasescreen(&ilock, &screen);

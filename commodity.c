@@ -42,9 +42,8 @@ static struct NewBroker MyBroker =
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
-	int i;
+	size_t i;
 	BOOL rc = FALSE;
-	size_t tt_length = 0;
 	size_t arrsizes;
 	struct Popkeys* keys;
        	char * tt_optvalue;
@@ -53,36 +52,35 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 
 	arrsizes = sizeof(defopts) / sizeof(*defopts);
 
-	exclude_wtype = calloc(TT_MAX_LENGTH, sizeof(char));
 
 	for (i = 0; i < arrsizes ; ++i) {
-		CxObj *filter;
-		tt_length = FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname) ? strlen((const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) : 0;
+		size_t tt_length = FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname) ? strlen((const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) : 0;
 
 		//if(!FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) {
 		if(tt_length == 0) {
 			if(defopts[i].tt_type == KEYTYPE ) {
-				tt_length = strlen(defopts[i].defaultval)+1;
-				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof keys[i].rawcombo);
-				strncpy(keys[i].rawcombo, defopts[i].defaultval, tt_length);
+				size_t ttd_length = strlen(defopts[i].defaultval)+1;
+				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof *keys[i].rawcombo);
+				strncpy(keys[i].rawcombo, defopts[i].defaultval, ttd_length);
 				printf("Default keys: %s\n", keys[i].rawcombo);
 			} 
 		} else {
 			tt_optvalue = malloc(TT_MAX_LENGTH * sizeof *tt_optvalue);
 			strncpy(tt_optvalue,(const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname), tt_length+1);
 
-			if (tt_length != 0 && defopts[i].tt_type == KEYTYPE) {
-				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof keys[i].rawcombo);
-				strncpy(keys[i].rawcombo, (const char *)tt_optvalue, strlen(tt_optvalue)+1);
+			if (defopts[i].tt_type == KEYTYPE) {
+				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof *keys[i].rawcombo);
+				strncpy(keys[i].rawcombo, (const char *)tt_optvalue, tt_length+1);
 				printf("Custom keys: %s\n", keys[i].rawcombo);
-			} else if(tt_length != 0 && defopts[i].tt_type == OPTTYPE ) {
+			} else if(defopts[i].tt_type == OPTTYPE ) {
 				switch (defopts[i].cxint) {
 					case 900: 	
 						topgap = atoi((const char *)tt_optvalue);
 						printf("topgap: %d\n", topgap);
 						break;
 					case 901:
-						strncpy(exclude_wtype, (const char *)tt_optvalue, strlen(tt_optvalue)+1);
+						exclude_wtype = calloc(TT_MAX_LENGTH, sizeof *exclude_wtype);
+						strncpy(exclude_wtype, (const char *)tt_optvalue, tt_length+1);
 						printf("inc_wtype: %s\n", exclude_wtype);
 						break;
 				}
@@ -92,18 +90,25 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 		}
 	
 		
-		if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, defopts[i].cxint)))
-		{
-			/* Attach hotkey object to broker and initialized hotkey detection.
-		 	*/
-			AttachCxObj(broker, filter);
+		if(keys[i].rawcombo != NULL) {
+			CxObj *filter;
+			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, defopts[i].cxint)))
+			{
+				/* Attach hotkey object to broker and initialized hotkey detection.
+		 		*/
+				AttachCxObj(broker, filter);
  
-			if (CxObjError(filter) != 0) {
-				printf("CxObjError %lu\n", CxObjError(filter));
-				rc = FALSE;
-				break;
-			} else {
-				rc = TRUE;
+				if (CxObjError(filter) != 0) {
+					//printf("CxObjError %lu\n", CxObjError(filter));
+					free(keys[i].rawcombo);
+					keys[i].rawcombo = NULL;
+					rc = FALSE;
+					break;
+				} else {
+					free(keys[i].rawcombo);
+					keys[i].rawcombo = NULL;
+					rc = TRUE;
+				}
 			}
 		}
 		tt_length = 0;
