@@ -4,17 +4,15 @@ Tiling window "manager" for AmigaOS 3.1.x.
 
 ## Building from source
 
-### Compilation SAS/C on AmigaOS
-```
-cd dintwm
-mkmk
-smake
-```
-
 ### Compilation with GCC on AmigaOS (requires ADE)
 ```
 cd dintwm
 gcc -o dintwm dintwm.c -noixemul -Wall -Werror
+```
+
+### Cross-compilation on Linux for AmigaOS (requires bebbo's m68k-amigaos-gcc fork)
+```
+m68k-amigaos-gcc -o dintwm dintwm.c commodity.c -Wall -Wextra -Wtype-limits -noixemul
 ```
 
 ## Running dintwm
@@ -40,7 +38,7 @@ dintwm -g -b
 
 ## TODO
 
-- Create an optional Dintwm commodity to enable hotkeys
+- ~~Create an optional Dintwm commodity to enable hotkeys~~
 - Make dintwm dynamical, by saving position of windows before tiling.
 - Float -> Tile -> Float behaviour
 
