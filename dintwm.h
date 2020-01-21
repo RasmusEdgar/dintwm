@@ -23,7 +23,7 @@
 #define KEY_HGRID "rawkey control lshift g"
 #define KEY_SPIRAL "rawkey control lshift f"
 #define KEY_DWINDLE "rawkey control lshift d"
-#define TT_MAX_LENGTH 257
+#define TT_MAX_LENGTH 128
 //#define KEY_ARRAY_SIZE 4
 #define DEFAULT_TOPGAP 0
 #define KEYTYPE 1
@@ -36,20 +36,20 @@ void hgrid(void);
 void spiral(void);
 void dwindle(void);
 int topgap;
-char * exclude_wtype;
+char exclude_wtype[TT_MAX_LENGTH];
 
 // commodity headers
 int commo(void);
 
 struct Optdef {
-	const char* optname;
-        unsigned long cxint;
-	const char* defaultval;
+	const char *optname;
+        long cxint;
+	char *defaultval;
 	int tt_type;
 };
 
 struct Popkeys {
-        char * restrict rawcombo;
+        char *rawcombo;
 };
 
 struct Keyfuncdef {

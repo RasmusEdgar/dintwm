@@ -9,15 +9,6 @@ static struct Optdef defopts[] = {
 	{ "EXCL_WTYPE", 901, "0", OPTTYPE }
 };
 
-/*struct Optdef defopts[] = {
-	{ .optname = "POPKEY_TILE", .cxint = 1, .defaultval = KEY_TILE, .tt_type = KEYTYPE },
-	{ .optname = "POPKEY_HGRID", .cxint = 2, .defaultval = KEY_HGRID, .tt_type = KEYTYPE },
-	{ .optname = "POPKEY_SPIRAL", .cxint = 3, .defaultval = KEY_SPIRAL, .tt_type = KEYTYPE },
-	{ .optname = "POPKEY_DWINDLE", .cxint = 4, .defaultval = KEY_DWINDLE, .tt_type = KEYTYPE },
-	{ .optname = "TOPGAP", .cxint = 900, .tt_type = OPTTYPE },
-	{ .optname = "INC_WTYPE", .cxint = 901, .tt_type = KEYTYPE }
-};*/
-
 static struct Keyfuncdef defkeyfuncs[] = {
 	{ tile },
 	{ hgrid },
@@ -46,47 +37,30 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	BOOL rc = FALSE;
 	size_t arrsizes;
 	struct Popkeys* keys;
-       	char * tt_optvalue;
 
 	keys = malloc(sizeof(*defopts) * sizeof(*keys));
-
 	arrsizes = sizeof(defopts) / sizeof(*defopts);
 
-
 	for (i = 0; i < arrsizes ; ++i) {
-		size_t tt_length = FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname) ? strlen((const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) : 0;
+       		const char * tt_optvalue = (const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		//if(!FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname)) {
-		if(tt_length == 0) {
+		if(tt_optvalue == NULL) {
 			if(defopts[i].tt_type == KEYTYPE ) {
-				size_t ttd_length = strlen(defopts[i].defaultval)+1;
-				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof *keys[i].rawcombo);
-				strncpy(keys[i].rawcombo, defopts[i].defaultval, ttd_length);
-				printf("Default keys: %s\n", keys[i].rawcombo);
+				keys[i].rawcombo = defopts[i].defaultval;
 			} 
 		} else {
-			tt_optvalue = malloc(TT_MAX_LENGTH * sizeof *tt_optvalue);
-			strncpy(tt_optvalue,(const char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname), tt_length+1);
-
 			if (defopts[i].tt_type == KEYTYPE) {
-				keys[i].rawcombo = malloc(TT_MAX_LENGTH * sizeof *keys[i].rawcombo);
-				strncpy(keys[i].rawcombo, (const char *)tt_optvalue, tt_length+1);
-				printf("Custom keys: %s\n", keys[i].rawcombo);
+				keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 			} else if(defopts[i].tt_type == OPTTYPE ) {
 				switch (defopts[i].cxint) {
 					case 900: 	
 						topgap = atoi((const char *)tt_optvalue);
-						printf("topgap: %d\n", topgap);
 						break;
 					case 901:
-						exclude_wtype = calloc(TT_MAX_LENGTH, sizeof *exclude_wtype);
-						strncpy(exclude_wtype, (const char *)tt_optvalue, tt_length+1);
-						printf("inc_wtype: %s\n", exclude_wtype);
+						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
 						break;
 				}
 			}
-			free(tt_optvalue); 
-			tt_optvalue = NULL;
 		}
 	
 		
@@ -94,24 +68,16 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 			CxObj *filter;
 			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, defopts[i].cxint)))
 			{
-				/* Attach hotkey object to broker and initialized hotkey detection.
-		 		*/
 				AttachCxObj(broker, filter);
  
 				if (CxObjError(filter) != 0) {
-					//printf("CxObjError %lu\n", CxObjError(filter));
-					free(keys[i].rawcombo);
-					keys[i].rawcombo = NULL;
 					rc = FALSE;
 					break;
 				} else {
-					free(keys[i].rawcombo);
-					keys[i].rawcombo = NULL;
 					rc = TRUE;
 				}
 			}
 		}
-		tt_length = 0;
 	}
 	free(keys);
 	return rc;
@@ -157,16 +123,16 @@ int commo(void)
  
 				while (running)
 				{
-					WaitPort(mp);
+					(void)WaitPort(mp);
  
 					while ((msg = (APTR)GetMsg(mp)))
 					{
-						ULONG id = CxMsgID(msg);
-						ULONG type = CxMsgType(msg);
+						long id = CxMsgID(msg);
+						unsigned long type = CxMsgType(msg);
  
 						ReplyMsg((struct Message *)msg);
  
-						if (type == CXM_COMMAND)
+						if ((int)type == CXM_COMMAND)
 						{
 							switch (id)
 							{
@@ -185,7 +151,7 @@ int commo(void)
 									break;
 							}
 						}
-						else if (type == CXM_IEVENT)
+						else if ((int)type == CXM_IEVENT)
 						{
 							if (id == defopts[(id-1)].cxint) {
 								defkeyfuncs[(id-1)].func();
@@ -201,7 +167,6 @@ int commo(void)
 				ReplyMsg((struct Message *)msg);
 		}
 		DeleteMsgPort(mp);
-		free(exclude_wtype);
 	}
  
 	return 0;

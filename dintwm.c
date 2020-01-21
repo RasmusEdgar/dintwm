@@ -196,7 +196,7 @@ void tile(void)
 
 void hgrid(void)
 {
-	unsigned int wincount, wnr, ntop = 0, nbottom = 0;
+	int wincount, wnr, ntop = 0, nbottom = 0;
 	int winwidth = 0;
 	int winx = 0, winy = 0;
 
