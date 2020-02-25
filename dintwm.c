@@ -2,9 +2,9 @@
 
 static void fibonacci(int);
 static void printusage(int, int);
-static void lockbasescreen(unsigned long *ilock, struct Screen **screen);
-static void unlockbasescreen(unsigned long *ilock, struct Screen **screen);
-static int skipper(struct Window *window);
+static void lockbasescreen(unsigned long *il, struct Screen **s);
+static void unlockbasescreen(unsigned long *il, struct Screen **s);
+static int skipper(struct Window *w);
 static struct Screen *screen;
 static unsigned long ilock;
 static int skip = 0;
@@ -112,18 +112,18 @@ void printusage(int err, int optnum)
 	}
 }
 
-int skipper(struct Window *window)
+int skipper(struct Window *w)
 {
-	if (window->Flags & BACKDROP) {
+	if (w->Flags & BACKDROP) {
 		return 1;
 	}
 
-	if (strcmp("Workbench", (const char *)window->Title) == 0) {
+	if (strcmp("Workbench", (const char *)w->Title) == 0) {
 		return 1;
 	}
 
 	printf("wtype: %s\n", exclude_wtype);
-	if (strcmp(exclude_wtype, (const char *)window->Title) == 0) {
+	if (strcmp(exclude_wtype, (const char *)w->Title) == 0) {
 		return 1;
 	}
 
@@ -348,14 +348,14 @@ void spiral(void)
 	fibonacci(0);
 }
 
-void lockbasescreen(unsigned long *ilock, struct Screen **screen)
+void lockbasescreen(unsigned long *il, struct Screen **s)
 {
-	*ilock = LockIBase(0L);
-	*screen = LockPubScreen(NULL);
+	*il = LockIBase(0L);
+	*s = LockPubScreen(NULL);
 }
 
-void unlockbasescreen(unsigned long *ilock, struct Screen **screen)
+void unlockbasescreen(unsigned long *il, struct Screen **s)
 {
-	UnlockPubScreen(NULL, *screen);
-	UnlockIBase(*ilock);
+	UnlockPubScreen(NULL, *s);
+	UnlockIBase(*il);
 }
