@@ -24,7 +24,7 @@ int topgap;
 char exclude_wtype[TT_MAX_LENGTH];
 
 // commodity headers
-int commo(void);
+short int commo(void);
 
 struct Optdef {
 	char *optname;

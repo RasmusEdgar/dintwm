@@ -105,7 +105,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	return rc;
 }
  
-int commo(void)
+short int commo(void)
 {
 	struct MsgPort *mp = CreateMsgPort();
 	static struct DiskObject *diskobj;

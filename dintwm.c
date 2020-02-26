@@ -173,8 +173,8 @@ void tile(void)
 			    (screen->Height - mwiny -
 			     topgap) / (MIN(wincount, nmaster) - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx, topgap - winy + mwiny,
-					mwinwidth, winheight);
+			ChangeWindowBox(window, (short int)winx, (short int)(topgap - winy + mwiny),
+					(short int)mwinwidth, (short int)winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			mwiny += winheight;
@@ -183,9 +183,9 @@ void tile(void)
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx + mwinwidth,
-					topgap - winy + nwiny,
-					screen->Width - mwinwidth, winheight);
+			ChangeWindowBox(window, (short int)(winx + mwinwidth),
+					(short int)(topgap - winy + nwiny),
+					(short int)(screen->Width - mwinwidth), (short int)winheight);
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 			nwiny += winheight;
@@ -224,8 +224,8 @@ void hgrid(void)
 			winwidth = screen->Width / wincount;
 			winx = wnr == 1 ? screen->Width / wincount : 0;
 			BeginRefresh(window);
-			ChangeWindowBox(window, winx, topgap - winy,
-					winwidth, screen->Height - topgap);
+			ChangeWindowBox(window, (short int)winx, (short int)(topgap - winy),
+					(short int)winwidth, (short int)(screen->Height - topgap));
 			EndRefresh(window, TRUE);
 			RefreshWindowFrame(window);
 		} else {
@@ -234,22 +234,22 @@ void hgrid(void)
 			if (wnr < ntop) {
 				BeginRefresh(window);
 				ChangeWindowBox(window,
-						winx +
-						wnr * screen->Width / ntop,
-						topgap - winy,
-						screen->Width / ntop,
-						(screen->Height - topgap) / 2);
+						(short int)(winx +
+						wnr * screen->Width / ntop),
+						(short int)(topgap - winy),
+						(short int)(screen->Width / ntop),
+						(short int)((screen->Height - topgap) / 2));
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
 			} else {
 				BeginRefresh(window);
 				ChangeWindowBox(window,
-						winx + (wnr -
+						(short int)(winx + (wnr -
 							ntop) * screen->Width /
-						nbottom,
-						topgap + winy + screen->Height / 2,
-						screen->Width / nbottom,
-						(screen->Height - topgap) / 2);
+						nbottom),
+						(short int)(topgap + winy + screen->Height / 2),
+						(short int)(screen->Width / nbottom),
+						(short int)((screen->Height - topgap) / 2));
 				EndRefresh(window, TRUE);
 				RefreshWindowFrame(window);
 			}
@@ -260,8 +260,7 @@ void hgrid(void)
 
 void fibonacci(int s)
 {
-	int wnr, wincount, winx, winwidth, winheight;
-	int winy;
+	int wnr, wincount, winx, winwidth, winheight, winy;
 
 	lockbasescreen(&ilock, &screen);
 	for (wincount = 0, window = screen->FirstWindow; window;
@@ -331,7 +330,7 @@ void fibonacci(int s)
 			wnr++;
 		}
 		BeginRefresh(window);
-		ChangeWindowBox(window, winx, winy, winwidth, winheight);
+		ChangeWindowBox(window, (short int)winx, (short int)winy, (short int)winwidth, (short int)winheight);
 		EndRefresh(window, TRUE);
 		RefreshWindowFrame(window);
 	}
