@@ -33,7 +33,7 @@ To run dintwm as a commodity:
   * TOPGAP=, which is default set to 0
   * EXCL\_WTYPE=, accepts window title, which is default set to nothing
 3. Test it out using the following command: ```dintwm -C```
-4. When done copy dintwm.info file to wbstartup and dintwm should run after reboot.
+4. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
 5. Check its status in System->Tools->Commodities->Exchange, you can also kill from here.
 
 The tooltypes in the dintwm file could look like this:  
