@@ -7,11 +7,11 @@ Dintwm is under rather heavy development, it is very much beta, is a hobby proje
 
 ## Building from source
 
+Install crosscompiler:  
+https://github.com/bebbo/amiga-gcc
+
 ### Compilation with GCC on AmigaOS (requires ADE)
-```
-cd dintwm
-gcc -o dintwm dintwm.c -noixemul -Wall -Werror
-```
+Not working atm. Use crosscompiler from bebbo.
 
 ### Cross-compilation on Linux for AmigaOS (requires bebbo's m68k-amigaos-gcc fork)
 ```
@@ -34,7 +34,7 @@ To run dintwm as a commodity:
   * EXCL\_WTYPE=, accepts window title, which is default set to nothing
 3. Test it out using the following command: ```dintwm -C```
 4. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
-5. Check its status in System->Tools->Commodities->Exchange, you can also kill from here.
+5. Check its status in System->Tools->Commodities->Exchange, you can also kill dintwm from here.
 
 The tooltypes in the dintwm file could look like this:  
 ```
