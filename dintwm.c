@@ -2,6 +2,7 @@
 
 static void fibonacci(int);
 static void printusage(int, int);
+static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static int skipper(struct Window *w);
@@ -122,7 +123,6 @@ int skipper(struct Window *w)
 		return 1;
 	}
 
-	printf("wtype: %s\n", exclude_wtype);
 	if (strcmp(exclude_wtype, (const char *)w->Title) == 0) {
 		return 1;
 	}
@@ -131,15 +131,19 @@ int skipper(struct Window *w)
 
 }
 
+void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
+	BeginRefresh(window);
+	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
+	EndRefresh(window, TRUE);
+	RefreshWindowFrame(window);
+}
+
 void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
 
 	lockbasescreen(&ilock, &screen);
-	// count windows
-	/*for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++);*/
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -152,9 +156,6 @@ void tile(void)
 		unlockbasescreen(&ilock, &screen);
 		return;
 	}
-
-	// remove count for workbench window
-	//wincount--;
 
 	if (wincount > nmaster) {
 		mwinwidth = nmaster != 0 ? (screen->Width * fact) / 1000 : 0;
@@ -172,22 +173,13 @@ void tile(void)
 			winheight =
 			    (screen->Height - mwiny -
 			     topgap) / (MIN(wincount, nmaster) - wnr);
-			BeginRefresh(window);
-			ChangeWindowBox(window, (short int)winx, (short int)(topgap - winy + mwiny),
-					(short int)mwinwidth, (short int)winheight);
-			EndRefresh(window, TRUE);
-			RefreshWindowFrame(window);
+			cwb(window, winx, (topgap - winy + mwiny), mwinwidth, winheight);
 			mwiny += winheight;
 		} else {
 			winheight =
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
-			BeginRefresh(window);
-			ChangeWindowBox(window, (short int)(winx + mwinwidth),
-					(short int)(topgap - winy + nwiny),
-					(short int)(screen->Width - mwinwidth), (short int)winheight);
-			EndRefresh(window, TRUE);
-			RefreshWindowFrame(window);
+			cwb(window, (winx + mwinwidth), (topgap - winy + nwiny), (screen->Width - mwinwidth), winheight);
 			nwiny += winheight;
 		}
 	}
@@ -223,35 +215,14 @@ void hgrid(void)
 		if (wincount <= 1) {
 			winwidth = screen->Width / wincount;
 			winx = wnr == 1 ? screen->Width / wincount : 0;
-			BeginRefresh(window);
-			ChangeWindowBox(window, (short int)winx, (short int)(topgap - winy),
-					(short int)winwidth, (short int)(screen->Height - topgap));
-			EndRefresh(window, TRUE);
-			RefreshWindowFrame(window);
+			cwb(window, winx, (topgap - winy), winwidth, (screen->Height - topgap));
 		} else {
 			ntop = wincount / 2;
 			nbottom = wincount - ntop;
 			if (wnr < ntop) {
-				BeginRefresh(window);
-				ChangeWindowBox(window,
-						(short int)(winx +
-						wnr * screen->Width / ntop),
-						(short int)(topgap - winy),
-						(short int)(screen->Width / ntop),
-						(short int)((screen->Height - topgap) / 2));
-				EndRefresh(window, TRUE);
-				RefreshWindowFrame(window);
+				cwb(window, (winx + wnr * screen->Width / ntop), (topgap - winy), (screen->Width / ntop), ((screen->Height - topgap) / 2));
 			} else {
-				BeginRefresh(window);
-				ChangeWindowBox(window,
-						(short int)(winx + (wnr -
-							ntop) * screen->Width /
-						nbottom),
-						(short int)(topgap + winy + screen->Height / 2),
-						(short int)(screen->Width / nbottom),
-						(short int)((screen->Height - topgap) / 2));
-				EndRefresh(window, TRUE);
-				RefreshWindowFrame(window);
+				cwb(window, (winx + (wnr - ntop) * screen->Width / nbottom), (topgap + winy + screen->Height / 2), (screen->Width / nbottom), ((screen->Height - topgap) / 2));
 			}
 		}
 	}
@@ -329,10 +300,7 @@ void fibonacci(int s)
 			}
 			wnr++;
 		}
-		BeginRefresh(window);
-		ChangeWindowBox(window, (short int)winx, (short int)winy, (short int)winwidth, (short int)winheight);
-		EndRefresh(window, TRUE);
-		RefreshWindowFrame(window);
+		cwb(window, winx, winy, winwidth, winheight);
 	}
 	unlockbasescreen(&ilock, &screen);
 }

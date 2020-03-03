@@ -3,6 +3,9 @@
 #define DEFAULT_TOPGAP 0
 #define KEYTYPE 1
 #define OPTTYPE 2
+#define STORE 1
+#define RESTORE 2
+#define FREE 3
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "Sets up hotkeys for DintWM";
@@ -19,6 +22,10 @@ static char KEY_SPIRAL[] = "rawkey control lshift f";
 static char KEY_DWINDLE[] = "rawkey control lshift d";
 static char NA[] = "0";
 
+static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
+static void copywindowlist(struct Window *w);
+
+static struct Window **windowlist;
 static struct Library *iconbase;
 static struct Optdef defopts[] = {
 	{ TYPE_TILE, 1, KEY_TILE, KEYTYPE },
@@ -36,7 +43,6 @@ static struct Keyfuncdef defkeyfuncs[] = {
 	{ dwindle }
 };
 
-static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 
 static struct NewBroker MyBroker =
 {
@@ -50,6 +56,50 @@ static struct NewBroker MyBroker =
         0,
         0
 };
+
+/*int window_vault(struct Screen *s, int action) {
+
+	switch action {
+		case STORE:
+		copywindowlist(s->Window);
+		break;
+		case RESTORE:
+		break;
+		case FREE:
+		break;
+		case default:
+		break;
+	}
+
+}*/
+
+void copywindowlist(struct Window *w) {
+	// Part 1 - the null list
+	if (w == NULL) return NULL;
+
+	// Part 2 - the head element
+	struct Window *windowlisthead = malloc(sizeof(struct Window));
+	windowlisthead->LeftEdge = w->LeftEdge;
+	windowlisthead->TopEdge = w->TopEdge;
+	windowlisthead->Width = w->Width;
+	windowlisthead->Height = w->Height;
+	windowlisthead->Pointer = w->Pointer;
+
+	// Part 3 - the rest of the list
+	windowlist = windowlisthead;
+	w = w->NextWindow;
+	while(w != NULL) {
+		windowlist->NextWindow = malloc(sizeof(struct Window);
+		windowlist = windowlist->NextWindow;
+		windowlist->LeftEdge = w->LeftEdge;
+		windowlist->TopEdge = w->TopEdge;
+		windowlist->Width = w->Width;
+		windowlist->Height = w->Height;
+		windowlist->Pointer = w->Pointer;
+		w = w->NextWindow;
+	}
+	windowlist->NextWindow = NULL;  // terminate last element
+}
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
