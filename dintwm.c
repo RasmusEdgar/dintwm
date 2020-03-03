@@ -122,7 +122,6 @@ int skipper(struct Window *w)
 		return 1;
 	}
 
-	printf("wtype: %s\n", exclude_wtype);
 	if (strcmp(exclude_wtype, (const char *)w->Title) == 0) {
 		return 1;
 	}
