@@ -23,9 +23,7 @@ static char KEY_DWINDLE[] = "rawkey control lshift d";
 static char NA[] = "0";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
-static void copywindowlist(struct Window *w);
 
-static struct Window **windowlist;
 static struct Library *iconbase;
 static struct Optdef defopts[] = {
 	{ TYPE_TILE, 1, KEY_TILE, KEYTYPE },
@@ -73,33 +71,6 @@ static struct NewBroker MyBroker =
 
 }*/
 
-void copywindowlist(struct Window *w) {
-	// Part 1 - the null list
-	if (w == NULL) return NULL;
-
-	// Part 2 - the head element
-	struct Window *windowlisthead = malloc(sizeof(struct Window));
-	windowlisthead->LeftEdge = w->LeftEdge;
-	windowlisthead->TopEdge = w->TopEdge;
-	windowlisthead->Width = w->Width;
-	windowlisthead->Height = w->Height;
-	windowlisthead->Pointer = w->Pointer;
-
-	// Part 3 - the rest of the list
-	windowlist = windowlisthead;
-	w = w->NextWindow;
-	while(w != NULL) {
-		windowlist->NextWindow = malloc(sizeof(struct Window);
-		windowlist = windowlist->NextWindow;
-		windowlist->LeftEdge = w->LeftEdge;
-		windowlist->TopEdge = w->TopEdge;
-		windowlist->Width = w->Width;
-		windowlist->Height = w->Height;
-		windowlist->Pointer = w->Pointer;
-		w = w->NextWindow;
-	}
-	windowlist->NextWindow = NULL;  // terminate last element
-}
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
@@ -110,6 +81,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 
 	keys = malloc(sizeof(*defopts) * sizeof(*keys));
 	arrsizes = sizeof(defopts) / sizeof(*defopts);
+
 
 	for (i = 0; i < arrsizes ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);

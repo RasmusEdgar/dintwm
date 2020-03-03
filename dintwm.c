@@ -5,11 +5,13 @@ static void printusage(int, int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
+static struct Window *copywindowlist(struct Window *w);
 static int skipper(struct Window *w);
 static struct Screen *screen;
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
+static struct Window *windowliststore;
 static const int nmaster = 1;
 static const int fact = 550;
 short rc;
@@ -20,9 +22,12 @@ int main(int argc, char **argv)
 	char margopt = 'a';
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
+		windowliststore = copywindowlist(screen->FirstWindow);
 		if((rc = commo()) == 0) {
+			free(windowliststore);
 			exit(EXIT_SUCCESS);
 		}
+		free(windowliststore);
 		exit(EXIT_FAILURE);
 	}
 
@@ -31,7 +36,11 @@ int main(int argc, char **argv)
 			switch (argv[i][1]) {
 			case 'b':
 				if (optargerr == 0 && topgap == 0) {
-					topgap = screen->BarHeight -1;
+					//topgap = screen->NextWindow->IFont->tf_Baseline + 1;
+					//topgap = screen->WBorTop + screen->Font->ta_YSize + 1;
+					topgap = screen->BarHeight + 1;
+					printf("%d\n",screen->WBorTop);
+					printf("%hu\n",screen->Font->ta_YSize);
 				} else {
 					optargerr = 1;
 				}
@@ -162,6 +171,8 @@ void tile(void)
 	} else {
 		mwinwidth = screen->Width;
 	}
+
+	printf("%d\n",topgap);
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wnr++) {
@@ -313,6 +324,35 @@ void dwindle(void)
 void spiral(void)
 {
 	fibonacci(0);
+}
+
+struct Window *copywindowlist(struct Window *w) {
+	// Part 1 - the null list
+	if (w == NULL) return NULL;
+
+	// Part 2 - the head element
+	struct Window *windowlisthead = malloc(sizeof(struct Window));
+	windowlisthead->LeftEdge = w->LeftEdge;
+	windowlisthead->TopEdge = w->TopEdge;
+	windowlisthead->Width = w->Width;
+	windowlisthead->Height = w->Height;
+	windowlisthead->Pointer = w->Pointer;
+
+	// Part 3 - the rest of the list
+	struct Window *windowlist = windowlisthead;
+	w = w->NextWindow;
+	while(w != NULL) {
+		windowlist->NextWindow = malloc(sizeof(struct Window));
+		windowlist = windowlist->NextWindow;
+		windowlist->LeftEdge = w->LeftEdge;
+		windowlist->TopEdge = w->TopEdge;
+		windowlist->Width = w->Width;
+		windowlist->Height = w->Height;
+		windowlist->Pointer = w->Pointer;
+		w = w->NextWindow;
+	}
+	windowlist->NextWindow = NULL;  // terminate last element
+	return windowlist;
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)
