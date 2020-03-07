@@ -14,12 +14,14 @@ static char TYPE_TILE[] = "POPKEY_TILE";
 static char TYPE_HGRID[] = "POPKEY_HGRID";
 static char TYPE_SPIRAL[] = "POPKEY_SPIRAL";
 static char TYPE_DWINDLE[] = "POPKEY_DWINDLE";
+static char TYPE_RESTORE[] = "POPKEY_RESTORE";
 static char TYPE_TOPGAP[] = "TOPGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char KEY_TILE[] = "rawkey control lshift t";
 static char KEY_HGRID[] = "rawkey control lshift g";
 static char KEY_SPIRAL[] = "rawkey control lshift f";
 static char KEY_DWINDLE[] = "rawkey control lshift d";
+static char KEY_RESTORE[] = "rawkey control lshift r";
 static char NA[] = "0";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
@@ -30,6 +32,7 @@ static struct Optdef defopts[] = {
 	{ TYPE_HGRID, 2, KEY_HGRID, KEYTYPE },
 	{ TYPE_SPIRAL, 3, KEY_SPIRAL, KEYTYPE },
 	{ TYPE_DWINDLE, 4, KEY_DWINDLE, KEYTYPE },
+	{ TYPE_RESTORE, 5, KEY_RESTORE, KEYTYPE },
 	{ TYPE_TOPGAP, 900, NA, OPTTYPE },
 	{ TYPE_EXCL_WTYPE, 901, NA, OPTTYPE }
 };
@@ -38,7 +41,8 @@ static struct Keyfuncdef defkeyfuncs[] = {
 	{ tile },
 	{ hgrid },
 	{ spiral },
-	{ dwindle }
+	{ dwindle },
+	{ restore }
 };
 
 
@@ -135,11 +139,13 @@ short int commo(void)
 	static unsigned char diskobjname[] = "dintwm";
 
 	if(!(iconbase = OpenLibrary(iconlib,37))) {
+		printf("Iconlib failed\n");
 		DeleteMsgPort(mp);
 		return 1;
 	}
 
 	if((diskobj = GetDiskObject(diskobjname)) == NULL) {
+		printf("diskobj failed\n");
 		DeleteMsgPort(mp);
 		return 1;
 	}
@@ -175,7 +181,7 @@ short int commo(void)
 					while ((msg = (void *)GetMsg(mp)))
 					{
 						long id = CxMsgID(msg);
-						uint32_t type = CxMsgType(msg);
+						unsigned long type = CxMsgType(msg);
  
 						ReplyMsg((struct Message *)msg);
  

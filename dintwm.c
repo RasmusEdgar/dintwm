@@ -5,7 +5,8 @@ static void printusage(int, int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
-static struct Window *copywindowlist(struct Window *w);
+static struct Window *copywindowlist(struct Screen *s);
+static void printList(struct Window *w);
 static int skipper(struct Window *w);
 static struct Screen *screen;
 static unsigned long ilock;
@@ -14,6 +15,7 @@ static struct Window *window;
 static struct Window *windowliststore;
 static const int nmaster = 1;
 static const int fact = 550;
+static signed char restoretag[] = "r";
 short rc;
 
 int main(int argc, char **argv)
@@ -22,11 +24,15 @@ int main(int argc, char **argv)
 	char margopt = 'a';
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
-		windowliststore = copywindowlist(screen->FirstWindow);
+		lockbasescreen(&ilock, &screen);
+		windowliststore = copywindowlist(screen);
+		printList(windowliststore);
+		unlockbasescreen(&ilock, &screen);
 		if((rc = commo()) == 0) {
 			free(windowliststore);
 			exit(EXIT_SUCCESS);
 		}
+		printf("Commo failed\n");
 		free(windowliststore);
 		exit(EXIT_FAILURE);
 	}
@@ -36,11 +42,7 @@ int main(int argc, char **argv)
 			switch (argv[i][1]) {
 			case 'b':
 				if (optargerr == 0 && topgap == 0) {
-					//topgap = screen->NextWindow->IFont->tf_Baseline + 1;
-					//topgap = screen->WBorTop + screen->Font->ta_YSize + 1;
-					topgap = screen->BarHeight + 1;
-					printf("%d\n",screen->WBorTop);
-					printf("%hu\n",screen->Font->ta_YSize);
+					topgap = screen->BarHeight * 2 - 2;
 				} else {
 					optargerr = 1;
 				}
@@ -171,8 +173,6 @@ void tile(void)
 	} else {
 		mwinwidth = screen->Width;
 	}
-
-	printf("%d\n",topgap);
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wnr++) {
@@ -326,33 +326,80 @@ void spiral(void)
 	fibonacci(0);
 }
 
-struct Window *copywindowlist(struct Window *w) {
-	// Part 1 - the null list
-	if (w == NULL) return NULL;
+struct Window *copywindowlist(struct Screen *s) {
+	struct Window *dst = NULL, **next = &dst, *w = s->FirstWindow;
+	while (w)
+	{
+		/*if ((skip = skipper(w)) == 1) {
+			continue;
+		}*/
+        	// allocate new node
+		*next = malloc(sizeof(**next));
+		if (*next) {
+			(*next)->Title = w->Title;
+			(*next)->LeftEdge = w->LeftEdge;
+			(*next)->TopEdge = w->TopEdge;
+			(*next)->Width = w->Width;
+			(*next)->Height = w->Height;
+			(*next)->Flags = w->Flags;
+			(*next)->UserData = restoretag;
+			w->UserData = restoretag;
 
-	// Part 2 - the head element
-	struct Window *windowlisthead = malloc(sizeof(struct Window));
-	windowlisthead->LeftEdge = w->LeftEdge;
-	windowlisthead->TopEdge = w->TopEdge;
-	windowlisthead->Width = w->Width;
-	windowlisthead->Height = w->Height;
-	windowlisthead->Pointer = w->Pointer;
+			// reposition our next-link to the address of ptr->next
+			//  of the node we just added.
+			next = &(*next)->NextWindow;
 
-	// Part 3 - the rest of the list
-	struct Window *windowlist = windowlisthead;
-	w = w->NextWindow;
-	while(w != NULL) {
-		windowlist->NextWindow = malloc(sizeof(struct Window));
-		windowlist = windowlist->NextWindow;
-		windowlist->LeftEdge = w->LeftEdge;
-		windowlist->TopEdge = w->TopEdge;
-		windowlist->Width = w->Width;
-		windowlist->Height = w->Height;
-		windowlist->Pointer = w->Pointer;
-		w = w->NextWindow;
+			// and finally, advance the source pointer
+			w = w->NextWindow;
+		} else {
+			perror("Failed to allocate node.");
+			exit(EXIT_FAILURE);
+		}
 	}
-	windowlist->NextWindow = NULL;  // terminate last element
-	return windowlist;
+	*next = NULL;
+	return dst;
+}
+
+void printList(struct Window *w) {
+
+	struct Window *ptr;
+	ptr = w;
+	while (ptr)
+	{
+		printf("Title %s\n", ptr->Title);
+		printf("LeftEdge %hu\n", ptr->LeftEdge);
+		printf("TopEdge %hu\n", ptr->TopEdge);
+		printf("Width %hu\n", ptr->Width);
+		printf("Height %hu\n", ptr->Height);
+		ptr = ptr->NextWindow;
+	}
+
+	printf("done\n");
+}
+
+void restore(void)
+{
+	lockbasescreen(&ilock, &screen);
+	struct Window *storehead = windowliststore;
+	for (window = screen->FirstWindow; window;
+	     window = window->NextWindow) {
+		if ((skip = skipper(window)) == 1) {
+			windowliststore = windowliststore->NextWindow;
+			continue;
+		}
+		if (windowliststore->UserData == window->UserData) {
+			printf("UserData val store round one %s\n", windowliststore->UserData);
+			cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
+			//window->UserData = windowliststore->UserData;
+		} else {
+			printf("No UserData match!\n");
+			printf("UserData val store %s\n", windowliststore->UserData);
+			printf("UserData val window %s\n", window->UserData);
+		}
+		windowliststore = windowliststore->NextWindow;
+	}
+	windowliststore = storehead;
+	unlockbasescreen(&ilock, &screen);
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)
