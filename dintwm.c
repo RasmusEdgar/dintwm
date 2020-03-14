@@ -5,8 +5,8 @@ static void printusage(int, int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
-static struct Window *copywindowlist(struct Screen *s);
-static void printList(struct Window *w);
+static struct Window *copywindowlist(void);
+//static void printList(struct Window *w);
 static int skipper(struct Window *w);
 static struct Screen *screen;
 static unsigned long ilock;
@@ -15,7 +15,8 @@ static struct Window *window;
 static struct Window *windowliststore;
 static const int nmaster = 1;
 static const int fact = 550;
-static signed char restoretag[] = "r";
+static unsigned char restoretag = 'r';
+//static unsigned char *restoreptr = &restoretag;
 short rc;
 
 int main(int argc, char **argv)
@@ -25,8 +26,7 @@ int main(int argc, char **argv)
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
 		lockbasescreen(&ilock, &screen);
-		windowliststore = copywindowlist(screen);
-		printList(windowliststore);
+		windowliststore = copywindowlist();
 		unlockbasescreen(&ilock, &screen);
 		if((rc = commo()) == 0) {
 			free(windowliststore);
@@ -145,6 +145,7 @@ int skipper(struct Window *w)
 void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
 	BeginRefresh(window);
 	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
+	WindowToFront(w);
 	EndRefresh(window, TRUE);
 	RefreshWindowFrame(window);
 }
@@ -326,13 +327,17 @@ void spiral(void)
 	fibonacci(0);
 }
 
-struct Window *copywindowlist(struct Screen *s) {
-	struct Window *dst = NULL, **next = &dst, *w = s->FirstWindow;
+//struct Window *copywindowlist(struct Screen *s) {
+struct Window *copywindowlist(void) {
+	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
+	
+	lockbasescreen(&ilock, &screen);
 	while (w)
 	{
-		/*if ((skip = skipper(w)) == 1) {
+		if ((skip = skipper(w)) == 1) {
+			w = w->NextWindow;
 			continue;
-		}*/
+		}
         	// allocate new node
 		*next = malloc(sizeof(**next));
 		if (*next) {
@@ -342,14 +347,11 @@ struct Window *copywindowlist(struct Screen *s) {
 			(*next)->Width = w->Width;
 			(*next)->Height = w->Height;
 			(*next)->Flags = w->Flags;
-			(*next)->UserData = restoretag;
-			w->UserData = restoretag;
+			(*next)->ExtData = &restoretag;
+			w->ExtData = &restoretag;
 
-			// reposition our next-link to the address of ptr->next
-			//  of the node we just added.
 			next = &(*next)->NextWindow;
 
-			// and finally, advance the source pointer
 			w = w->NextWindow;
 		} else {
 			perror("Failed to allocate node.");
@@ -357,10 +359,11 @@ struct Window *copywindowlist(struct Screen *s) {
 		}
 	}
 	*next = NULL;
+	unlockbasescreen(&ilock, &screen);
 	return dst;
 }
 
-void printList(struct Window *w) {
+/*void printList(struct Window *w) {
 
 	struct Window *ptr;
 	ptr = w;
@@ -375,7 +378,7 @@ void printList(struct Window *w) {
 	}
 
 	printf("done\n");
-}
+}*/
 
 void restore(void)
 {
@@ -387,14 +390,12 @@ void restore(void)
 			windowliststore = windowliststore->NextWindow;
 			continue;
 		}
-		if (windowliststore->UserData == window->UserData) {
-			printf("UserData val store round one %s\n", windowliststore->UserData);
+
+		if (windowliststore->ExtData == window->ExtData) {
 			cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
-			//window->UserData = windowliststore->UserData;
 		} else {
-			printf("No UserData match!\n");
-			printf("UserData val store %s\n", windowliststore->UserData);
-			printf("UserData val window %s\n", window->UserData);
+			WindowToBack(window);
+			continue;
 		}
 		windowliststore = windowliststore->NextWindow;
 	}
