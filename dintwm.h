@@ -20,6 +20,7 @@ void tile(void);
 void hgrid(void);
 void spiral(void);
 void dwindle(void);
+void restore(void);
 int topgap;
 char exclude_wtype[TT_MAX_LENGTH];
 

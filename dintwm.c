@@ -2,15 +2,19 @@
 
 static void fibonacci(int);
 static void printusage(int, int);
+static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
+static struct Window *copywindowlist(void);
 static int skipper(struct Window *w);
 static struct Screen *screen;
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
+static struct Window *windowliststore;
 static const int nmaster = 1;
 static const int fact = 550;
+static unsigned char restoretag = 'r';
 short rc;
 
 int main(int argc, char **argv)
@@ -19,9 +23,15 @@ int main(int argc, char **argv)
 	char margopt = 'a';
 	
 	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
+		lockbasescreen(&ilock, &screen);
+		windowliststore = copywindowlist();
+		unlockbasescreen(&ilock, &screen);
 		if((rc = commo()) == 0) {
+			free(windowliststore);
 			exit(EXIT_SUCCESS);
 		}
+		printf("Commo failed\n");
+		free(windowliststore);
 		exit(EXIT_FAILURE);
 	}
 
@@ -30,7 +40,7 @@ int main(int argc, char **argv)
 			switch (argv[i][1]) {
 			case 'b':
 				if (optargerr == 0 && topgap == 0) {
-					topgap = screen->BarHeight -1;
+					topgap = screen->BarHeight * 2 - 2;
 				} else {
 					optargerr = 1;
 				}
@@ -130,15 +140,20 @@ int skipper(struct Window *w)
 
 }
 
+void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
+	BeginRefresh(window);
+	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
+	WindowToFront(w);
+	EndRefresh(window, TRUE);
+	RefreshWindowFrame(window);
+}
+
 void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
 
 	lockbasescreen(&ilock, &screen);
-	// count windows
-	/*for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++);*/
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
 		if ((skip = skipper(window)) == 1) {
@@ -151,9 +166,6 @@ void tile(void)
 		unlockbasescreen(&ilock, &screen);
 		return;
 	}
-
-	// remove count for workbench window
-	//wincount--;
 
 	if (wincount > nmaster) {
 		mwinwidth = nmaster != 0 ? (screen->Width * fact) / 1000 : 0;
@@ -171,22 +183,13 @@ void tile(void)
 			winheight =
 			    (screen->Height - mwiny -
 			     topgap) / (MIN(wincount, nmaster) - wnr);
-			BeginRefresh(window);
-			ChangeWindowBox(window, (short int)winx, (short int)(topgap - winy + mwiny),
-					(short int)mwinwidth, (short int)winheight);
-			EndRefresh(window, TRUE);
-			RefreshWindowFrame(window);
+			cwb(window, winx, (topgap - winy + mwiny), mwinwidth, winheight);
 			mwiny += winheight;
 		} else {
 			winheight =
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
-			BeginRefresh(window);
-			ChangeWindowBox(window, (short int)(winx + mwinwidth),
-					(short int)(topgap - winy + nwiny),
-					(short int)(screen->Width - mwinwidth), (short int)winheight);
-			EndRefresh(window, TRUE);
-			RefreshWindowFrame(window);
+			cwb(window, (winx + mwinwidth), (topgap - winy + nwiny), (screen->Width - mwinwidth), winheight);
 			nwiny += winheight;
 		}
 	}
@@ -222,35 +225,14 @@ void hgrid(void)
 		if (wincount <= 1) {
 			winwidth = screen->Width / wincount;
 			winx = wnr == 1 ? screen->Width / wincount : 0;
-			BeginRefresh(window);
-			ChangeWindowBox(window, (short int)winx, (short int)(topgap - winy),
-					(short int)winwidth, (short int)(screen->Height - topgap));
-			EndRefresh(window, TRUE);
-			RefreshWindowFrame(window);
+			cwb(window, winx, (topgap - winy), winwidth, (screen->Height - topgap));
 		} else {
 			ntop = wincount / 2;
 			nbottom = wincount - ntop;
 			if (wnr < ntop) {
-				BeginRefresh(window);
-				ChangeWindowBox(window,
-						(short int)(winx +
-						wnr * screen->Width / ntop),
-						(short int)(topgap - winy),
-						(short int)(screen->Width / ntop),
-						(short int)((screen->Height - topgap) / 2));
-				EndRefresh(window, TRUE);
-				RefreshWindowFrame(window);
+				cwb(window, (winx + wnr * screen->Width / ntop), (topgap - winy), (screen->Width / ntop), ((screen->Height - topgap) / 2));
 			} else {
-				BeginRefresh(window);
-				ChangeWindowBox(window,
-						(short int)(winx + (wnr -
-							ntop) * screen->Width /
-						nbottom),
-						(short int)(topgap + winy + screen->Height / 2),
-						(short int)(screen->Width / nbottom),
-						(short int)((screen->Height - topgap) / 2));
-				EndRefresh(window, TRUE);
-				RefreshWindowFrame(window);
+				cwb(window, (winx + (wnr - ntop) * screen->Width / nbottom), (topgap + winy + screen->Height / 2), (screen->Width / nbottom), ((screen->Height - topgap) / 2));
 			}
 		}
 	}
@@ -328,10 +310,7 @@ void fibonacci(int s)
 			}
 			wnr++;
 		}
-		BeginRefresh(window);
-		ChangeWindowBox(window, (short int)winx, (short int)winy, (short int)winwidth, (short int)winheight);
-		EndRefresh(window, TRUE);
-		RefreshWindowFrame(window);
+		cwb(window, winx, winy, winwidth, winheight);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
@@ -344,6 +323,64 @@ void dwindle(void)
 void spiral(void)
 {
 	fibonacci(0);
+}
+
+struct Window *copywindowlist(void) {
+	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
+	
+	lockbasescreen(&ilock, &screen);
+	while (w)
+	{
+		if ((skip = skipper(w)) == 1) {
+			w = w->NextWindow;
+			continue;
+		}
+        	// allocate new node
+		*next = malloc(sizeof(**next));
+		if (*next) {
+			(*next)->Title = w->Title;
+			(*next)->LeftEdge = w->LeftEdge;
+			(*next)->TopEdge = w->TopEdge;
+			(*next)->Width = w->Width;
+			(*next)->Height = w->Height;
+			(*next)->Flags = w->Flags;
+			(*next)->ExtData = &restoretag;
+			w->ExtData = &restoretag;
+
+			next = &(*next)->NextWindow;
+
+			w = w->NextWindow;
+		} else {
+			perror("Failed to allocate node.");
+			exit(EXIT_FAILURE);
+		}
+	}
+	*next = NULL;
+	unlockbasescreen(&ilock, &screen);
+	return dst;
+}
+
+void restore(void)
+{
+	lockbasescreen(&ilock, &screen);
+	struct Window *storehead = windowliststore;
+	for (window = screen->FirstWindow; window;
+	     window = window->NextWindow) {
+		if ((skip = skipper(window)) == 1) {
+			windowliststore = windowliststore->NextWindow;
+			continue;
+		}
+
+		if (windowliststore->ExtData == window->ExtData) {
+			cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
+		} else {
+			WindowToBack(window);
+			continue;
+		}
+		windowliststore = windowliststore->NextWindow;
+	}
+	windowliststore = storehead;
+	unlockbasescreen(&ilock, &screen);
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)
