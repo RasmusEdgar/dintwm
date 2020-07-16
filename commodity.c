@@ -15,6 +15,8 @@ static char TYPE_HGRID[] = "POPKEY_HGRID";
 static char TYPE_SPIRAL[] = "POPKEY_SPIRAL";
 static char TYPE_DWINDLE[] = "POPKEY_DWINDLE";
 static char TYPE_RESTORE[] = "POPKEY_RESTORE";
+static char TYPE_SWITCHL[] = "POPKEY_SWITCHL";
+static char TYPE_SWITCHB[] = "POPKEY_SWITCHB";
 static char TYPE_TOPGAP[] = "TOPGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char KEY_TILE[] = "rawkey control lshift t";
@@ -22,6 +24,8 @@ static char KEY_HGRID[] = "rawkey control lshift g";
 static char KEY_SPIRAL[] = "rawkey control lshift f";
 static char KEY_DWINDLE[] = "rawkey control lshift d";
 static char KEY_RESTORE[] = "rawkey control lshift r";
+static char KEY_SWITCHL[] = "rawkey control lshift s";
+static char KEY_SWITCHB[] = "rawkey control lshift x";
 static char NA[] = "0";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
@@ -33,18 +37,11 @@ static struct Optdef defopts[] = {
 	{ TYPE_SPIRAL, 3, KEY_SPIRAL, KEYTYPE },
 	{ TYPE_DWINDLE, 4, KEY_DWINDLE, KEYTYPE },
 	{ TYPE_RESTORE, 5, KEY_RESTORE, KEYTYPE },
+	{ TYPE_SWITCHL, 6, KEY_SWITCHL, KEYTYPE },
+	{ TYPE_SWITCHB, 7, KEY_SWITCHB, KEYTYPE },
 	{ TYPE_TOPGAP, 900, NA, OPTTYPE },
 	{ TYPE_EXCL_WTYPE, 901, NA, OPTTYPE }
 };
-
-static struct Keyfuncdef defkeyfuncs[] = {
-	{ tile },
-	{ hgrid },
-	{ spiral },
-	{ dwindle },
-	{ restore }
-};
-
 
 static struct NewBroker MyBroker =
 {
@@ -189,6 +186,9 @@ short int commo(void)
 						else if (type == CXM_IEVENT)
 						{
 							if (id == defopts[(id-1)].cxint) {
+								if(id < (TILE_FUNC_LIMIT+1)) {
+									*current_layout = id;
+								}
 								defkeyfuncs[(id-1)].func();
 							}
 						}

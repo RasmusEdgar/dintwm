@@ -1,6 +1,5 @@
 #include "dintwm.h"
 
-static void fibonacci(int);
 static void printusage(int, int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
@@ -16,6 +15,8 @@ static const int nmaster = 1;
 static const int fact = 550;
 static unsigned char restoretag = 'r';
 short rc;
+static int layout_start = LAYOUT_START;
+static int *layout_number = &layout_start;
 
 int main(int argc, char **argv)
 {
@@ -28,6 +29,7 @@ int main(int argc, char **argv)
 		unlockbasescreen(&ilock, &screen);
 		if((rc = commo()) == 0) {
 			free(windowliststore);
+			printf("Commo Succeeded\n");
 			exit(EXIT_SUCCESS);
 		}
 		printf("Commo failed\n");
@@ -323,6 +325,38 @@ void dwindle(void)
 void spiral(void)
 {
 	fibonacci(0);
+}
+
+void switcher(int d)
+{
+	if(*current_layout < TILE_FUNC_LIMIT && *layout_number == LAYOUT_START) {
+		*layout_number = *current_layout;
+	}
+		
+	if(d) {
+		if(*layout_number == TILE_FUNC_LIMIT) {
+			*layout_number = 0;
+		} 
+		defkeyfuncs[(*layout_number)].func();
+		(*layout_number)++;
+	} else {
+		if(*layout_number == 0) {
+			*layout_number = TILE_FUNC_LIMIT;
+		} 
+		(*layout_number)--;
+		defkeyfuncs[(*layout_number)].func();
+	}
+
+}
+
+void switchf(void)
+{
+	switcher(1);
+}
+
+void switchb(void)
+{
+	switcher(0);
 }
 
 struct Window *copywindowlist(void) {

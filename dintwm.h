@@ -15,13 +15,18 @@
 
 #define TT_MAX_LENGTH 128
 
-// dintwm main functions
+// dintwm main functions shared
+void fibonacci(int);
 void tile(void);
 void hgrid(void);
 void spiral(void);
 void dwindle(void);
 void restore(void);
+void switcher(int);
+void switchf(void);
+void switchb(void);
 int topgap;
+int *current_layout;
 char exclude_wtype[TT_MAX_LENGTH];
 
 // commodity headers
@@ -44,3 +49,9 @@ struct Keyfuncdef {
 	
 struct Opts* opts;
 
+// tile function headers;
+extern struct Keyfuncdef defkeyfuncs[]; 
+enum tile_funcs {
+	LAYOUT_START = -1,
+	TILE_FUNC_LIMIT = 4
+};
