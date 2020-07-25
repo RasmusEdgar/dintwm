@@ -15,10 +15,12 @@ static char TYPE_HGRID[] = "POPKEY_HGRID";
 static char TYPE_SPIRAL[] = "POPKEY_SPIRAL";
 static char TYPE_DWINDLE[] = "POPKEY_DWINDLE";
 static char TYPE_RESTORE[] = "POPKEY_RESTORE";
-static char TYPE_SWITCHL[] = "POPKEY_SWITCHL";
+static char TYPE_SWITCHF[] = "POPKEY_SWITCHF";
 static char TYPE_SWITCHB[] = "POPKEY_SWITCHB";
 static char TYPE_TOPGAP[] = "TOPGAP";
+static char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
+static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
 static char KEY_TILE[] = "rawkey control lshift t";
 static char KEY_HGRID[] = "rawkey control lshift g";
 static char KEY_SPIRAL[] = "rawkey control lshift f";
@@ -32,15 +34,17 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 
 static struct Library *iconbase;
 static struct Optdef defopts[] = {
-	{ TYPE_TILE, 1, KEY_TILE, KEYTYPE },
-	{ TYPE_HGRID, 2, KEY_HGRID, KEYTYPE },
-	{ TYPE_SPIRAL, 3, KEY_SPIRAL, KEYTYPE },
-	{ TYPE_DWINDLE, 4, KEY_DWINDLE, KEYTYPE },
-	{ TYPE_RESTORE, 5, KEY_RESTORE, KEYTYPE },
-	{ TYPE_SWITCHL, 6, KEY_SWITCHL, KEYTYPE },
-	{ TYPE_SWITCHB, 7, KEY_SWITCHB, KEYTYPE },
-	{ TYPE_TOPGAP, 900, NA, OPTTYPE },
-	{ TYPE_EXCL_WTYPE, 901, NA, OPTTYPE }
+	{ TYPE_TILE, FUNC_TILE, KEY_TILE, KEYTYPE },
+	{ TYPE_HGRID, FUNC_HGRID, KEY_HGRID, KEYTYPE },
+	{ TYPE_SPIRAL, FUNC_SPIRAL, KEY_SPIRAL, KEYTYPE },
+	{ TYPE_DWINDLE, FUNC_DWINDLE, KEY_DWINDLE, KEYTYPE },
+	{ TYPE_RESTORE, FUNC_RESTORE, KEY_RESTORE, KEYTYPE },
+	{ TYPE_SWITCHF, FUNC_SWITCHF, KEY_SWITCHL, KEYTYPE },
+	{ TYPE_SWITCHB, FUNC_SWITCHB, KEY_SWITCHB, KEYTYPE },
+	{ TYPE_TOPGAP, TOPGAP_ID, NA, OPTTYPE },
+	{ TYPE_DEFAULT_TOPGAP, DEFAULT_TOPGAP_ID, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE }
 };
 
 static struct NewBroker MyBroker =
@@ -79,11 +83,17 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 				keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 			} else if(defopts[i].tt_type == OPTTYPE ) {
 				switch (defopts[i].cxint) {
-					case 900: 	
+					case TOPGAP_ID: 	
 						topgap = atoi((const char *)tt_optvalue);
 						break;
-					case 901:
+					case DEFAULT_TOPGAP_ID: 	
+						topgap = screen->BarHeight - 1;
+						break;
+					case EXCL_WTYPE_ID:
 						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
+						break;
+					case INCL_WTYPE_ID:
+						strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
 						break;
 					default:
 						break;
@@ -185,11 +195,11 @@ short int commo(void)
 						}
 						else if (type == CXM_IEVENT)
 						{
-							if (id == defopts[(id-1)].cxint) {
-								if(id < (TILE_FUNC_LIMIT+1)) {
+							if (id == defopts[id].cxint) {
+								if(id < (TILE_FUNC_LIMIT)) {
 									*current_layout = id;
 								}
-								defkeyfuncs[(id-1)].func();
+								defkeyfuncs[id].func();
 							}
 						}
 					}

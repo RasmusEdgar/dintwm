@@ -1,12 +1,13 @@
 #include "dintwm.h"
+#include "ketopt.h"
 
-static void printusage(int, int);
+static void fibonacci(int);
+static void switcher(int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static struct Window *copywindowlist(void);
 static int skipper(struct Window *w);
-static struct Screen *screen;
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
@@ -17,137 +18,132 @@ static unsigned char restoretag = 'r';
 short rc;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
+static int dint_opt_state = COMMODITIZE;
+static int dint_exit_state = EXIT_SUCCESS;
 
 int main(int argc, char **argv)
 {
-	int i = 0, optnum = 0, optargerr = 0;
-	char margopt = 'a';
-	
-	if ((argc == 0 ) || ((argv[1][0] == '-') && (argv[1][1] == 'C'))) {
-		lockbasescreen(&ilock, &screen);
-		windowliststore = copywindowlist();
-		unlockbasescreen(&ilock, &screen);
-		if((rc = commo()) == 0) {
-			free(windowliststore);
-			printf("Commo Succeeded\n");
-			exit(EXIT_SUCCESS);
-		}
-		printf("Commo failed\n");
-		free(windowliststore);
-		exit(EXIT_FAILURE);
-	}
+	ketopt_t opt = KETOPT_INIT;
+	int c;
 
-	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-') {
-			switch (argv[i][1]) {
+	while ((c = ketopt(&opt, argc, argv, 1, "bB:Cdghst", 0)) >= 0) {
+		switch (c) {
 			case 'b':
-				if (optargerr == 0 && topgap == 0) {
-					topgap = screen->BarHeight * 2 - 2;
-				} else {
-					optargerr = 1;
-				}
+				topgap = screen->BarHeight - 1;
 				break;
 			case 'B':
-				if (optargerr == 0 && topgap == 0) {
-					topgap = argv[i][2] != '\0' ? atoi(&argv[i][2]) : atoi(&argv[i][3]);
-					if (topgap > screen->Height || topgap < 0) {
-						optargerr = 2;
-					}
-				} else {
-					optargerr = 1;
+				topgap = atoi(opt.arg);
+				if (topgap > screen->Height || topgap < 0) {
+					dint_opt_state = GAP_ERR;
 				}
 				break;
+			case 'C':
+				dint_opt_state = dint_opt_state == COMMODITIZE ? COMMODITIZE : DOUBLE_OPTION_ERR;
+				break;
+			case 'd': 
+				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_DWINDLE : DOUBLE_OPTION_ERR;
+				break;
+			case 'g':
+				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_HGRID : DOUBLE_OPTION_ERR;
+				break;
+			case 'h':
+				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_PRINTUSAGE : DOUBLE_OPTION_ERR;
+				break;
+			case 's':
+				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_SPIRAL : DOUBLE_OPTION_ERR;
+				break;
+			case 't':
+				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_TILE : DOUBLE_OPTION_ERR;
+				break;
+			case '?':
+				printf("unknown opt: -%c\n", opt.opt? opt.opt : ':');
+				break;
+			case ':':
+				printf("missing arg: -%c\n", opt.opt? opt.opt : ':');
+				break;
 			default:
-                               	margopt = margopt == 'a' ? argv[i][1] : 'x';
 				break;
-			}
-		} else {
-			if (topgap == 0) {
-				optnum = i;
-				margopt = 'x';
-				break;
-			}
 		}
-		if (optargerr >= 1 && margopt != 'x') {
-			margopt = 'x';		
-		}
+			
 	}
 
-	switch (margopt) {
-		case 'd':
-			dwindle();
+	switch (dint_opt_state) {
+		case DOUBLE_OPTION_ERR:
+			printf("Do not use two tile functions at the same time.\n");
+			dint_exit_state = EXIT_FAILURE;
 			break;
-		case 'g':
-			hgrid();
+		case GAP_ERR:
+			printf("Topgap larger or smaller than screen.\n");
+			dint_exit_state = EXIT_FAILURE;
 			break;
-		case 'h':
-			printusage(0, optnum);
-			break;
-		case 't':
-			tile();
-			break;
-		case 's':
-			spiral();
+		case COMMODITIZE:
+			windowliststore = copywindowlist();
+			if(windowliststore == NULL) {
+				dint_exit_state = EXIT_FAILURE;
+			} else if ((rc = commo()) != 0) {
+				free(windowliststore);
+				dint_exit_state = EXIT_FAILURE;
+			}
 			break;
 		default:
-			if(optargerr < 0) {
-				printusage(optargerr, optnum);
-			}
+			defkeyfuncs[dint_opt_state].func();
+			break;
 	}
 
-	exit(EXIT_SUCCESS);
+	exit(dint_exit_state);
+
 }
 
-void printusage(int err, int optnum)
+void printusage(void)
 {
 
-	switch (err) {
-		case 1:
-			printf("%s\n","Too many optional, main arguments or unknown option");
-			break;
-		case 2:
-			printf("%s\n","Custom topgap is either too big or too small.");
-			break;
-		case 3:
-			printf("%s %d\n","Unknown option in position", optnum);
-			break;
-		default:
-			printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-				"Options:",
-				"-d: Fibonacci dwindle",
-				"-g: Horizontal grid",
-				"-t: Tile with left master",
-				"-s: Fibonacci spiral",
-				"<other arg> -b: Add workbench bar gap",
-				"<other arg> -B<int>: Add custom top gap",
-				"-h: This message");
-	}
+	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		"Options:",
+		"-d: Fibonacci dwindle",
+		"-g: Horizontal grid",
+		"-t: Tile with left master",
+		"-s: Fibonacci spiral",
+		"<other arg> -b: Add workbench bar gap",
+		"<other arg> -B<int>: Add custom top gap",
+		"-h: This message");
 }
 
 int skipper(struct Window *w)
 {
 	if (w->Flags & BACKDROP) {
-		return 1;
+		goto exit_skip;
 	}
 
 	if (strcmp("Workbench", (const char *)w->Title) == 0) {
-		return 1;
+		goto exit_skip;
 	}
 
 	if (strcmp(exclude_wtype, (const char *)w->Title) == 0) {
-		return 1;
+		goto exit_skip;
 	}
 
-	return 0;
+	if (strlen(include_wtype) == 0) {
+		goto exit_noskip;
+	}
+
+	if (strcmp(include_wtype, (const char *)w->Title) == 0) {
+		goto exit_noskip;
+	}
+
+	exit_skip:
+		return 1;
+
+	exit_noskip:
+		return 0;
 
 }
 
 void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
-	BeginRefresh(window);
+	//BeginRefresh(window);
 	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
 	WindowToFront(w);
-	EndRefresh(window, TRUE);
-	RefreshWindowFrame(window);
+	//EndRefresh(window, TRUE);
+	//RefreshWindowFrame(window);
 }
 
 void tile(void)
@@ -155,6 +151,7 @@ void tile(void)
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
 
+	printf("Running tile\n");
 	lockbasescreen(&ilock, &screen);
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
@@ -360,9 +357,9 @@ void switchb(void)
 }
 
 struct Window *copywindowlist(void) {
+	lockbasescreen(&ilock, &screen);
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
 	
-	lockbasescreen(&ilock, &screen);
 	while (w)
 	{
 		if ((skip = skipper(w)) == 1) {
@@ -385,8 +382,9 @@ struct Window *copywindowlist(void) {
 
 			w = w->NextWindow;
 		} else {
-			perror("Failed to allocate node.");
-			exit(EXIT_FAILURE);
+			unlockbasescreen(&ilock, &screen);
+			dst = NULL;
+			return dst;
 		}
 	}
 	*next = NULL;

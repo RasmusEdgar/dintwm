@@ -6,5 +6,6 @@ struct Keyfuncdef defkeyfuncs[] = {
 	{ dwindle },
 	{ restore },
 	{ switchf },
-        { switchb }
+        { switchb },
+        { printusage }
 };
