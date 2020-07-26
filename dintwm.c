@@ -151,7 +151,6 @@ void tile(void)
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
 
-	printf("Running tile\n");
 	lockbasescreen(&ilock, &screen);
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
@@ -331,16 +330,16 @@ void switcher(int d)
 	}
 		
 	if(d) {
-		if(*layout_number == TILE_FUNC_LIMIT) {
+		(*layout_number)++;
+		if(*layout_number > TILE_FUNC_LIMIT) {
 			*layout_number = 0;
 		} 
 		defkeyfuncs[(*layout_number)].func();
-		(*layout_number)++;
 	} else {
-		if(*layout_number == 0) {
+		(*layout_number)--;
+		if(*layout_number < 0) {
 			*layout_number = TILE_FUNC_LIMIT;
 		} 
-		(*layout_number)--;
 		defkeyfuncs[(*layout_number)].func();
 	}
 
