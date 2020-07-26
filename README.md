@@ -26,18 +26,17 @@ To run dintwm as a commodity:
 
 1. Create a default tooltype (icon) for dintwm
 2. Add options you need, the following are available:
-  * POPKEY\_TILE=, which is default set to "rawkey control lshift t", tile with master window layout
-  * POPKEY\_HGRID=, which is default set to "rawkey control lshift g", grid layout
-  * POPKEY\_SPIRAL=, which is default set to "rawkey control lshift f", fibonacci variant layout
-  * POPKEY\_DWINDLE=, which is default set to "rawkey control lshift d", another fibonacci variant layout
-  * POPKEY\_RESTORE=, which is default set to "rawkey control lshift r", enables restore of initial window placement
-  * POPKEY\_SWITCHF=, which is default set to "rawkey control lshift s", flip through layouts forwards
-  * POPKEY\_SWITCHB=, which is default set to "rawkey control lshift s", flip through layouts backwards
+  * POPKEY\_TILE=, which is default set to "rawkey control lcommand t", tile with master window layout (lcommand is Left Amiga Key, windows key in {Win,fs-}uae)
+  * POPKEY\_HGRID=, which is default set to "rawkey control lcommand g", grid layout
+  * POPKEY\_SPIRAL=, which is default set to "rawkey control lcommand f", fibonacci variant layout
+  * POPKEY\_DWINDLE=, which is default set to "rawkey control lcommand d", another fibonacci variant layout
+  * POPKEY\_RESTORE=, which is default set to "rawkey control lcommand r", enables restore of initial window placement
+  * POPKEY\_SWITCHF=, which is default set to "rawkey control lcommand s", flip through layouts forwards
+  * POPKEY\_SWITCHB=, which is default set to "rawkey control lcommand s", flip through layouts backwards
   * TOPGAP=, which is default set to 0, sets the top gap of the screen to show workbench bar
   * DEFAULT\_TOPGAP=, which is default set to 0, sets automatically calculated top gap.
   * EXCL\_WTYPE=, accepts window title, which default is set to nothing, exludes windows based on title
   * INCL\_WTYPE=, accepts window title, which default is set to nothing, includes windows based on title
-  * 
 3. Test it out using the following command: ```dintwm -C```
 4. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
 5. Check its status in System->Tools->Commodities->Exchange, you can also kill dintwm from here.
