@@ -59,7 +59,7 @@ enum dintwm_identifiers {
 	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
 	GAP_ERR = -3, // Can not call two tile functions from cli
 	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
-	TILE_FUNC_LIMIT = 4, // switcher funcetion - maximum limit of tiling layouts to switch through
+	TILE_FUNC_LIMIT = 3, // switcher funcetion - maximum limit of tiling layouts to switch through
 	FUNC_TILE = 0, // tile function identifier
 	FUNC_HGRID = 1, // hgrid function identifier
 	FUNC_SPIRAL = 2, // spiral function identifier
