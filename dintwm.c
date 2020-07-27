@@ -11,7 +11,7 @@ static int skipper(struct Window *w);
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
-static struct Window *windowliststore;
+static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
 static const int fact = 550;
 static unsigned char restoretag = 'r';
@@ -77,12 +77,11 @@ int main(int argc, char **argv)
 			dint_exit_state = EXIT_FAILURE;
 			break;
 		case COMMODITIZE:
-			windowliststore = copywindowlist();
-			if(windowliststore == NULL) {
+			if ((rc = commo()) != 0) {
 				dint_exit_state = EXIT_FAILURE;
-			} else if ((rc = commo()) != 0) {
+			}
+			if (!windowliststore) {
 				free(windowliststore);
-				dint_exit_state = EXIT_FAILURE;
 			}
 			break;
 		default:
@@ -139,11 +138,8 @@ int skipper(struct Window *w)
 }
 
 void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
-	//BeginRefresh(window);
 	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
 	WindowToFront(w);
-	//EndRefresh(window, TRUE);
-	//RefreshWindowFrame(window);
 }
 
 void tile(void)
@@ -391,6 +387,18 @@ struct Window *copywindowlist(void) {
 	return dst;
 }
 
+void takesnapshot(void) {
+	if(windowliststore == NULL) {
+		windowliststore = copywindowlist();	
+	}
+}
+
+void cleansnapshot(void) {
+	if(windowliststore != NULL) {
+		free(windowliststore);
+	}
+}
+
 void restore(void)
 {
 	lockbasescreen(&ilock, &screen);
@@ -404,6 +412,7 @@ void restore(void)
 
 		if (windowliststore->ExtData == window->ExtData) {
 			cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
+			WindowToFront(window);
 		} else {
 			WindowToBack(window);
 			continue;

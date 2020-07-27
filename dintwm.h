@@ -23,6 +23,8 @@ void dwindle(void);
 void restore(void);
 void switchf(void);
 void switchb(void);
+void takesnapshot(void);
+void cleansnapshot(void);
 void printusage(void);
 int topgap;
 long int *current_layout;
@@ -67,7 +69,9 @@ enum dintwm_identifiers {
 	FUNC_RESTORE = 4, // restore function identifier
 	FUNC_SWITCHF = 5, // switchf function identifier
 	FUNC_SWITCHB = 6, // switchb function identifier
-	FUNC_PRINTUSAGE = 7, // printusage function identifier
+	FUNC_CLEANSNAPSHOT = 7,
+	FUNC_TAKESNAPSHOT = 8,
+	FUNC_PRINTUSAGE = 9, // printusage function identifier
 	K_CGAP_ID = 301, // longopts ketopts id
 	TOPGAP_ID = 900, // topgap type identifier
 	DEFAULT_TOPGAP_ID = 901, // default topgap identifier

@@ -17,17 +17,21 @@ static char TYPE_DWINDLE[] = "POPKEY_DWINDLE";
 static char TYPE_RESTORE[] = "POPKEY_RESTORE";
 static char TYPE_SWITCHF[] = "POPKEY_SWITCHF";
 static char TYPE_SWITCHB[] = "POPKEY_SWITCHB";
+static char TYPE_CLEANSNAPSHOT[] = "POPKEY_CLEANSNAPSHOT";
+static char TYPE_TAKESNAPSHOT[] = "POPKEY_TAKESNAPSHOT";
 static char TYPE_TOPGAP[] = "TOPGAP";
 static char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
-static char KEY_TILE[] = "rawkey control lcommand t";
-static char KEY_HGRID[] = "rawkey control lcommand g";
-static char KEY_SPIRAL[] = "rawkey control lcommand f";
-static char KEY_DWINDLE[] = "rawkey control lcommand d";
-static char KEY_RESTORE[] = "rawkey control lcommand r";
-static char KEY_SWITCHL[] = "rawkey control lcommand s";
-static char KEY_SWITCHB[] = "rawkey control lcommand x";
+static char KEY_TILE[] = "rawkey control lshift t";
+static char KEY_HGRID[] = "rawkey control lshift g";
+static char KEY_SPIRAL[] = "rawkey control lshift f";
+static char KEY_DWINDLE[] = "rawkey control lshift d";
+static char KEY_RESTORE[] = "rawkey control lshift r";
+static char KEY_SWITCHL[] = "rawkey control lshift s";
+static char KEY_SWITCHB[] = "rawkey control lshift x";
+static char KEY_CLEANSNAPSHOT[] = "rawkey control lshift c";
+static char KEY_TAKESNAPSHOT[] = "rawkey control lshift p";
 static char NA[] = "0";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
@@ -41,6 +45,8 @@ static struct Optdef defopts[] = {
 	{ TYPE_RESTORE, FUNC_RESTORE, KEY_RESTORE, KEYTYPE },
 	{ TYPE_SWITCHF, FUNC_SWITCHF, KEY_SWITCHL, KEYTYPE },
 	{ TYPE_SWITCHB, FUNC_SWITCHB, KEY_SWITCHB, KEYTYPE },
+	{ TYPE_CLEANSNAPSHOT, FUNC_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE },
+	{ TYPE_TAKESNAPSHOT, FUNC_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE },
 	{ TYPE_TOPGAP, TOPGAP_ID, NA, OPTTYPE },
 	{ TYPE_DEFAULT_TOPGAP, DEFAULT_TOPGAP_ID, NA, OPTTYPE },
 	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
@@ -177,6 +183,7 @@ short int commo(void)
 							switch (id)
 							{
 								case CXCMD_UNIQUE:
+									printf("Commodity is already running. Quitting.\n");
 									running = FALSE;
 									break;
 								case CXCMD_DISABLE:

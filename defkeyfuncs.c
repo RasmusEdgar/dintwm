@@ -7,5 +7,7 @@ struct Keyfuncdef defkeyfuncs[] = {
 	{ restore },
 	{ switchf },
         { switchb },
+        { cleansnapshot },
+        { takesnapshot },
         { printusage }
 };
