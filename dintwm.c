@@ -388,39 +388,41 @@ struct Window *copywindowlist(void) {
 }
 
 void takesnapshot(void) {
-	if(windowliststore == NULL) {
-		windowliststore = copywindowlist();	
-	}
+	cleansnapshot();
+	windowliststore = copywindowlist();	
 }
 
 void cleansnapshot(void) {
 	if(windowliststore != NULL) {
 		free(windowliststore);
+		windowliststore = NULL;
 	}
 }
 
 void restore(void)
 {
-	lockbasescreen(&ilock, &screen);
-	struct Window *storehead = windowliststore;
-	for (window = screen->FirstWindow; window;
-	     window = window->NextWindow) {
-		if ((skip = skipper(window)) == 1) {
-			windowliststore = windowliststore->NextWindow;
-			continue;
-		}
+	if(windowliststore != NULL) {
+		lockbasescreen(&ilock, &screen);
+		struct Window *storehead = windowliststore;
+		for (window = screen->FirstWindow; window;
+			window = window->NextWindow) {
+			if ((skip = skipper(window)) == 1) {
+				windowliststore = windowliststore->NextWindow;
+				continue;
+			}
 
-		if (windowliststore->ExtData == window->ExtData) {
-			cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
-			WindowToFront(window);
-		} else {
-			WindowToBack(window);
-			continue;
+			if (windowliststore->ExtData == window->ExtData) {
+				cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
+				WindowToFront(window);
+			} else {
+				WindowToBack(window);
+				continue;
+			}
+			windowliststore = windowliststore->NextWindow;
 		}
-		windowliststore = windowliststore->NextWindow;
+		windowliststore = storehead;
+		unlockbasescreen(&ilock, &screen);
 	}
-	windowliststore = storehead;
-	unlockbasescreen(&ilock, &screen);
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)
