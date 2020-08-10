@@ -23,16 +23,23 @@ static char TYPE_TOPGAP[] = "TOPGAP";
 static char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
-static char KEY_TILE[] = "rawkey control lshift t";
-static char KEY_HGRID[] = "rawkey control lshift g";
-static char KEY_SPIRAL[] = "rawkey control lshift f";
-static char KEY_DWINDLE[] = "rawkey control lshift d";
-static char KEY_RESTORE[] = "rawkey control lshift r";
-static char KEY_SWITCHL[] = "rawkey control lshift s";
-static char KEY_SWITCHB[] = "rawkey control lshift x";
-static char KEY_CLEANSNAPSHOT[] = "rawkey control lshift c";
-static char KEY_TAKESNAPSHOT[] = "rawkey control lshift p";
+static char TYPE_AUTO[] = "AUTO";
+static char TYPE_SHELL[] = "SHELL";
+static char TYPE_CLOSEWIN[] = "CLOSEWIN";
+static char KEY_TILE[] = "rawkey control lcommand t";
+static char KEY_HGRID[] = "rawkey control lcommand g";
+static char KEY_SPIRAL[] = "rawkey control lcommand f";
+static char KEY_DWINDLE[] = "rawkey control lcommand d";
+static char KEY_RESTORE[] = "rawkey control lcommand r";
+static char KEY_SWITCHL[] = "rawkey control lcommand s";
+static char KEY_SWITCHB[] = "rawkey control lcommand x";
+static char KEY_CLEANSNAPSHOT[] = "rawkey control lcommand c";
+static char KEY_TAKESNAPSHOT[] = "rawkey control lcommand p";
+static char KEY_SHELL[] = "rawkey control lcommand return";
+static char KEY_CLOSEWIN[] = "rawkey control lcommand delete";
 static char NA[] = "0";
+
+static short autotile = FALSE;
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 
@@ -47,10 +54,13 @@ static struct Optdef defopts[] = {
 	{ TYPE_SWITCHB, FUNC_SWITCHB, KEY_SWITCHB, KEYTYPE },
 	{ TYPE_CLEANSNAPSHOT, FUNC_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE },
 	{ TYPE_TAKESNAPSHOT, FUNC_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE },
+	{ TYPE_SHELL, FUNC_SHELL, KEY_SHELL, KEYTYPE },
+	{ TYPE_CLOSEWIN, FUNC_CLOSEWIN, KEY_CLOSEWIN, KEYTYPE },
 	{ TYPE_TOPGAP, TOPGAP_ID, NA, OPTTYPE },
 	{ TYPE_DEFAULT_TOPGAP, DEFAULT_TOPGAP_ID, NA, OPTTYPE },
 	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
-	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE }
+	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE },
+	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE }
 };
 
 static struct NewBroker MyBroker =
@@ -93,13 +103,16 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 						topgap = atoi((const char *)tt_optvalue);
 						break;
 					case DEFAULT_TOPGAP_ID: 	
-						topgap = screen->BarHeight - 1;
+						topgap = calcgap();
 						break;
 					case EXCL_WTYPE_ID:
 						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
 						break;
 					case INCL_WTYPE_ID:
 						strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
+						break;
+					case AUTO_ID:
+						autotile = TRUE;
 						break;
 					default:
 						break;
@@ -133,6 +146,8 @@ short int commo(void)
 	static struct DiskObject *diskobj;
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
+	static int wincount = 0;
+	current_layout = 0;
 
 	if(!(iconbase = OpenLibrary(iconlib,37))) {
 		DeleteMsgPort(mp);
@@ -169,7 +184,15 @@ short int commo(void)
  
 				while (running)
 				{
-					(void)WaitPort(mp);
+					if(autotile) {
+						wincount = countwindows();
+						WaitTOF();	
+						if(wincount < (countwindows())) {
+							defkeyfuncs[*current_layout].func();
+						}
+					} else {
+						(void)WaitPort(mp);
+					}
  
 					while ((msg = (void *)GetMsg(mp)))
 					{
@@ -203,7 +226,7 @@ short int commo(void)
 						else if (type == CXM_IEVENT)
 						{
 							if (id == defopts[id].cxint) {
-								if(id < (TILE_FUNC_LIMIT)) {
+								if(id <= (TILE_FUNC_LIMIT)) {
 									*current_layout = id;
 								}
 								defkeyfuncs[id].func();

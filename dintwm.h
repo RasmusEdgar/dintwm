@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
+//#define CALCGAP			(screen->BarHeight + screen->WBorBottom - 3)
 
 #define TT_MAX_LENGTH 128
 
@@ -26,6 +27,10 @@ void switchb(void);
 void takesnapshot(void);
 void cleansnapshot(void);
 void printusage(void);
+int countwindows(void);
+void doshell(void);
+void closewin(void);
+int calcgap(void);
 int topgap;
 long int *current_layout;
 char exclude_wtype[TT_MAX_LENGTH];
@@ -69,12 +74,15 @@ enum dintwm_identifiers {
 	FUNC_RESTORE = 4, // restore function identifier
 	FUNC_SWITCHF = 5, // switchf function identifier
 	FUNC_SWITCHB = 6, // switchb function identifier
-	FUNC_CLEANSNAPSHOT = 7,
-	FUNC_TAKESNAPSHOT = 8,
-	FUNC_PRINTUSAGE = 9, // printusage function identifier
+	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
+	FUNC_TAKESNAPSHOT = 8, // Take snapshot
+	FUNC_SHELL = 9, // printusage function identifier
+	FUNC_CLOSEWIN = 10, // Nuke window
+	FUNC_PRINTUSAGE = 11, // printusage function identifier
 	K_CGAP_ID = 301, // longopts ketopts id
 	TOPGAP_ID = 900, // topgap type identifier
 	DEFAULT_TOPGAP_ID = 901, // default topgap identifier
 	EXCL_WTYPE_ID = 902, // exclude window type identifier
-	INCL_WTYPE_ID = 903 // exclude window type identifier
+	INCL_WTYPE_ID = 903, // exclude window type identifier
+	AUTO_ID = 1000 // AUTO TILE
 };
