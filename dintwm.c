@@ -449,7 +449,7 @@ void doshell(void) {
 }
 
 int calcgap(void) {
-	return(screen->BarHeight + screen->WBorBottom - 3);
+	return(screen->BarHeight * 2);
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)
