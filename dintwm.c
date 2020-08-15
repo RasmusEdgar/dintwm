@@ -7,8 +7,6 @@ static void switcher(int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
-static void CloseWindowSafely(struct Window *win);
-static void StripIntuiMessages( struct MsgPort *mp, struct Window *win);
 static struct Window *copywindowlist(void);
 static int skipper(struct Window *w);
 static unsigned long ilock;
@@ -21,13 +19,13 @@ static unsigned char restoretag = 'r';
 short rc;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
-static int dint_opt_state = COMMODITIZE;
-static int dint_exit_state = EXIT_SUCCESS;
-
 int main(int argc, char **argv)
 {
 	ketopt_t opt = KETOPT_INIT;
-	int c;
+	static int c;
+	static int dint_opt_state = COMMODITIZE;
+	static int dint_exit_state = EXIT_SUCCESS;
+
 
 	while ((c = ketopt(&opt, argc, argv, 1, "bB:Cdghst", 0)) >= 0) {
 		switch (c) {
@@ -116,6 +114,10 @@ int skipper(struct Window *w)
 		goto exit_skip;
 	}
 
+	if (w->Flags & GIMMEZEROZERO) {
+		goto exit_skip;
+	}
+
 	if (strcmp("Workbench", (const char *)w->Title) == 0) {
 		goto exit_skip;
 	}
@@ -151,13 +153,6 @@ void tile(void)
 	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
 
 	lockbasescreen(&ilock, &screen);
-	/*for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++) {
-		if ((skip = skipper(window)) == 1) {
-			wincount--;
-			continue;
-		}
-	}*/
 	wincount = countwindows();
 
 	if (wincount == 0) {
@@ -201,13 +196,6 @@ void hgrid(void)
 	int winx = 0, winy = 0;
 
 	lockbasescreen(&ilock, &screen);
-	/*for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++) {
-		if ((skip = skipper(window)) == 1) {
-			wincount--;
-			continue;
-		}
-	}*/
 	wincount = countwindows();
 
 	if (wincount == 0) {
@@ -243,13 +231,6 @@ void fibonacci(int s)
 	int wnr, wincount, winx, winwidth, winheight, winy;
 
 	lockbasescreen(&ilock, &screen);
-	/*for (wincount = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow, wincount++) {
-		if ((skip = skipper(window)) == 1) {
-			wincount--;
-			continue;
-		}
-	}*/
 	wincount = countwindows();
 
 	winx = 0;
@@ -452,7 +433,7 @@ void doshell(void) {
 
 	if((file = Open(autocon, MODE_OLDFILE))) {
         	stags[0].ti_Tag = SYS_Input;
-        	stags[0].ti_Data = (unsigned long int)file;
+        	stags[0].ti_Data = (long unsigned int)file;
         	stags[1].ti_Tag = SYS_Output;
         	stags[1].ti_Data = 0;
         	stags[2].ti_Tag = SYS_Asynch;
@@ -460,55 +441,15 @@ void doshell(void) {
         	stags[3].ti_Tag = SYS_UserShell;
         	stags[3].ti_Data = TRUE;
         	stags[4].ti_Tag = TAG_DONE;
-		(void)System(cmd,stags);
+		(void)SystemTagList(cmd,stags);
+	} else {
+		return;
 	}
+
 }
 
 int calcgap(void) {
 	return(screen->BarHeight + screen->WBorBottom - 3);
-}
-
-void closewin(void) {
-	lockbasescreen(&ilock, &screen);
-	for (window = screen->FirstWindow; window;
-		window = window->NextWindow) {
-		if (window->Flags & WINDOWACTIVE) {
-			CloseWindowSafely(window);
-		}
-	}
-	unlockbasescreen(&ilock, &screen);
-}
-
-void CloseWindowSafely(struct Window *win) {
-	Forbid();
-
-	StripIntuiMessages(win->UserPort, win);
-
-	win->UserPort = NULL;
-
-	ModifyIDCMP(win, 0L);
-
-	Permit();
-
-	CloseWindow(win);
-}
-
-void StripIntuiMessages( struct MsgPort *wmp, struct Window *win) {
-	struct IntuiMessage *msg;
-	struct Node *succ;
-
-	msg = (struct IntuiMessage *) wmp->mp_MsgList.lh_Head;
-
-	while((succ =  msg->ExecMessage.mn_Node.ln_Succ)) {
-
-		if(msg->IDCMPWindow == win) {
-			Remove((struct Node *)msg);
-			ReplyMsg((struct Message *)msg);
-		}
-
-		msg = (struct IntuiMessage *) succ;
-    	}
-	DeleteMsgPort(wmp);
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)

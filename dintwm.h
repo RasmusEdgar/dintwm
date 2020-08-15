@@ -29,7 +29,6 @@ void cleansnapshot(void);
 void printusage(void);
 int countwindows(void);
 void doshell(void);
-void closewin(void);
 int calcgap(void);
 int topgap;
 long int *current_layout;
@@ -77,8 +76,7 @@ enum dintwm_identifiers {
 	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
 	FUNC_TAKESNAPSHOT = 8, // Take snapshot
 	FUNC_SHELL = 9, // printusage function identifier
-	FUNC_CLOSEWIN = 10, // Nuke window
-	FUNC_PRINTUSAGE = 11, // printusage function identifier
+	FUNC_PRINTUSAGE = 10, // printusage function identifier
 	K_CGAP_ID = 301, // longopts ketopts id
 	TOPGAP_ID = 900, // topgap type identifier
 	DEFAULT_TOPGAP_ID = 901, // default topgap identifier

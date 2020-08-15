@@ -10,6 +10,5 @@ struct Keyfuncdef defkeyfuncs[] = {
         { cleansnapshot },
         { takesnapshot },
         { doshell },
-        { closewin },
         { printusage }
 };
