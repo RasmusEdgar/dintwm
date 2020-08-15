@@ -31,6 +31,7 @@ int countwindows(void);
 void doshell(void);
 int calcgap(void);
 int topgap;
+int bottomgap;
 long int *current_layout;
 char exclude_wtype[TT_MAX_LENGTH];
 char include_wtype[TT_MAX_LENGTH];
@@ -80,6 +81,7 @@ enum dintwm_identifiers {
 	K_CGAP_ID = 301, // longopts ketopts id
 	TOPGAP_ID = 900, // topgap type identifier
 	DEFAULT_TOPGAP_ID = 901, // default topgap identifier
+	BOTTOMGAP_ID = 902, // bottomgap type identifier
 	EXCL_WTYPE_ID = 902, // exclude window type identifier
 	INCL_WTYPE_ID = 903, // exclude window type identifier
 	AUTO_ID = 1000 // AUTO TILE

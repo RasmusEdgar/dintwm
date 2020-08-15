@@ -27,14 +27,20 @@ int main(int argc, char **argv)
 	static int dint_exit_state = EXIT_SUCCESS;
 
 
-	while ((c = ketopt(&opt, argc, argv, 1, "bB:Cdghst", 0)) >= 0) {
+	while ((c = ketopt(&opt, argc, argv, 1, "aAB:Cdghst", 0)) >= 0) {
 		switch (c) {
-			case 'b':
+			case 'a':
 				topgap = calcgap();
 				break;
-			case 'B':
+			case 'A':
 				topgap = atoi(opt.arg);
 				if (topgap > screen->Height || topgap < 0) {
+					dint_opt_state = GAP_ERR;
+				}
+				break;
+			case 'B':
+				bottomgap = atoi(opt.arg);
+				if (bottomgap > screen->Height || bottomgap < 0) {
 					dint_opt_state = GAP_ERR;
 				}
 				break;
@@ -74,7 +80,7 @@ int main(int argc, char **argv)
 			dint_exit_state = EXIT_FAILURE;
 			break;
 		case GAP_ERR:
-			printf("Topgap larger or smaller than screen.\n");
+			printf("Gap is larger or smaller than screen.\n");
 			dint_exit_state = EXIT_FAILURE;
 			break;
 		case COMMODITIZE:
@@ -97,14 +103,15 @@ int main(int argc, char **argv)
 void printusage(void)
 {
 
-	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 		"Options:",
 		"-d: Fibonacci dwindle",
 		"-g: Horizontal grid",
 		"-t: Tile with left master",
 		"-s: Fibonacci spiral",
-		"<other arg> -b: Add workbench bar gap",
-		"<other arg> -B<int>: Add custom top gap",
+		"<other arg> -a: Add workbench bar gap",
+		"<other arg> -A<int>: Add custom top gap",
+		"<other arg> -B<int>: Add custom bottom gap",
 		"-h: This message");
 }
 
@@ -150,7 +157,7 @@ void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
 void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
-	    0, winx = 0, winy = 0, nwiny = 0, mwiny = 0;
+	    0, nwiny = 0, mwiny = 0;
 
 	lockbasescreen(&ilock, &screen);
 	wincount = countwindows();
@@ -175,15 +182,15 @@ void tile(void)
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
-			     topgap) / (MIN(wincount, nmaster) - wnr);
-			cwb(window, winx, (topgap - winy + mwiny), mwinwidth, winheight);
+			     topgap) / (MIN(wincount, nmaster) - wnr) - bottomgap;
+			cwb(window, 0, (topgap - mwiny), mwinwidth, winheight);
 			mwiny += winheight;
 		} else {
 			winheight =
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
-			cwb(window, (winx + mwinwidth), (topgap - winy + nwiny), (screen->Width - mwinwidth), winheight);
-			nwiny += winheight;
+			cwb(window, mwinwidth, nwiny, (screen->Width - mwinwidth), winheight);
+			nwiny += (bottomgap - winheight);
 		}
 	}
 	unlockbasescreen(&ilock, &screen);
