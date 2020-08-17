@@ -182,15 +182,16 @@ void tile(void)
 		if (wnr < nmaster) {
 			winheight =
 			    (screen->Height - mwiny -
-			     topgap) / (MIN(wincount, nmaster) - wnr) - bottomgap;
+			     topgap) / (MIN(wincount, nmaster) - wnr);
+			winheight -= bottomgap;
 			cwb(window, 0, (topgap - mwiny), mwinwidth, winheight);
 			mwiny += winheight;
 		} else {
 			winheight =
 			    (screen->Height - nwiny -
 			     topgap) / (wincount - wnr);
-			cwb(window, mwinwidth, nwiny, (screen->Width - mwinwidth), winheight);
-			nwiny += (bottomgap - winheight);
+			cwb(window, mwinwidth, nwiny, (screen->Width - mwinwidth), topgap - winheight);
+			nwiny += winheight;
 		}
 	}
 	unlockbasescreen(&ilock, &screen);
