@@ -16,8 +16,6 @@
 
 #define TT_MAX_LENGTH 128
 
-#define MODIFIER "alt"
-
 // dintwm main functions shared
 void tile(void);
 void hgrid(void);

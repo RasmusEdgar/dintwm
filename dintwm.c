@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 	static int dint_exit_state = EXIT_SUCCESS;
 
 
-	while ((c = ketopt(&opt, argc, argv, 1, "aAB:Cdghst", 0)) >= 0) {
+	while ((c = ketopt(&opt, argc, argv, 1, "aA:B:Cdghst", 0)) >= 0) {
 		switch (c) {
 			case 'a':
 				topgap = calcgap();
@@ -188,9 +188,9 @@ void tile(void)
 			mwiny += winheight;
 		} else {
 			winheight =
-			    (screen->Height - nwiny -
-			     topgap) / (wincount - wnr);
-			cwb(window, mwinwidth, nwiny, (screen->Width - mwinwidth), topgap - winheight);
+			    ((screen->Height - bottomgap) - nwiny -
+			    topgap) / (wincount - wnr);
+			cwb(window, mwinwidth, (topgap + nwiny), (screen->Width - mwinwidth), winheight);
 			nwiny += winheight;
 		}
 	}
@@ -201,7 +201,7 @@ void hgrid(void)
 {
 	int wincount, wnr, ntop = 0, nbottom = 0;
 	int winwidth = 0;
-	int winx = 0, winy = 0;
+	int winx = 0;
 
 	lockbasescreen(&ilock, &screen);
 	wincount = countwindows();
@@ -220,14 +220,14 @@ void hgrid(void)
 		if (wincount <= 1) {
 			winwidth = screen->Width / wincount;
 			winx = wnr == 1 ? screen->Width / wincount : 0;
-			cwb(window, winx, (topgap - winy), winwidth, (screen->Height - topgap));
+			cwb(window, winx, topgap, winwidth, (screen->Height - topgap) - bottomgap);
 		} else {
 			ntop = wincount / 2;
 			nbottom = wincount - ntop;
 			if (wnr < ntop) {
-				cwb(window, (winx + wnr * screen->Width / ntop), (topgap - winy), (screen->Width / ntop), ((screen->Height - topgap) / 2));
+				cwb(window, (winx + wnr * screen->Width / ntop), topgap, (screen->Width / ntop), ((screen->Height - topgap) / 2));
 			} else {
-				cwb(window, (winx + (wnr - ntop) * screen->Width / nbottom), (topgap + winy + screen->Height / 2), (screen->Width / nbottom), ((screen->Height - topgap) / 2));
+				cwb(window, (winx + (wnr - ntop) * screen->Width / nbottom), (topgap + (screen->Height - bottomgap) / 2), (screen->Width / nbottom), ((screen->Height - topgap) / 2) - bottomgap);
 			}
 		}
 	}
@@ -293,6 +293,7 @@ void fibonacci(int s)
 					winwidth =
 					    (screen->Width * fact) / 1000;
 				winy = topgap;
+				winheight -= bottomgap;
 				}
 			} else if (wnr == 1) {
 				winwidth = screen->Width - winwidth;
