@@ -32,6 +32,8 @@ void doshell(void);
 int calcgap(void);
 int topgap;
 int bottomgap;
+int leftgap;
+int rightgap;
 long int *current_layout;
 char exclude_wtype[TT_MAX_LENGTH];
 char include_wtype[TT_MAX_LENGTH];
