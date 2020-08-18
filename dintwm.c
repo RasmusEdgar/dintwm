@@ -34,27 +34,35 @@ int main(int argc, char **argv)
 				break;
 			case 'U':
 				topgap = atoi(opt.arg);
+				lockbasescreen(&ilock, &screen);
 				if (topgap > screen->Height || topgap < 0) {
 					dint_opt_state = GAP_ERR;
 				}
+				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'B':
 				bottomgap = atoi(opt.arg);
+				lockbasescreen(&ilock, &screen);
 				if (bottomgap > screen->Height || bottomgap < 0) {
 					dint_opt_state = GAP_ERR;
 				}
+				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'L':
 				leftgap = atoi(opt.arg);
+				lockbasescreen(&ilock, &screen);
 				if (leftgap > screen->Width || leftgap < 0) {
 					dint_opt_state = GAP_ERR;
 				}
+				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'R':
 				rightgap = atoi(opt.arg);
+				lockbasescreen(&ilock, &screen);
 				if (rightgap > screen->Width || rightgap < 0) {
 					dint_opt_state = GAP_ERR;
 				}
+				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'C':
 				dint_opt_state = dint_opt_state == COMMODITIZE ? COMMODITIZE : DOUBLE_OPTION_ERR;
@@ -195,11 +203,10 @@ void tile(void)
 		}
 		if (wnr < nmaster) {
 			winheight = (screen->Height - (bottomgap + topgap)) / (MIN(wincount, nmaster) - wnr);
-			mwinwidth = mwinwidth -  rightgap;
-			cwb(window, leftgap, topgap, mwinwidth, winheight);
+			cwb(window, leftgap, topgap, mwinwidth - rightgap, winheight);
 		} else {
-			winheight = (screen->Height - nwiny) / (wincount - wnr);
-			cwb(window, (mwinwidth - rightgap) + leftgap, nwiny + topgap - bottomgap, (screen->Width - mwinwidth), winheight);
+			winheight = (screen->Height - (bottomgap + topgap) - nwiny) / (wincount - wnr);
+			cwb(window, (mwinwidth + leftgap) - rightgap, nwiny + topgap, (screen->Width - mwinwidth - leftgap), winheight);
 			nwiny += winheight;
 		}
 	}
@@ -467,7 +474,11 @@ void doshell(void) {
 }
 
 int calcgap(void) {
-	return(screen->BarHeight * 2);
+	int bheight;
+	lockbasescreen(&ilock, &screen);
+	bheight = screen->BarHeight + 1;
+	unlockbasescreen(&ilock, &screen);
+	return(bheight);
 }
 
 void lockbasescreen(unsigned long *il, struct Screen **s)
