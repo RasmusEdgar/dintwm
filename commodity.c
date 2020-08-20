@@ -148,6 +148,7 @@ short int commo(void)
 	static int wincount = 0;
 	current_layout = 0;
 	static short first_run = TRUE;
+	int lock = 1;
 
 	if(!(iconbase = OpenLibrary(iconlib,37))) {
 		DeleteMsgPort(mp);
@@ -185,9 +186,9 @@ short int commo(void)
 				while (running)
 				{
 					if(autotile) {
-						wincount = countwindows();
+						wincount = countwindows(lock);
 						WaitTOF();	
-						if(wincount != (countwindows()) || first_run == TRUE) {
+						if(wincount != (countwindows(lock)) || first_run == TRUE) {
 							defkeyfuncs[*current_layout].func();
 							if(first_run == TRUE) {
 								first_run = FALSE;

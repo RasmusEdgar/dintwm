@@ -27,7 +27,7 @@ void switchb(void);
 void takesnapshot(void);
 void cleansnapshot(void);
 void printusage(void);
-int countwindows(void);
+int countwindows(int l);
 void doshell(void);
 int calcgap(void);
 int topgap;

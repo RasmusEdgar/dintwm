@@ -19,6 +19,7 @@ static unsigned char restoretag = 'r';
 short rc;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
+static int nolock = 0;
 int main(int argc, char **argv)
 {
 	ketopt_t opt = KETOPT_INIT;
@@ -182,7 +183,7 @@ void tile(void)
 	    0, nwiny = 0;
 
 	lockbasescreen(&ilock, &screen);
-	wincount = countwindows();
+	wincount = countwindows(nolock);
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
@@ -220,7 +221,7 @@ void hgrid(void)
 	int winx = 0;
 
 	lockbasescreen(&ilock, &screen);
-	wincount = countwindows();
+	wincount = countwindows(nolock);
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
@@ -234,16 +235,16 @@ void hgrid(void)
 			continue;
 		}
 		if (wincount <= 1) {
-			winwidth = screen->Width / wincount;
+			winwidth = (screen->Width - (leftgap + rightgap)) / wincount;
 			winx = wnr == 1 ? screen->Width / wincount : 0;
-			cwb(window, winx, topgap, winwidth, (screen->Height - topgap) - bottomgap);
+			cwb(window, winx - leftgap, topgap, winwidth - rightgap, screen->Height - (bottomgap + topgap));
 		} else {
 			ntop = wincount / 2;
 			nbottom = wincount - ntop;
 			if (wnr < ntop) {
-				cwb(window, (winx + wnr * screen->Width / ntop), topgap, (screen->Width / ntop), ((screen->Height - topgap) / 2));
+				cwb(window, (leftgap + wnr * (screen->Width - rightgap) / ntop), topgap, (screen->Width / ntop) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
 			} else {
-				cwb(window, (winx + (wnr - ntop) * screen->Width / nbottom), (topgap + (screen->Height - bottomgap) / 2), (screen->Width / nbottom), ((screen->Height - topgap) / 2) - bottomgap);
+				cwb(window, (leftgap + (wnr - ntop) * (screen->Width - rightgap) / nbottom), (screen->Height - (topgap - bottomgap)) / 2, (screen->Width / nbottom) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
 			}
 		}
 	}
@@ -255,7 +256,7 @@ void fibonacci(int s)
 	int wnr, wincount, winx, winwidth, winheight, winy;
 
 	lockbasescreen(&ilock, &screen);
-	wincount = countwindows();
+	wincount = countwindows(nolock);
 
 	winx = 0;
 	winy = topgap;
@@ -438,8 +439,11 @@ void restore(void)
 	}
 }
 
-int countwindows(void) {
+int countwindows(int l) {
 	int wincount;
+	if(l) {
+		lockbasescreen(&ilock, &screen);	
+	}
         for (wincount = 0, window = screen->FirstWindow; window;
              window = window->NextWindow, wincount++) {
                 if ((skip = skipper(window)) == 1) {
@@ -447,6 +451,9 @@ int countwindows(void) {
                         continue;
                 }
         }
+	if(l) {
+		unlockbasescreen(&ilock, &screen);
+	}
 	return wincount;
 }
 
