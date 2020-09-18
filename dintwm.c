@@ -207,14 +207,15 @@ void tile(void)
 			wy = topgap;
 			ww = mwinwidth - rightgap;
 			wh = (screen->Height - (bottomgap + topgap)) / (MIN(wincount, nmaster) - wnr);
+			cwb(window, wx, wy, ww, wh);
 		} else {
 			wx = (mwinwidth + leftgap) - rightgap;
 			wy = topgap;
 			ww = mwinwidth - rightgap;
 			wh = (screen->Height - (bottomgap + topgap) - nwiny) / (wincount - wnr);
+			cwb(window, wx, wy, ww, wh);
 			nwiny += wh;
 		}
-		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
