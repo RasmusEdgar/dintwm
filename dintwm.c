@@ -179,8 +179,8 @@ void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
 
 void tile(void)
 {
-	int wincount = 0, wnr = 0, mwinwidth = 0, winheight =
-	    0, nwiny = 0;
+	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
+	int wx = 0, wy = 0, ww = 0, wh = 0;
 
 	lockbasescreen(&ilock, &screen);
 	wincount = countwindows(nolock);
@@ -203,13 +203,18 @@ void tile(void)
 			continue;
 		}
 		if (wnr < nmaster) {
-			winheight = (screen->Height - (bottomgap + topgap)) / (MIN(wincount, nmaster) - wnr);
-			cwb(window, leftgap, topgap, mwinwidth - rightgap, winheight);
+			wx = leftgap;
+			wy = topgap;
+			ww = mwinwidth - rightgap;
+			wh = (screen->Height - (bottomgap + topgap)) / (MIN(wincount, nmaster) - wnr);
 		} else {
-			winheight = (screen->Height - (bottomgap + topgap) - nwiny) / (wincount - wnr);
-			cwb(window, (mwinwidth + leftgap) - rightgap, nwiny + topgap, (screen->Width - mwinwidth - leftgap), winheight);
-			nwiny += winheight;
+			wx = (mwinwidth + leftgap) - rightgap;
+			wy = topgap;
+			ww = mwinwidth - rightgap;
+			wh = (screen->Height - (bottomgap + topgap) - nwiny) / (wincount - wnr);
+			nwiny += wh;
 		}
+		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
@@ -242,9 +247,12 @@ void hgrid(void)
 			ntop = wincount / 2;
 			nbottom = wincount - ntop;
 			if (wnr < ntop) {
-				cwb(window, (leftgap + wnr * (screen->Width - rightgap) / ntop), topgap, (screen->Width / ntop) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
+				// cwb(window, (leftgap + wnr * (screen->Width - rightgap) / ntop), topgap, (screen->Width / ntop) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
+				cwb(window, leftgap + (wnr * (screen->Width / ntop)) - rightgap, topgap, (screen->Width - rightgap) / ntop, (screen->Height - (bottomgap + topgap)) / 2);
+
 			} else {
-				cwb(window, (leftgap + (wnr - ntop) * (screen->Width - rightgap) / nbottom), (screen->Height - (topgap - bottomgap)) / 2, (screen->Width / nbottom) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
+				cwb(window, (leftgap + (wnr - ntop) * (screen->Width / nbottom)) - rightgap, (screen->Height - (topgap - bottomgap)) / 2, (screen->Width - rightgap) / nbottom, (screen->Height - (bottomgap + topgap)) / 2);
+				//cwb(window, (leftgap + (wnr - ntop) * (screen->Width - rightgap) / nbottom), (screen->Height - (topgap - bottomgap)) / 2, (screen->Width / nbottom) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
 			}
 		}
 	}
