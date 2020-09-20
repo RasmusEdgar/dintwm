@@ -180,9 +180,13 @@ void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
 void tile(void)
 {
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
-	int wx = 0, wy = 0, ww = 0, wh = 0;
+	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
 	lockbasescreen(&ilock, &screen);
+
+	sh = screen->Height - (bottomgap + topgap);
+	sw = screen->Width - (rightgap + leftgap);
+
 	wincount = countwindows(nolock);
 
 	if (wincount == 0) {
@@ -191,9 +195,9 @@ void tile(void)
 	}
 
 	if (wincount > nmaster) {
-		mwinwidth = nmaster != 0 ? (screen->Width * fact) / 1000 : 0;
+		mwinwidth = nmaster != 0 ? (sw * fact) / 1000 : 0;
 	} else {
-		mwinwidth = screen->Width;
+		mwinwidth = sw;
 	}
 
 	for (wnr = 0, window = screen->FirstWindow; window;
@@ -205,17 +209,16 @@ void tile(void)
 		if (wnr < nmaster) {
 			wx = leftgap;
 			wy = topgap;
-			ww = mwinwidth - rightgap;
-			wh = (screen->Height - (bottomgap + topgap)) / (MIN(wincount, nmaster) - wnr);
-			cwb(window, wx, wy, ww, wh);
+			ww = mwinwidth;
+			wh = sh / (MIN(wincount, nmaster) - wnr);
 		} else {
-			wx = (mwinwidth + leftgap) - rightgap;
-			wy = topgap;
-			ww = mwinwidth - rightgap;
-			wh = (screen->Height - (bottomgap + topgap) - nwiny) / (wincount - wnr);
-			cwb(window, wx, wy, ww, wh);
+			wx = mwinwidth + leftgap;
+			wy = nwiny + topgap;
+			ww = sw - mwinwidth;
+			wh = (sh - nwiny) / (wincount - wnr);
 			nwiny += wh;
 		}
+		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
@@ -223,10 +226,13 @@ void tile(void)
 void hgrid(void)
 {
 	int wincount, wnr, ntop = 0, nbottom = 0;
-	int winwidth = 0;
-	int winx = 0;
+	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
 	lockbasescreen(&ilock, &screen);
+
+	sh = screen->Height - (bottomgap + topgap);
+	sw = screen->Width - (rightgap + leftgap);
+
 	wincount = countwindows(nolock);
 
 	if (wincount == 0) {
@@ -241,36 +247,48 @@ void hgrid(void)
 			continue;
 		}
 		if (wincount <= 1) {
-			winwidth = (screen->Width - (leftgap + rightgap)) / wincount;
-			winx = wnr == 1 ? screen->Width / wincount : 0;
-			cwb(window, winx - leftgap, topgap, winwidth - rightgap, screen->Height - (bottomgap + topgap));
+			wx = wnr == 1 ? sw / wincount : 0;
+			wx = leftgap;
+			wy = topgap;
+			ww = sw / wincount;
+			wh = sh;
 		} else {
 			ntop = wincount / 2;
 			nbottom = wincount - ntop;
 			if (wnr < ntop) {
-				// cwb(window, (leftgap + wnr * (screen->Width - rightgap) / ntop), topgap, (screen->Width / ntop) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
-				cwb(window, leftgap + (wnr * (screen->Width / ntop)) - rightgap, topgap, (screen->Width - rightgap) / ntop, (screen->Height - (bottomgap + topgap)) / 2);
+				wx = wnr * (sw / ntop) + leftgap;
+				wy = topgap;
+				ww = sw / ntop;
+				wh = sh / 2;
 
 			} else {
-				cwb(window, (leftgap + (wnr - ntop) * (screen->Width / nbottom)) - rightgap, (screen->Height - (topgap - bottomgap)) / 2, (screen->Width - rightgap) / nbottom, (screen->Height - (bottomgap + topgap)) / 2);
-				//cwb(window, (leftgap + (wnr - ntop) * (screen->Width - rightgap) / nbottom), (screen->Height - (topgap - bottomgap)) / 2, (screen->Width / nbottom) - rightgap, (screen->Height - (bottomgap + topgap)) / 2);
+				wx = (wnr - ntop) * (sw / nbottom) + leftgap;
+				wy = (sh / 2) + topgap;
+				ww = sw / nbottom;
+				wh = sh / 2;
 			}
 		}
+		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
 
 void fibonacci(int s)
 {
-	int wnr, wincount, winx, winwidth, winheight, winy;
+	int wnr, wincount;
+	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
 	lockbasescreen(&ilock, &screen);
+
+	sh = screen->Height - (bottomgap + topgap);
+	sw = screen->Width - (rightgap + leftgap);
+
 	wincount = countwindows(nolock);
 
-	winx = 0;
-	winy = topgap;
-	winwidth = screen->Width;
-	winheight = screen->Height - topgap;
+	wy = topgap;
+	wx = leftgap;
+	ww = sw;
+	wh = sh;
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow) {
@@ -279,54 +297,45 @@ void fibonacci(int s)
 			continue;
 		}
 
-		if ((wnr % 2 != 0
-		     && winheight / 2 >
-		     ((screen->WBorRight - 1) - (screen->WBorLeft - 1)))
-		    || (wnr % 2 == 0
-			&& winwidth / 2 >
-			((screen->WBorRight - 1) - (screen->WBorLeft - 1)))) {
-			if (wnr < wincount - 1) {
-				if (wnr % 2 != 0) {
-					winheight /= 2;
-				} else {
-					winwidth /= 2;
-				}
-				if ((wnr % 4) == 2 && s == 0) {
-					winx += winwidth;
-				} else if ((wnr % 4) == 3 && s == 0) {
-					winy += winheight;
-				}
+		if (wnr < wincount - 1) {
+			if (wnr % 2 != 0) {
+				wh /= 2;
+			} else {
+				ww /= 2;
 			}
-			if ((wnr % 4) == 0) {
-				if (s != 0) {
-					winy += winheight;
-				} else {
-					winy -= winheight;
-				}
-			} else if ((wnr % 4) == 1) {
-				winx += winwidth;
-			} else if ((wnr % 4) == 2) {
-				winy += winheight;
-			} else if ((wnr % 4) == 3) {
-				if (s != 0) {
-					winx += winwidth;
-				} else {
-					winx -= winwidth;
-				}
+			if ((wnr % 4) == 2 && s == 0) {
+				wx += ww;
+			} else if ((wnr % 4) == 3 && s == 0) {
+				wy += wh;
 			}
-			if (wnr == 0) {
-				if (wincount != 1) {
-					winwidth =
-					    (screen->Width * fact) / 1000;
-				winy = topgap;
-				winheight -= bottomgap;
-				}
-			} else if (wnr == 1) {
-				winwidth = screen->Width - winwidth;
-			}
-			wnr++;
 		}
-		cwb(window, winx, winy, winwidth, winheight);
+		if ((wnr % 4) == 0) {
+			if (s != 0) {
+				wy += wh;
+			} else {
+				wy -= wh;
+			}
+		} else if ((wnr % 4) == 1) {
+			wx += ww;
+		} else if ((wnr % 4) == 2) {
+			wy += wh;
+		} else if ((wnr % 4) == 3) {
+			if (s != 0) {
+				wx += ww;
+			} else {
+				wx -= ww;
+			}
+		}
+		if (wnr == 0) {
+			if (wincount != 1) {
+				ww = (sw * fact) / 1000;
+				wy = topgap;
+			}
+		} else if (wnr == 1) {
+			ww = sw - ww;
+		}
+		wnr++;
+		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
 }
@@ -401,8 +410,8 @@ struct Window *copywindowlist(void) {
 			w = w->NextWindow;
 		} else {
 			unlockbasescreen(&ilock, &screen);
-			dst = NULL;
-			return dst;
+			//dst = NULL;
+			return NULL;
 		}
 	}
 	*next = NULL;
