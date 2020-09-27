@@ -66,9 +66,9 @@ extern struct Keyfuncdef defkeyfuncs[];
 enum dintwm_identifiers {
 	COMMODITIZE = -1,
 	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
-	GAP_ERR = -3, // Can not call two tile functions from cli
+	GAP_ERR = -3, // Gaps are too small or too big
 	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
-	TILE_FUNC_LIMIT = 3, // switcher funcetion - maximum limit of tiling layouts to switch through
+	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
 	FUNC_TILE = 0, // tile function identifier
 	FUNC_HGRID = 1, // hgrid function identifier
 	FUNC_SPIRAL = 2, // spiral function identifier
@@ -84,7 +84,9 @@ enum dintwm_identifiers {
 	TOPGAP_ID = 900, // topgap type identifier
 	DEFAULT_TOPGAP_ID = 901, // default topgap identifier
 	BOTTOMGAP_ID = 902, // bottomgap type identifier
-	EXCL_WTYPE_ID = 902, // exclude window type identifier
-	INCL_WTYPE_ID = 903, // exclude window type identifier
+	LEFTGAP_ID = 903, // leftgap type identifier
+	RIGHTGAP_ID = 904, // rightgap type identifier
+	EXCL_WTYPE_ID = 905, // exclude window type identifier
+	INCL_WTYPE_ID = 906, // include window type identifier
 	AUTO_ID = 1000 // AUTO TILE
 };

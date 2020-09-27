@@ -1,3 +1,4 @@
+//-V::677
 #include "dintwm.h"
 #include "ketopt.h"
 #include <dos/dostags.h>
@@ -16,7 +17,6 @@ static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
 static const int fact = 550;
 static unsigned char restoretag = 'r';
-short rc;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
 static int nolock = 0;
@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 	static int c;
 	static int dint_opt_state = COMMODITIZE;
 	static int dint_exit_state = EXIT_SUCCESS;
+	static short rc;
 
 
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:Cdghst", 0)) >= 0) {
@@ -247,7 +248,6 @@ void hgrid(void)
 			continue;
 		}
 		if (wincount <= 1) {
-			wx = wnr == 1 ? sw / wincount : 0;
 			wx = leftgap;
 			wy = topgap;
 			ww = sw / wincount;
@@ -386,35 +386,35 @@ void switchb(void)
 struct Window *copywindowlist(void) {
 	lockbasescreen(&ilock, &screen);
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
-	
+
 	while (w)
 	{
 		if ((skip = skipper(w)) == 1) {
 			w = w->NextWindow;
 			continue;
 		}
-        	// allocate new node
+
 		*next = malloc(sizeof(**next));
-		if (*next) {
-			(*next)->Title = w->Title;
-			(*next)->LeftEdge = w->LeftEdge;
-			(*next)->TopEdge = w->TopEdge;
-			(*next)->Width = w->Width;
-			(*next)->Height = w->Height;
-			(*next)->Flags = w->Flags;
-			(*next)->ExtData = &restoretag;
-			w->ExtData = &restoretag;
-
-			next = &(*next)->NextWindow;
-
-			w = w->NextWindow;
-		} else {
+		if (*next == NULL) {
 			unlockbasescreen(&ilock, &screen);
-			//dst = NULL;
-			return NULL;
+			exit(EXIT_FAILURE);
 		}
+
+		(*next)->Title = w->Title;
+		(*next)->LeftEdge = w->LeftEdge;
+		(*next)->TopEdge = w->TopEdge;
+		(*next)->Width = w->Width;
+		(*next)->Height = w->Height;
+		(*next)->Flags = w->Flags;
+		(*next)->ExtData = &restoretag;
+		w->ExtData = &restoretag;
+
+		next = &(*next)->NextWindow;
+
+		w = w->NextWindow;
 	}
 	*next = NULL;
+
 	unlockbasescreen(&ilock, &screen);
 	return dst;
 }

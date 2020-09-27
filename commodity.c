@@ -1,3 +1,4 @@
+//-V::677
 #include "dintwm.h"
 
 #define DEFAULT_TOPGAP 0
@@ -23,6 +24,8 @@ static char TYPE_SHELL[] = "POPKEY_SHELL";
 static char TYPE_TOPGAP[] = "TOPGAP";
 static char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
 static char TYPE_BOTTOMGAP[] = "BOTTOMGAP";
+static char TYPE_LEFTGAP[] = "LEFTGAP";
+static char TYPE_RIGHTGAP[] = "RIGHTGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
 static char TYPE_AUTO[] = "AUTO";
@@ -55,8 +58,10 @@ static struct Optdef defopts[] = {
 	{ TYPE_TAKESNAPSHOT, FUNC_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE },
 	{ TYPE_SHELL, FUNC_SHELL, KEY_SHELL, KEYTYPE },
 	{ TYPE_TOPGAP, TOPGAP_ID, NA, OPTTYPE },
-	{ TYPE_BOTTOMGAP, BOTTOMGAP_ID, NA, OPTTYPE },
 	{ TYPE_DEFAULT_TOPGAP, DEFAULT_TOPGAP_ID, NA, OPTTYPE },
+	{ TYPE_BOTTOMGAP, BOTTOMGAP_ID, NA, OPTTYPE },
+	{ TYPE_LEFTGAP, LEFTGAP_ID, NA, OPTTYPE },
+	{ TYPE_RIGHTGAP, RIGHTGAP_ID, NA, OPTTYPE },
 	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
 	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE },
 	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE }
@@ -82,8 +87,8 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	size_t arrsizes;
 	struct Popkeys* keys;
 
-	keys = malloc(sizeof(*defopts) * sizeof(*keys));
 	arrsizes = sizeof(defopts) / sizeof(*defopts);
+	keys = malloc(sizeof(*keys) * arrsizes);
 
 
 	for (i = 0; i < arrsizes ; ++i) {
@@ -103,6 +108,15 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 						break;
 					case DEFAULT_TOPGAP_ID: 	
 						topgap = calcgap();
+						break;
+					case BOTTOMGAP_ID: 	
+						bottomgap = atoi((const char *)tt_optvalue);
+						break;
+					case LEFTGAP_ID: 	
+						leftgap = atoi((const char *)tt_optvalue);
+						break;
+					case RIGHTGAP_ID: 	
+						rightgap = atoi((const char *)tt_optvalue);
 						break;
 					case EXCL_WTYPE_ID:
 						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
