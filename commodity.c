@@ -29,6 +29,8 @@ static char TYPE_RIGHTGAP[] = "RIGHTGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
 static char TYPE_AUTO[] = "AUTO";
+static char TYPE_CONLINE[] = "CONLINE";
+static char TYPE_SHELLCMD[] = "SHELLCMD";
 static char KEY_TILE[] = "rawkey control lcommand t";
 static char KEY_HGRID[] = "rawkey control lcommand g";
 static char KEY_SPIRAL[] = "rawkey control lcommand f";
@@ -64,7 +66,9 @@ static struct Optdef defopts[] = {
 	{ TYPE_RIGHTGAP, RIGHTGAP_ID, NA, OPTTYPE },
 	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
 	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE },
-	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE }
+	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE },
+	{ TYPE_CONLINE, CONLINE_ID, NA, OPTTYPE },
+	{ TYPE_SHELLCMD, SHELLCMD_ID, NA, OPTTYPE }
 };
 
 static struct NewBroker MyBroker =
@@ -86,6 +90,9 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	BOOL rc = FALSE;
 	size_t arrsizes;
 	struct Popkeys* keys;
+
+	conline[0] = 0;
+	shellcmd[0] = 0;
 
 	arrsizes = sizeof(defopts) / sizeof(*defopts);
 	keys = malloc(sizeof(*keys) * arrsizes);
@@ -119,10 +126,24 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 						rightgap = atoi((const char *)tt_optvalue);
 						break;
 					case EXCL_WTYPE_ID:
-						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
 						break;
 					case INCL_WTYPE_ID:
-						strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case CONLINE_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)conline,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case SHELLCMD_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)shellcmd,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
 						break;
 					case AUTO_ID:
 						autotile = TRUE;
@@ -165,7 +186,7 @@ short int commo(void)
 	int lock = 1;
 
 	if(!(iconbase = OpenLibrary(iconlib,37))) {
-		DeleteMsgPort(mp);
+	DeleteMsgPort(mp);
 		return 1;
 	}
 

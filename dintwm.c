@@ -476,12 +476,21 @@ int countwindows(int l) {
 }
 
 void doshell(void) {
+//void doshell(unsigned char *conline, unsigned char *shellcmd) {
 	static unsigned char autocon[] ="CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT";
 	static unsigned char cmd[] = "NewShell";
 	struct TagItem stags[5];
     	long int file;
 
-	if((file = Open(autocon, MODE_OLDFILE))) {
+	if(conline[0] == 0) {
+		strncpy((char *)conline,(char *)autocon,(strlen((const char *)autocon))+1);
+	}
+
+	if(shellcmd[0] == 0) {
+		strncpy((char *)shellcmd,(char *)cmd,(strlen((const char *)cmd))+1);
+	}
+
+	if((file = Open(conline, MODE_OLDFILE))) {
         	stags[0].ti_Tag = SYS_Input;
         	stags[0].ti_Data = (long unsigned int)file;
         	stags[1].ti_Tag = SYS_Output;
@@ -491,7 +500,7 @@ void doshell(void) {
         	stags[3].ti_Tag = SYS_UserShell;
         	stags[3].ti_Data = TRUE;
         	stags[4].ti_Tag = TAG_DONE;
-		(void)SystemTagList(cmd,stags);
+		(void)SystemTagList(shellcmd,stags);
 	} else {
 		return;
 	}

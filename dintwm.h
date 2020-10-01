@@ -37,6 +37,8 @@ int rightgap;
 long int *current_layout;
 char exclude_wtype[TT_MAX_LENGTH];
 char include_wtype[TT_MAX_LENGTH];
+unsigned char conline[TT_MAX_LENGTH];
+unsigned char shellcmd[TT_MAX_LENGTH];
 
 // Screen shared struct
 struct Screen *screen;
@@ -78,15 +80,17 @@ enum dintwm_identifiers {
 	FUNC_SWITCHB = 6, // switchb function identifier
 	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
 	FUNC_TAKESNAPSHOT = 8, // Take snapshot
-	FUNC_SHELL = 9, // printusage function identifier
+	FUNC_SHELL = 9, // Shell command identifier
 	FUNC_PRINTUSAGE = 10, // printusage function identifier
 	K_CGAP_ID = 301, // longopts ketopts id
 	TOPGAP_ID = 900, // topgap type identifier
 	DEFAULT_TOPGAP_ID = 901, // default topgap identifier
 	BOTTOMGAP_ID = 902, // bottomgap type identifier
-	LEFTGAP_ID = 903, // leftgap type identifier
+	LEFTGAP_ID = 903, // leftgap type iNewshell command dentifier
 	RIGHTGAP_ID = 904, // rightgap type identifier
 	EXCL_WTYPE_ID = 905, // exclude window type identifier
 	INCL_WTYPE_ID = 906, // include window type identifier
+	CONLINE_ID = 907, // include window type identifier
+	SHELLCMD_ID = 908, // include window type identifier
 	AUTO_ID = 1000 // AUTO TILE
 };
