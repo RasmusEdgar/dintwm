@@ -83,14 +83,20 @@ enum dintwm_identifiers {
 	FUNC_SHELL = 9, // Shell command identifier
 	FUNC_PRINTUSAGE = 10, // printusage function identifier
 	K_CGAP_ID = 301, // longopts ketopts id
-	TOPGAP_ID = 900, // topgap type identifier
-	DEFAULT_TOPGAP_ID = 901, // default topgap identifier
-	BOTTOMGAP_ID = 902, // bottomgap type identifier
-	LEFTGAP_ID = 903, // leftgap type iNewshell command dentifier
-	RIGHTGAP_ID = 904, // rightgap type identifier
-	EXCL_WTYPE_ID = 905, // exclude window type identifier
-	INCL_WTYPE_ID = 906, // include window type identifier
-	CONLINE_ID = 907, // include window type identifier
-	SHELLCMD_ID = 908, // include window type identifier
+	TOPGAP_ID = 700, // topgap type identifier
+	DEFAULT_TOPGAP_ID = 701, // default topgap identifier
+	BOTTOMGAP_ID = 702, // bottomgap type identifier
+	LEFTGAP_ID = 703, // leftgap type iNewshell command dentifier
+	RIGHTGAP_ID = 704, // rightgap type identifier
+	EXCL_WTYPE_ID = 705, // exclude window type identifier
+	INCL_WTYPE_ID = 706, // include window type identifier
+	CONLINE_0_ID = 800, // include window type identifier
+	SHELLCMD_0_ID = 900, // include window type identifier
+	CONLINE_1_ID = 801, // include window type identifier
+	SHELLCMD_1_ID = 901, // include window type identifier
 	AUTO_ID = 1000 // AUTO TILE
 };
+
+typedef union {
+	const void *v;
+} Arg;
