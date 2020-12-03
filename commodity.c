@@ -29,8 +29,14 @@ static char TYPE_RIGHTGAP[] = "RIGHTGAP";
 static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
 static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
 static char TYPE_AUTO[] = "AUTO";
-static char TYPE_CONLINE[] = "CONLINE";
-static char TYPE_SHELLCMD[] = "SHELLCMD";
+static char TYPE_CONLINE_0[] = "CONLINE_0";
+static char TYPE_SHELLCMD_0[] = "SHELLCMD_0";
+static char TYPE_CONLINE_1[] = "CONLINE_1";
+static char TYPE_SHELLCMD_1[] = "SHELLCMD_1";
+static char TYPE_CONLINE_2[] = "CONLINE_2";
+static char TYPE_SHELLCMD_2[] = "SHELLCMD_2";
+static char TYPE_CONLINE_3[] = "CONLINE_3";
+static char TYPE_SHELLCMD_3[] = "SHELLCMD_3";
 static char KEY_TILE[] = "rawkey control lcommand t";
 static char KEY_HGRID[] = "rawkey control lcommand g";
 static char KEY_SPIRAL[] = "rawkey control lcommand f";
@@ -67,8 +73,14 @@ static struct Optdef defopts[] = {
 	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
 	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE },
 	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE, CONLINE_ID, NA, OPTTYPE },
-	{ TYPE_SHELLCMD, SHELLCMD_ID, NA, OPTTYPE }
+	{ TYPE_CONLINE_0, CONLINE_0_ID, NA, OPTTYPE },
+	{ TYPE_SHELLCMD_0, SHELLCMD_0_ID, NA, OPTTYPE },
+	{ TYPE_CONLINE_1, CONLINE_1_ID, NA, OPTTYPE },
+	{ TYPE_SHELLCMD_1, SHELLCMD_1_ID, NA, OPTTYPE },
+	{ TYPE_CONLINE_2, CONLINE_2_ID, NA, OPTTYPE },
+	{ TYPE_SHELLCMD_2, SHELLCMD_2_ID, NA, OPTTYPE },
+	{ TYPE_CONLINE_3, CONLINE_3_ID, NA, OPTTYPE },
+	{ TYPE_SHELLCMD_3, SHELLCMD_3_ID, NA, OPTTYPE },
 };
 
 static struct NewBroker MyBroker =
@@ -135,12 +147,42 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 							strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
 						}
 						break;
-					case CONLINE_ID:
+					case CONLINE_0_ID:
 						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
 							strncpy((char *)conline,tt_optvalue,(strlen(tt_optvalue))+1);
 						}
 						break;
-					case SHELLCMD_ID:
+					case SHELLCMD_0_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)shellcmd,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case CONLINE_1_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)conline,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case SHELLCMD_1_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)shellcmd,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case CONLINE_2_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)conline,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case SHELLCMD_2_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)shellcmd,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case CONLINE_3_ID:
+						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+							strncpy((char *)conline,tt_optvalue,(strlen(tt_optvalue))+1);
+						}
+						break;
+					case SHELLCMD_3_ID:
 						if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
 							strncpy((char *)shellcmd,tt_optvalue,(strlen(tt_optvalue))+1);
 						}
@@ -267,6 +309,9 @@ short int commo(void)
 							if (id == defopts[id].cxint) {
 								if(id <= (TILE_FUNC_LIMIT)) {
 									*current_layout = id;
+								}
+								if(id == 9) {
+									defkeyfuncs[id].func();
 								}
 								defkeyfuncs[id].func();
 							}

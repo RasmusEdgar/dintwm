@@ -94,6 +94,10 @@ enum dintwm_identifiers {
 	SHELLCMD_0_ID = 900, // include window type identifier
 	CONLINE_1_ID = 801, // include window type identifier
 	SHELLCMD_1_ID = 901, // include window type identifier
+	CONLINE_2_ID = 802, // include window type identifier
+	SHELLCMD_2_ID = 902, // include window type identifier
+	CONLINE_3_ID = 803, // include window type identifier
+	SHELLCMD_3_ID = 903, // include window type identifier
 	AUTO_ID = 1000 // AUTO TILE
 };
 
