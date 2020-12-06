@@ -4,7 +4,6 @@
 #include <dos/dostags.h>
 
 static void fibonacci(int);
-static void switcher(int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
@@ -178,8 +177,10 @@ void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
 	WindowToFront(w);
 }
 
-void tile(void)
+void tile(const Arg *arg)
 {
+	(void)arg;
+
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
@@ -224,8 +225,10 @@ void tile(void)
 	unlockbasescreen(&ilock, &screen);
 }
 
-void hgrid(void)
+void hgrid(const Arg *arg)
 {
+	(void)arg;
+
 	int wincount, wnr, ntop = 0, nbottom = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
@@ -340,23 +343,25 @@ void fibonacci(int s)
 	unlockbasescreen(&ilock, &screen);
 }
 
-void dwindle(void)
+void dwindle(const Arg *arg)
 {
+	(void)arg;
 	fibonacci(1);
 }
 
-void spiral(void)
+void spiral(const Arg *arg)
 {
+	(void)arg;
 	fibonacci(0);
 }
 
-void switcher(int d)
+void switcher(const Arg *arg)
 {
 	if(*current_layout < TILE_FUNC_LIMIT && *layout_number == LAYOUT_START) {
 		*layout_number = *current_layout;
 	}
 		
-	if(d) {
+	if(arg->i) {
 		(*layout_number)++;
 		if(*layout_number > TILE_FUNC_LIMIT) {
 			*layout_number = 0;
@@ -373,12 +378,12 @@ void switcher(int d)
 
 }
 
-void switchf(void)
+void switchf(const Arg *arg)
 {
 	switcher(1);
 }
 
-void switchb(void)
+void switchb(const Arg *arg)
 {
 	switcher(0);
 }
@@ -419,20 +424,22 @@ struct Window *copywindowlist(void) {
 	return dst;
 }
 
-void takesnapshot(void) {
-	cleansnapshot();
+void takesnapshot(const Arg *arg) {
+	(void)arg;
+	cleansnapshot(0);
 	windowliststore = copywindowlist();	
 }
 
-void cleansnapshot(void) {
+void cleansnapshot(const Arg *arg) {
+	(void)arg;
 	if(windowliststore != NULL) {
 		free(windowliststore);
 		windowliststore = NULL;
 	}
 }
 
-void restore(void)
-{
+void restore(const Arg *arg) {
+	(void)arg;
 	if(windowliststore != NULL) {
 		lockbasescreen(&ilock, &screen);
 		struct Window *storehead = windowliststore;
@@ -475,7 +482,8 @@ int countwindows(int l) {
 	return wincount;
 }
 
-void doshell(void) {
+void doshell(const Arg *arg) {
+	(void)arg;
 //void doshell(unsigned char *conline, unsigned char *shellcmd) {
 	static unsigned char autocon[] ="CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT";
 	static unsigned char cmd[] = "NewShell";

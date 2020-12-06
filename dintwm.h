@@ -15,20 +15,25 @@
 //#define CALCGAP			(screen->BarHeight + screen->WBorBottom - 3)
 
 #define TT_MAX_LENGTH 128
+typedef union {
+	int i;
+	const void *v;
+} Arg;
 
 // dintwm main functions shared
-void tile(void);
-void hgrid(void);
-void spiral(void);
-void dwindle(void);
-void restore(void);
-void switchf(void);
-void switchb(void);
-void takesnapshot(void);
-void cleansnapshot(void);
+void tile(const Arg *arg);
+void hgrid(const Arg *arg);
+void spiral(const Arg *arg);
+void dwindle(const Arg *arg);
+void restore(const Arg *arg);
+void switcher(const Arg *arg);
+void switchf(const Arg *arg);
+void switchb(const Arg *arg);
+void takesnapshot(const Arg *arg);
+void cleansnapshot(const Arg *arg);
 void printusage(void);
 int countwindows(int l);
-void doshell(void);
+void doshell(const Arg *arg);
 int calcgap(void);
 int topgap;
 int bottomgap;
@@ -101,6 +106,12 @@ enum dintwm_identifiers {
 	AUTO_ID = 1000 // AUTO TILE
 };
 
-typedef union {
-	const void *v;
-} Arg;
+
+typedef struct {
+	char *optname;
+        long cxint;
+	char *defaultval;
+	int tt_type;
+        void (*func)(const Arg *);
+        const Arg arg;
+} Optdefnew;
