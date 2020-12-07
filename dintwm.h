@@ -12,9 +12,48 @@
 #include <stdio.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
-//#define CALCGAP			(screen->BarHeight + screen->WBorBottom - 3)
 
-#define TT_MAX_LENGTH 128
+enum dintwm_identifiers {
+	DEFAULT_TOPGAP = 0,
+	KEYTYPE = 1,
+	OPTTYPE = 2,
+	STORE = 1,
+	RESTORE = 2,
+	FREE = 3,
+	COMMODITIZE = -1,
+	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
+	GAP_ERR = -3, // Gaps are too small or too big
+	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
+	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
+	FUNC_TILE = 0, // tile function identifier
+	FUNC_HGRID = 1, // hgrid function identifier
+	FUNC_SPIRAL = 2, // spiral function identifier
+	FUNC_DWINDLE = 3, // dwindle function identifier
+	FUNC_RESTORE = 4, // restore function identifier
+	FUNC_SWITCHF = 5, // switchf function identifier
+	FUNC_SWITCHB = 6, // switchb function identifier
+	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
+	FUNC_TAKESNAPSHOT = 8, // Take snapshot
+	FUNC_CMD = 9, // Shell command identifier
+	FUNC_PRINTUSAGE = 10, // printusage function identifier
+	TT_MAX_LENGTH = 128, // Tooltype Max Length
+	K_CGAP_ID = 301, // longopts ketopts id
+	TOPGAP_ID = 700, // topgap type identifier
+	DEFAULT_TOPGAP_ID = 701, // default topgap identifier
+	BOTTOMGAP_ID = 702, // bottomgap type identifier
+	LEFTGAP_ID = 703, // leftgap type iNewshell command dentifier
+	RIGHTGAP_ID = 704, // rightgap type identifier
+	EXCL_WTYPE_ID = 705, // exclude window type identifier
+	INCL_WTYPE_ID = 706, // include window type identifier
+	CONLINE_0_ID = 800, // include window type identifier
+	CMD_0_ID = 900, // include window type identifier
+	CONLINE_1_ID = 801, // include window type identifier
+	CMD_1_ID = 901, // include window type identifier
+	CONLINE_2_ID = 802, // include window type identifier
+	CMD_2_ID = 902, // include window type identifier
+	AUTO_ID = 1000 // AUTO TILE
+};
+
 typedef union {
 	int i;
 	const void *v;
@@ -23,17 +62,16 @@ typedef union {
 // dintwm main functions shared
 void tile(const Arg *arg);
 void hgrid(const Arg *arg);
+void fibonacci(const Arg *arg);
 void spiral(const Arg *arg);
 void dwindle(const Arg *arg);
 void restore(const Arg *arg);
 void switcher(const Arg *arg);
-void switchf(const Arg *arg);
-void switchb(const Arg *arg);
 void takesnapshot(const Arg *arg);
 void cleansnapshot(const Arg *arg);
 void printusage(void);
 int countwindows(int l);
-void doshell(const Arg *arg);
+void docmd(const Arg *arg);
 int calcgap(void);
 int topgap;
 int bottomgap;
@@ -51,67 +89,26 @@ struct Screen *screen;
 // commodity headers
 short int commo(void);
 
-struct Optdef {
-	char *optname;
-        long cxint;
-	char *defaultval;
-	int tt_type;
-};
-
 struct Popkeys {
         char *rawcombo;
 };
-
-struct Keyfuncdef {
-        void (*func)(void);
-};
-	
-struct Opts* opts;
-
-// tile function headers;
-extern struct Keyfuncdef defkeyfuncs[]; 
-enum dintwm_identifiers {
-	COMMODITIZE = -1,
-	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
-	GAP_ERR = -3, // Gaps are too small or too big
-	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
-	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
-	FUNC_TILE = 0, // tile function identifier
-	FUNC_HGRID = 1, // hgrid function identifier
-	FUNC_SPIRAL = 2, // spiral function identifier
-	FUNC_DWINDLE = 3, // dwindle function identifier
-	FUNC_RESTORE = 4, // restore function identifier
-	FUNC_SWITCHF = 5, // switchf function identifier
-	FUNC_SWITCHB = 6, // switchb function identifier
-	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
-	FUNC_TAKESNAPSHOT = 8, // Take snapshot
-	FUNC_SHELL = 9, // Shell command identifier
-	FUNC_PRINTUSAGE = 10, // printusage function identifier
-	K_CGAP_ID = 301, // longopts ketopts id
-	TOPGAP_ID = 700, // topgap type identifier
-	DEFAULT_TOPGAP_ID = 701, // default topgap identifier
-	BOTTOMGAP_ID = 702, // bottomgap type identifier
-	LEFTGAP_ID = 703, // leftgap type iNewshell command dentifier
-	RIGHTGAP_ID = 704, // rightgap type identifier
-	EXCL_WTYPE_ID = 705, // exclude window type identifier
-	INCL_WTYPE_ID = 706, // include window type identifier
-	CONLINE_0_ID = 800, // include window type identifier
-	SHELLCMD_0_ID = 900, // include window type identifier
-	CONLINE_1_ID = 801, // include window type identifier
-	SHELLCMD_1_ID = 901, // include window type identifier
-	CONLINE_2_ID = 802, // include window type identifier
-	SHELLCMD_2_ID = 902, // include window type identifier
-	CONLINE_3_ID = 803, // include window type identifier
-	SHELLCMD_3_ID = 903, // include window type identifier
-	AUTO_ID = 1000 // AUTO TILE
-};
-
 
 typedef struct {
 	char *optname;
         long cxint;
 	char *defaultval;
 	int tt_type;
-        void (*func)(const Arg *);
-        const Arg arg;
-} Optdefnew;
+} Opts;
+
+
+typedef struct {
+	char *optname;
+	long cxint;
+	char *defaultval;
+	int tt_type;
+	void (*func)(const Arg *);
+	const Arg arg;
+} Keys;
+
+extern Keys defkeys[];
+extern Opts defopts[];

@@ -3,7 +3,6 @@
 #include "ketopt.h"
 #include <dos/dostags.h>
 
-static void fibonacci(int);
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
@@ -113,7 +112,7 @@ int main(int argc, char **argv)
 			}
 			break;
 		default:
-			defkeyfuncs[dint_opt_state].func();
+			defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
 			break;
 	}
 
@@ -276,7 +275,7 @@ void hgrid(const Arg *arg)
 	unlockbasescreen(&ilock, &screen);
 }
 
-void fibonacci(int s)
+void fibonacci(const Arg *arg)
 {
 	int wnr, wincount;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
@@ -306,14 +305,14 @@ void fibonacci(int s)
 			} else {
 				ww /= 2;
 			}
-			if ((wnr % 4) == 2 && s == 0) {
+			if ((wnr % 4) == 2 && arg->i == 0) {
 				wx += ww;
-			} else if ((wnr % 4) == 3 && s == 0) {
+			} else if ((wnr % 4) == 3 && arg->i == 0) {
 				wy += wh;
 			}
 		}
 		if ((wnr % 4) == 0) {
-			if (s != 0) {
+			if (arg->i != 0) {
 				wy += wh;
 			} else {
 				wy -= wh;
@@ -323,7 +322,7 @@ void fibonacci(int s)
 		} else if ((wnr % 4) == 2) {
 			wy += wh;
 		} else if ((wnr % 4) == 3) {
-			if (s != 0) {
+			if (arg->i != 0) {
 				wx += ww;
 			} else {
 				wx -= ww;
@@ -343,18 +342,6 @@ void fibonacci(int s)
 	unlockbasescreen(&ilock, &screen);
 }
 
-void dwindle(const Arg *arg)
-{
-	(void)arg;
-	fibonacci(1);
-}
-
-void spiral(const Arg *arg)
-{
-	(void)arg;
-	fibonacci(0);
-}
-
 void switcher(const Arg *arg)
 {
 	if(*current_layout < TILE_FUNC_LIMIT && *layout_number == LAYOUT_START) {
@@ -366,26 +353,16 @@ void switcher(const Arg *arg)
 		if(*layout_number > TILE_FUNC_LIMIT) {
 			*layout_number = 0;
 		} 
-		defkeyfuncs[(*layout_number)].func();
+		defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
 	} else {
 		(*layout_number)--;
 		if(*layout_number < 0) {
 			*layout_number = TILE_FUNC_LIMIT;
 		} 
-		defkeyfuncs[(*layout_number)].func();
+		defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
 	}
 	*current_layout = *layout_number;
 
-}
-
-void switchf(const Arg *arg)
-{
-	switcher(1);
-}
-
-void switchb(const Arg *arg)
-{
-	switcher(0);
 }
 
 struct Window *copywindowlist(void) {
@@ -482,9 +459,8 @@ int countwindows(int l) {
 	return wincount;
 }
 
-void doshell(const Arg *arg) {
+void docmd(const Arg *arg) {
 	(void)arg;
-//void doshell(unsigned char *conline, unsigned char *shellcmd) {
 	static unsigned char autocon[] ="CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT";
 	static unsigned char cmd[] = "NewShell";
 	struct TagItem stags[5];
