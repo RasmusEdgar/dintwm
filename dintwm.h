@@ -23,19 +23,15 @@ enum dintwm_identifiers {
 	COMMODITIZE = -1,
 	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
 	GAP_ERR = -3, // Gaps are too small or too big
+	UNKNOWN = -4, // Unknown option
+	MISSING = -5, // Missing argument
 	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
 	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
 	FUNC_TILE = 0, // tile function identifier
 	FUNC_HGRID = 1, // hgrid function identifier
 	FUNC_SPIRAL = 2, // spiral function identifier
 	FUNC_DWINDLE = 3, // dwindle function identifier
-	FUNC_RESTORE = 4, // restore function identifier
-	FUNC_SWITCHF = 5, // switchf function identifier
-	FUNC_SWITCHB = 6, // switchb function identifier
-	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
-	FUNC_TAKESNAPSHOT = 8, // Take snapshot
-	FUNC_CMD = 9, // Shell command identifier
-	FUNC_PRINTUSAGE = 10, // printusage function identifier
+	FUNC_PRINTUSAGE = 42, // printusage function identifier
 	TT_MAX_LENGTH = 128, // Tooltype Max Length
 	K_CGAP_ID = 301, // longopts ketopts id
 	TOPGAP_ID = 700, // topgap type identifier
@@ -103,7 +99,7 @@ typedef struct {
 
 typedef struct {
 	char *optname;
-	long cxint;
+	//long cxint;
 	char *defaultval;
 	int tt_type;
 	void (*func)(const Arg *);

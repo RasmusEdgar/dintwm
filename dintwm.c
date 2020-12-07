@@ -82,16 +82,15 @@ int main(int argc, char **argv)
 			case 't':
 				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_TILE : DOUBLE_OPTION_ERR;
 				break;
-			case '?':
-				printf("unknown opt: -%c\n", opt.opt? opt.opt : ':');
-				break;
 			case ':':
-				printf("missing arg: -%c\n", opt.opt? opt.opt : ':');
+				dint_opt_state = MISSING;
+				break;
+			case '?':
+				dint_opt_state = UNKNOWN;
 				break;
 			default:
 				break;
 		}
-			
 	}
 
 	switch (dint_opt_state) {
@@ -103,6 +102,14 @@ int main(int argc, char **argv)
 			printf("Gap is larger or smaller than screen.\n");
 			dint_exit_state = EXIT_FAILURE;
 			break;
+		case UNKNOWN:
+			printf("unknown opt: -%c\n", opt.opt? opt.opt : ':');
+			dint_exit_state = EXIT_FAILURE;
+			break;
+		case MISSING:
+			printf("missing arg: -%c\n", opt.opt? opt.opt : ':');
+			dint_exit_state = EXIT_FAILURE;
+			break;
 		case COMMODITIZE:
 			if ((rc = commo()) != 0) {
 				dint_exit_state = EXIT_FAILURE;
@@ -110,6 +117,9 @@ int main(int argc, char **argv)
 			if (windowliststore != NULL) {
 				free(windowliststore);
 			}
+			break;
+		case FUNC_PRINTUSAGE:
+			printusage();
 			break;
 		default:
 			defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);

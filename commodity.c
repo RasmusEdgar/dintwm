@@ -11,18 +11,18 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 static struct Library *iconbase;
 
 Keys defkeys[] = {
-	{ TYPE_TILE, FUNC_TILE, KEY_TILE, KEYTYPE, tile, {0} },
-	{ TYPE_HGRID, FUNC_HGRID, KEY_HGRID, KEYTYPE, hgrid, {0} },
-	{ TYPE_SPIRAL, FUNC_SPIRAL, KEY_SPIRAL, KEYTYPE, fibonacci, {.i = 0} },
-	{ TYPE_DWINDLE, FUNC_DWINDLE, KEY_DWINDLE, KEYTYPE, fibonacci, {.i = 1} },
-	{ TYPE_RESTORE, FUNC_RESTORE, KEY_RESTORE, KEYTYPE, restore, {0} },
-	{ TYPE_SWITCHF, FUNC_SWITCHF, KEY_SWITCHF, KEYTYPE, switcher, {.i = 1} },
-	{ TYPE_SWITCHB, FUNC_SWITCHB, KEY_SWITCHB, KEYTYPE, switcher, {.i = 0} },
-	{ TYPE_CLEANSNAPSHOT, FUNC_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE, cleansnapshot, {0} },
-	{ TYPE_TAKESNAPSHOT, FUNC_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE, takesnapshot, {0} },
-	{ TYPE_CMD_0, FUNC_CMD, KEY_CMD, KEYTYPE, docmd, { .i = 1 } },
-	{ TYPE_CMD_1, FUNC_CMD, KEY_CMD, KEYTYPE, docmd, { .i = 2 } },
-	{ TYPE_CMD_2, FUNC_CMD, KEY_CMD, KEYTYPE, docmd, { .i = 3 } },
+	{ TYPE_TILE, KEY_TILE, KEYTYPE, tile, {0} },
+	{ TYPE_HGRID, KEY_HGRID, KEYTYPE, hgrid, {0} },
+	{ TYPE_SPIRAL, KEY_SPIRAL, KEYTYPE, fibonacci, {.i = 0} },
+	{ TYPE_DWINDLE, KEY_DWINDLE, KEYTYPE, fibonacci, {.i = 1} },
+	{ TYPE_RESTORE, KEY_RESTORE, KEYTYPE, restore, {0} },
+	{ TYPE_SWITCHF, KEY_SWITCHF, KEYTYPE, switcher, {.i = 1} },
+	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE, switcher, {.i = 0} },
+	{ TYPE_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE, cleansnapshot, {0} },
+	{ TYPE_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE, takesnapshot, {0} },
+	{ TYPE_CMD_0, KEY_CMD, KEYTYPE, docmd, { .i = 1 } },
+	{ TYPE_CMD_1, KEY_CMD, KEYTYPE, docmd, { .i = 2 } },
+	{ TYPE_CMD_2, KEY_CMD, KEYTYPE, docmd, { .i = 3 } },
 };
 
 Opts defopts[] = {
@@ -153,7 +153,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 
 		if(keys[i].rawcombo != NULL) {
 			CxObj *filter;
-			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, defkeys[i].cxint)))
+			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
 			{
 				AttachCxObj(broker, filter);
  
@@ -261,12 +261,10 @@ short int commo(void)
 						}
 						else if (type == CXM_IEVENT)
 						{
-							//if (id == defkeys[id].cxint) {
-								if(id <= (TILE_FUNC_LIMIT)) {
-									*current_layout = id;
-								}
-								defkeys[id].func(&defkeys[id].arg);
-							//}
+							if(id <= (TILE_FUNC_LIMIT)) {
+								*current_layout = id;
+							}
+							defkeys[id].func(&defkeys[id].arg);
 						}
 					}
 				}
