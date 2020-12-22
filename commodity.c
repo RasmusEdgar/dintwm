@@ -20,9 +20,9 @@ Keys defkeys[] = {
 	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE, switcher, {.i = 0} },
 	{ TYPE_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE, cleansnapshot, {0} },
 	{ TYPE_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE, takesnapshot, {0} },
-	{ TYPE_CMD_0, KEY_CMD, KEYTYPE, docmd, { .i = 1 } },
-	{ TYPE_CMD_1, KEY_CMD, KEYTYPE, docmd, { .i = 2 } },
-	{ TYPE_CMD_2, KEY_CMD, KEYTYPE, docmd, { .i = 3 } },
+	{ TYPE_CMD_0, KEY_CMD, KEYTYPE, docmd, { .i = CMD_0_ID } },
+	{ TYPE_CMD_1, KEY_CMD, KEYTYPE, docmd, { .i = CMD_1_ID } },
+	{ TYPE_CMD_2, KEY_CMD, KEYTYPE, docmd, { .i = CMD_2_ID } },
 };
 
 Opts defopts[] = {
@@ -143,12 +143,10 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	keys = malloc(sizeof(*keys) * keyarrsize);
 
 	for (i = 0; i < keyarrsize ; ++i) {
-       		char *tt_keyvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
+		keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
 
-		if(tt_keyvalue == NULL) {
+		if(keys[i].rawcombo == NULL) {
 			keys[i].rawcombo = defkeys[i].defaultval;
-		} else {
-			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
 		}
 
 		if(keys[i].rawcombo != NULL) {

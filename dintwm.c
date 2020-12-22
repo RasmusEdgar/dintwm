@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 	static int c;
 	static int dint_opt_state = COMMODITIZE;
 	static int dint_exit_state = EXIT_SUCCESS;
+	static int dint_fail_state = EXIT_SUCCESS;
 	static short rc;
 
 
@@ -33,34 +34,50 @@ int main(int argc, char **argv)
 				topgap = calcgap();
 				break;
 			case 'U':
+				if(*opt.arg == '-') {
+					dint_fail_state = MISSING;
+					break;
+				}
 				topgap = atoi(opt.arg);
 				lockbasescreen(&ilock, &screen);
 				if (topgap > screen->Height || topgap < 0) {
-					dint_opt_state = GAP_ERR;
+					dint_fail_state = GAP_ERR;
 				}
 				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'B':
+				if(*opt.arg == '-') {
+					dint_fail_state = MISSING;
+					break;
+				}
 				bottomgap = atoi(opt.arg);
 				lockbasescreen(&ilock, &screen);
 				if (bottomgap > screen->Height || bottomgap < 0) {
-					dint_opt_state = GAP_ERR;
+					dint_fail_state = GAP_ERR;
 				}
 				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'L':
+				if(*opt.arg == '-') {
+					dint_fail_state = MISSING;
+					break;
+				}
 				leftgap = atoi(opt.arg);
 				lockbasescreen(&ilock, &screen);
 				if (leftgap > screen->Width || leftgap < 0) {
-					dint_opt_state = GAP_ERR;
+					dint_fail_state = GAP_ERR;
 				}
 				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'R':
+				if(*opt.arg == '-') {
+					dint_fail_state = MISSING;
+					break;
+				}
 				rightgap = atoi(opt.arg);
 				lockbasescreen(&ilock, &screen);
 				if (rightgap > screen->Width || rightgap < 0) {
-					dint_opt_state = GAP_ERR;
+					dint_fail_state = GAP_ERR;
 				}
 				unlockbasescreen(&ilock, &screen);
 				break;
@@ -83,36 +100,47 @@ int main(int argc, char **argv)
 				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_TILE : DOUBLE_OPTION_ERR;
 				break;
 			case ':':
-				dint_opt_state = MISSING;
+				dint_fail_state = MISSING;
 				break;
 			case '?':
-				dint_opt_state = UNKNOWN;
+				dint_fail_state = UNKNOWN;
 				break;
 			default:
 				break;
 		}
 	}
 
-	switch (dint_opt_state) {
+	switch (dint_fail_state) {
 		case DOUBLE_OPTION_ERR:
 			printf("Do not use two tile functions at the same time.\n");
 			dint_exit_state = EXIT_FAILURE;
+			goto exit_state;
 			break;
 		case GAP_ERR:
 			printf("Gap is larger or smaller than screen.\n");
 			dint_exit_state = EXIT_FAILURE;
+			goto exit_state;
 			break;
 		case UNKNOWN:
 			printf("unknown opt: -%c\n", opt.opt? opt.opt : ':');
 			dint_exit_state = EXIT_FAILURE;
+			goto exit_state;
 			break;
 		case MISSING:
 			printf("missing arg: -%c\n", opt.opt? opt.opt : ':');
 			dint_exit_state = EXIT_FAILURE;
+			goto exit_state;
 			break;
+		default:
+			break;
+	}
+
+	
+	switch (dint_opt_state) {
 		case COMMODITIZE:
 			if ((rc = commo()) != 0) {
 				dint_exit_state = EXIT_FAILURE;
+				goto exit_state;
 			}
 			if (windowliststore != NULL) {
 				free(windowliststore);
@@ -126,7 +154,8 @@ int main(int argc, char **argv)
 			break;
 	}
 
-	exit(dint_exit_state);
+	exit_state:
+		exit(dint_exit_state);
 
 }
 
