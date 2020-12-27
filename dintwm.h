@@ -10,6 +10,7 @@
 #include <exec/types.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
+#include <devices/timer.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 
@@ -41,12 +42,27 @@ enum dintwm_identifiers {
 	RIGHTGAP_ID = 704, // rightgap type identifier
 	EXCL_WTYPE_ID = 705, // exclude window type identifier
 	INCL_WTYPE_ID = 706, // include window type identifier
-	CONLINE_0_ID = 800, // include window type identifier
-	CMD_0_ID = 900, // include window type identifier
-	CONLINE_1_ID = 801, // include window type identifier
-	CMD_1_ID = 901, // include window type identifier
-	CONLINE_2_ID = 802, // include window type identifier
-	CMD_2_ID = 902, // include window type identifier
+	CMD_MAX = 9, // Number of custom cmds
+	CONLINE_0_ID = 800, // conline identifier
+	CONLINE_1_ID = 801, // conline identifier
+	CONLINE_2_ID = 802, // conline identifier
+	CONLINE_3_ID = 803, // conline identifier
+	CONLINE_4_ID = 804, // conline identifier
+	CONLINE_5_ID = 805, // conline identifier
+	CONLINE_6_ID = 806, // conline identifier
+	CONLINE_7_ID = 807, // conline identifier
+	CONLINE_8_ID = 808, // conline identifier
+	CONLINE_9_ID = 809, // conline identifier
+	CMD_0_ID = 900, // cmd spawn identifier
+	CMD_1_ID = 901, // cmd spawn identifier
+	CMD_2_ID = 902, // cmd spawn identifier
+	CMD_3_ID = 903, // cmd spawn identifier
+	CMD_4_ID = 904, // cmd spawn identifier
+	CMD_5_ID = 905, // cmd spawn identifier
+	CMD_6_ID = 906, // cmd spawn identifier
+	CMD_7_ID = 907, // cmd spawn identifier
+	CMD_8_ID = 908, // cmd spawn identifier
+	CMD_9_ID = 909, // cmd spawn identifier
 	AUTO_ID = 1000 // AUTO TILE
 };
 
@@ -76,8 +92,12 @@ int rightgap;
 long int *current_layout;
 char exclude_wtype[TT_MAX_LENGTH];
 char include_wtype[TT_MAX_LENGTH];
-unsigned char conline[TT_MAX_LENGTH];
-unsigned char shellcmd[TT_MAX_LENGTH];
+
+// timer stuff
+void delete_timer (struct timerequest *);
+struct timerequest *create_timer( ULONG );
+void wait_for_timer(struct timerequest *, struct timeval *);
+LONG time_delay    ( struct timeval *, ULONG );
 
 // Screen shared struct
 struct Screen *screen;
@@ -99,12 +119,17 @@ typedef struct {
 
 typedef struct {
 	char *optname;
-	//long cxint;
 	char *defaultval;
 	int tt_type;
 	void (*func)(const Arg *);
 	const Arg arg;
 } Keys;
 
+typedef struct {
+	unsigned char *cmd_strings[CMD_MAX];
+	unsigned char *con_strings[CMD_MAX];
+} Cmdstore;
+
+extern Cmdstore cmds[];
 extern Keys defkeys[];
 extern Opts defopts[];

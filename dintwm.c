@@ -499,18 +499,27 @@ int countwindows(int l) {
 }
 
 void docmd(const Arg *arg) {
-	(void)arg;
-	static unsigned char autocon[] ="CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT";
-	static unsigned char cmd[] = "NewShell";
+	int cmdid = arg->i - CMD_0_ID;
+	static unsigned char defcon[] ="CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT";
+	static unsigned char defcmd[] = "NewShell";
 	struct TagItem stags[5];
     	long int file;
+	unsigned char conline[TT_MAX_LENGTH];
+	unsigned char cmd[TT_MAX_LENGTH];
 
-	if(conline[0] == 0) {
-		strncpy((char *)conline,(char *)autocon,(strlen((const char *)autocon))+1);
+	size_t conlen = strlen((const char *)cmds->con_strings[cmdid]);
+	size_t cmdlen = strlen((const char *)cmds->cmd_strings[cmdid]);
+
+	if (conlen != 0) {
+		strncpy((char *)conline,(const char *)cmds->con_strings[cmdid],conlen+1);
+	} else {
+		strncpy((char *)conline,(char *)defcon,(strlen((const char *)defcon))+1);
 	}
 
-	if(shellcmd[0] == 0) {
-		strncpy((char *)shellcmd,(char *)cmd,(strlen((const char *)cmd))+1);
+	if (cmdlen != 0) {
+		strncpy((char *)cmd,(const char *)cmds->cmd_strings[cmdid],cmdlen+1);
+	} else {
+		strncpy((char *)cmd,(char *)defcmd,(strlen((const char *)defcmd))+1);
 	}
 
 	if((file = Open(conline, MODE_OLDFILE))) {
@@ -523,7 +532,7 @@ void docmd(const Arg *arg) {
         	stags[3].ti_Tag = SYS_UserShell;
         	stags[3].ti_Data = TRUE;
         	stags[4].ti_Tag = TAG_DONE;
-		(void)SystemTagList(shellcmd,stags);
+		(void)SystemTagList(cmd,stags);
 	} else {
 		return;
 	}
