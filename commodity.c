@@ -351,12 +351,9 @@ short int commo(void)
 				{
 					if(autotile) {
 						wincount = countwindows(lock);
-						/*WaitTOF();	
-						WaitTOF();	
-						WaitTOF();*/
 						currentval.tv_secs = 0;
 						currentval.tv_micro = 20000;
-						time_delay( &currentval, UNIT_MICROHZ );
+						(void)time_delay( &currentval, UNIT_MICROHZ );
 						if(wincount != (countwindows(lock)) || first_run == TRUE) {
 							defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 							if(first_run == TRUE) {
@@ -401,7 +398,6 @@ short int commo(void)
 							if(id <= (TILE_FUNC_LIMIT)) {
 								*current_layout = id;
 							}
-							printf("id %lu\n", id);
 							defkeys[id].func(&defkeys[id].arg);
 						}
 					}
