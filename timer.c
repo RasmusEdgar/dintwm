@@ -59,7 +59,7 @@ void wait_for_timer(struct timerequest *tr, struct timeval *tv) {
 	tr->tr_time = *tv;
 
 /* post request to the timer -- will go to sleep till done */
-	DoIO((struct IORequest *)tr);
+	(void)DoIO((struct IORequest *)tr);
 }
 
 void delete_timer(struct timerequest *tr) {

@@ -190,15 +190,21 @@ int skipper(struct Window *w)
 		goto exit_skip;
 	}
 
-	if (strcmp(exclude_wtype, (const char *)w->Title) == 0) {
-		goto exit_skip;
+	if (exclude_wtype != 0) {
+		if(bsearch(&w->Title, wtypes->excl_strings, WTYPE_MAX, sizeof(char *), cstring_cmp)) {
+			goto exit_skip;
+		}
 	}
 
-	if (strlen(include_wtype) == 0) {
-		goto exit_noskip;
+	if (include_wtype != 0) {
+		if(bsearch(&w->Title, wtypes->incl_strings, WTYPE_MAX, sizeof(char *), cstring_cmp)) {
+			goto exit_noskip;
+		} else {
+			goto exit_skip;
+		}
 	}
 
-	if (strcmp(include_wtype, (const char *)w->Title) == 0) {
+	if (include_wtype == 0) {
 		goto exit_noskip;
 	}
 
@@ -499,7 +505,7 @@ int countwindows(int l) {
 }
 
 void docmd(const Arg *arg) {
-	int cmdid = arg->i - CMD_0_ID;
+	int cmdid = arg->i - CMD_ID_0;
 	static unsigned char defcon[] ="CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT";
 	static unsigned char defcmd[] = "NewShell";
 	struct TagItem stags[5];

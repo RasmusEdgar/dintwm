@@ -20,16 +20,16 @@ Keys defkeys[] = {
 	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE, switcher, {.i = 0} },
 	{ TYPE_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE, cleansnapshot, {0} },
 	{ TYPE_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE, takesnapshot, {0} },
-	{ TYPE_KEY_CMD_0, KEY_CMD_0, KEYTYPE, docmd, { .i = CMD_0_ID } },
-	{ TYPE_KEY_CMD_1, KEY_CMD_1, KEYTYPE, docmd, { .i = CMD_1_ID } },
-	{ TYPE_KEY_CMD_2, KEY_CMD_2, KEYTYPE, docmd, { .i = CMD_2_ID } },
-	{ TYPE_KEY_CMD_3, KEY_CMD_3, KEYTYPE, docmd, { .i = CMD_3_ID } },
-	{ TYPE_KEY_CMD_4, KEY_CMD_4, KEYTYPE, docmd, { .i = CMD_4_ID } },
-	{ TYPE_KEY_CMD_5, KEY_CMD_5, KEYTYPE, docmd, { .i = CMD_5_ID } },
-	{ TYPE_KEY_CMD_6, KEY_CMD_6, KEYTYPE, docmd, { .i = CMD_6_ID } },
-	{ TYPE_KEY_CMD_7, KEY_CMD_7, KEYTYPE, docmd, { .i = CMD_7_ID } },
-	{ TYPE_KEY_CMD_8, KEY_CMD_8, KEYTYPE, docmd, { .i = CMD_8_ID } },
-	{ TYPE_KEY_CMD_9, KEY_CMD_9, KEYTYPE, docmd, { .i = CMD_9_ID } },
+	{ TYPE_KEY_CMD_0, KEY_CMD_0, KEYTYPE, docmd, { .i = CMD_ID_0 } },
+	{ TYPE_KEY_CMD_1, KEY_CMD_1, KEYTYPE, docmd, { .i = CMD_ID_1 } },
+	{ TYPE_KEY_CMD_2, KEY_CMD_2, KEYTYPE, docmd, { .i = CMD_ID_2 } },
+	{ TYPE_KEY_CMD_3, KEY_CMD_3, KEYTYPE, docmd, { .i = CMD_ID_3 } },
+	{ TYPE_KEY_CMD_4, KEY_CMD_4, KEYTYPE, docmd, { .i = CMD_ID_4 } },
+	{ TYPE_KEY_CMD_5, KEY_CMD_5, KEYTYPE, docmd, { .i = CMD_ID_5 } },
+	{ TYPE_KEY_CMD_6, KEY_CMD_6, KEYTYPE, docmd, { .i = CMD_ID_7 } },
+	{ TYPE_KEY_CMD_7, KEY_CMD_7, KEYTYPE, docmd, { .i = CMD_ID_7 } },
+	{ TYPE_KEY_CMD_8, KEY_CMD_8, KEYTYPE, docmd, { .i = CMD_ID_8 } },
+	{ TYPE_KEY_CMD_9, KEY_CMD_9, KEYTYPE, docmd, { .i = CMD_ID_9 } },
 };
 
 Opts defopts[] = {
@@ -38,32 +38,52 @@ Opts defopts[] = {
 	{ TYPE_BOTTOMGAP, BOTTOMGAP_ID, NA, OPTTYPE },
 	{ TYPE_LEFTGAP, LEFTGAP_ID, NA, OPTTYPE },
 	{ TYPE_RIGHTGAP, RIGHTGAP_ID, NA, OPTTYPE },
-	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
-	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE },
 	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_0, CONLINE_0_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_1, CONLINE_1_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_2, CONLINE_2_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_3, CONLINE_3_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_4, CONLINE_4_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_5, CONLINE_5_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_6, CONLINE_6_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_7, CONLINE_7_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_8, CONLINE_8_ID, NA, OPTTYPE },
-	{ TYPE_CONLINE_9, CONLINE_9_ID, NA, OPTTYPE },
-	{ TYPE_CMD_0, CMD_0_ID, NA, OPTTYPE },
-	{ TYPE_CMD_1, CMD_1_ID, NA, OPTTYPE },
-	{ TYPE_CMD_2, CMD_2_ID, NA, OPTTYPE },
-	{ TYPE_CMD_3, CMD_3_ID, NA, OPTTYPE },
-	{ TYPE_CMD_4, CMD_4_ID, NA, OPTTYPE },
-	{ TYPE_CMD_5, CMD_5_ID, NA, OPTTYPE },
-	{ TYPE_CMD_6, CMD_6_ID, NA, OPTTYPE },
-	{ TYPE_CMD_7, CMD_7_ID, NA, OPTTYPE },
-	{ TYPE_CMD_8, CMD_8_ID, NA, OPTTYPE },
-	{ TYPE_CMD_9, CMD_9_ID, NA, OPTTYPE },
+	{ TYPE_AUTO_INTERVAL_MICRO, AUTO_INTERVAL_MICRO_ID, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_3, EXCL_WTYPE_ID_3, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_4, EXCL_WTYPE_ID_4, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_5, EXCL_WTYPE_ID_5, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_6, EXCL_WTYPE_ID_6, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_7, EXCL_WTYPE_ID_7, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_8, EXCL_WTYPE_ID_8, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_9, EXCL_WTYPE_ID_9, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_0, INCL_WTYPE_ID_0, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_1, INCL_WTYPE_ID_1, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_2, INCL_WTYPE_ID_2, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_3, INCL_WTYPE_ID_3, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_4, INCL_WTYPE_ID_4, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_5, INCL_WTYPE_ID_5, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_6, INCL_WTYPE_ID_6, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_7, INCL_WTYPE_ID_7, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_8, INCL_WTYPE_ID_8, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_9, INCL_WTYPE_ID_9, NA, OPTTYPE },
+	{ TYPE_CONLINE_0, CONLINE_ID_0, NA, OPTTYPE },
+	{ TYPE_CONLINE_1, CONLINE_ID_1, NA, OPTTYPE },
+	{ TYPE_CONLINE_2, CONLINE_ID_2, NA, OPTTYPE },
+	{ TYPE_CONLINE_3, CONLINE_ID_3, NA, OPTTYPE },
+	{ TYPE_CONLINE_4, CONLINE_ID_4, NA, OPTTYPE },
+	{ TYPE_CONLINE_5, CONLINE_ID_5, NA, OPTTYPE },
+	{ TYPE_CONLINE_6, CONLINE_ID_6, NA, OPTTYPE },
+	{ TYPE_CONLINE_7, CONLINE_ID_7, NA, OPTTYPE },
+	{ TYPE_CONLINE_8, CONLINE_ID_8, NA, OPTTYPE },
+	{ TYPE_CONLINE_9, CONLINE_ID_9, NA, OPTTYPE },
+	{ TYPE_CMD_0, CMD_ID_0, NA, OPTTYPE },
+	{ TYPE_CMD_1, CMD_ID_1, NA, OPTTYPE },
+	{ TYPE_CMD_2, CMD_ID_2, NA, OPTTYPE },
+	{ TYPE_CMD_3, CMD_ID_3, NA, OPTTYPE },
+	{ TYPE_CMD_4, CMD_ID_4, NA, OPTTYPE },
+	{ TYPE_CMD_5, CMD_ID_5, NA, OPTTYPE },
+	{ TYPE_CMD_6, CMD_ID_6, NA, OPTTYPE },
+	{ TYPE_CMD_7, CMD_ID_7, NA, OPTTYPE },
+	{ TYPE_CMD_8, CMD_ID_8, NA, OPTTYPE },
+	{ TYPE_CMD_9, CMD_ID_9, NA, OPTTYPE },
 };
 
 Cmdstore cmds[] = {0};
+Wtypestore wtypes[] = {0};
 
 static struct NewBroker MyBroker =
 {
@@ -86,32 +106,56 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	size_t optarrsize;
 	struct Popkeys* keys;
 
+	exclude_wtype = 0;
+	include_wtype = 0;
+
 	optarrsize = sizeof(defopts) / sizeof(*defopts);
         keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
-
-	printf("optarrsize %d\n",optarrsize);
-	printf("keyarrsize %d\n",keyarrsize);
 
 	for (i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
 		if(tt_optvalue) {
 
-			if(defopts[i].cxint >= CONLINE_0_ID && defopts[i].cxint <= (CMD_MAX + CONLINE_0_ID)) {
+			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
 				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-					cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-					if(cmds->con_strings[defopts[i].cxint - CONLINE_0_ID]) {
-						strcpy((char *)cmds->con_strings[defopts[i].cxint - CONLINE_0_ID],tt_optvalue);
+					cmds->con_strings[defopts[i].cxint - CONLINE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(cmds->con_strings[defopts[i].cxint - CONLINE_ID_0]) {
+						strcpy((char *)cmds->con_strings[defopts[i].cxint - CONLINE_ID_0],tt_optvalue);
 					}
 				}
 			}
 
-			if(defopts[i].cxint >= CMD_0_ID && defopts[i].cxint <= (CMD_MAX + CMD_0_ID)) {
+			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
 				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-					cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-					if(cmds->cmd_strings[defopts[i].cxint - CMD_0_ID]) {
-						strcpy((char *)cmds->cmd_strings[defopts[i].cxint - CMD_0_ID],tt_optvalue);
+					cmds->cmd_strings[defopts[i].cxint - CMD_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(cmds->cmd_strings[defopts[i].cxint - CMD_ID_0]) {
+						strcpy((char *)cmds->cmd_strings[defopts[i].cxint - CMD_ID_0],tt_optvalue);
 					}
+				}
+			}
+
+			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
+				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+					wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0]) {
+						strcpy((char *)wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0],tt_optvalue);
+					}
+				}
+				if(exclude_wtype == 0) {
+					exclude_wtype = 1;
+				}
+			}
+
+			if(defopts[i].cxint >= INCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
+				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+					wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0]) {
+						strcpy((char *)wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0],tt_optvalue);
+					}
+				}
+				if(include_wtype == 0) {
+					include_wtype = 1;
 				}
 			}
 
@@ -131,138 +175,11 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 				case RIGHTGAP_ID: 	
 					rightgap = atoi((const char *)tt_optvalue);
 					break;
-				case EXCL_WTYPE_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
-					}
-					break;
-				case INCL_WTYPE_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
-					}
-					break;
-				/*case CONLINE_0_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[0],tt_optvalue);
-					}
-					break;
-				case CONLINE_1_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[1],tt_optvalue);
-					}
-					break;
-				case CONLINE_2_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[2],tt_optvalue);
-					}
-					break;
-				case CONLINE_3_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[3],tt_optvalue);
-					}
-					break;
-				case CONLINE_4_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[4],tt_optvalue);
-					}
-					break;
-				case CONLINE_5_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[5],tt_optvalue);
-					}
-					break;
-				case CONLINE_6_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[6],tt_optvalue);
-					}
-					break;
-				case CONLINE_7_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[7],tt_optvalue);
-					}
-					break;
-				case CONLINE_8_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[8],tt_optvalue);
-					}
-					break;
-				case CONLINE_9_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->con_strings[defopts[i].cxint - CONLINE_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->con_strings[9],tt_optvalue);
-					}
-					break;
-				case CMD_0_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[0],tt_optvalue);
-					}
-					break;
-				case CMD_1_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[1],tt_optvalue);
-					}
-					break;
-				case CMD_2_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[2],tt_optvalue);
-					}
-					break;
-				case CMD_3_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[3],tt_optvalue);
-					}
-					break;
-				case CMD_4_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[4],tt_optvalue);
-					}
-					break;
-				case CMD_5_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[5],tt_optvalue);
-					}
-					break;
-				case CMD_6_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[6],tt_optvalue);
-					}
-					break;
-				case CMD_7_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[7],tt_optvalue);
-					}
-					break;
-				case CMD_8_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[8],tt_optvalue);
-					}
-					break;
-				case CMD_9_ID:
-					if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-						cmds->cmd_strings[defopts[i].cxint - CMD_0_ID] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-						strcpy((char *)cmds->cmd_strings[9],tt_optvalue);
-					}
-					break;*/
 				case AUTO_ID:
 					autotile = TRUE;
+					break;
+				case AUTO_INTERVAL_MICRO_ID:
+					auto_interval = strtoul((const char *)tt_optvalue,NULL,10);
 					break;
 				default:
 					break;
@@ -295,6 +212,14 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 		}
 	}
 
+	if(exclude_wtype) {
+		qsort(wtypes->excl_strings, WTYPE_MAX, sizeof(*wtypes->excl_strings), cstring_cmp);
+	}
+
+	if(include_wtype) {
+		qsort(wtypes->incl_strings, WTYPE_MAX, sizeof(*wtypes->incl_strings), cstring_cmp);
+	}
+
 	free(keys);
 	return rc;
 }
@@ -309,13 +234,15 @@ short int commo(void)
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
 	static int wincount = 0;
-	current_layout = 0;
 	static short first_run = TRUE;
 	int i;
 	int lock = 1;
 
+	current_layout = 0;
+	auto_interval = AUTO_INTERVAL_MICRO_DEF;
+
 	if(!(iconbase = OpenLibrary(iconlib,37))) {
-	DeleteMsgPort(mp);
+		DeleteMsgPort(mp);
 		return 1;
 	}
 
@@ -352,7 +279,7 @@ short int commo(void)
 					if(autotile) {
 						wincount = countwindows(lock);
 						currentval.tv_secs = 0;
-						currentval.tv_micro = 20000;
+						currentval.tv_micro = auto_interval;
 						(void)time_delay( &currentval, UNIT_MICROHZ );
 						if(wincount != (countwindows(lock)) || first_run == TRUE) {
 							defkeys[*current_layout].func(&defkeys[*current_layout].arg);
@@ -421,5 +348,21 @@ short int commo(void)
 		}
 	}
  
+	for (i = 0; i < WTYPE_MAX; ++i) {
+		if(wtypes->excl_strings[i]) {
+			free(wtypes->excl_strings[i]);
+		}
+		if(wtypes->incl_strings[i]) {
+			free(wtypes->incl_strings[i]);
+		}
+	}
+
 	return 0;
 }
+
+int cstring_cmp(const void *a, const void *b) 
+{ 
+	const char **ia = (const char **)a;
+	const char **ib = (const char **)b;
+	return strcmp(*ia, *ib);
+} 
