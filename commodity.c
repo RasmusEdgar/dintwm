@@ -1,64 +1,89 @@
+//-V::677
 #include "dintwm.h"
-
-#define DEFAULT_TOPGAP 0
-#define KEYTYPE 1
-#define OPTTYPE 2
-#define STORE 1
-#define RESTORE 2
-#define FREE 3
+#include "config.h"
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for AmigaOS";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
-static char TYPE_TILE[] = "POPKEY_TILE";
-static char TYPE_HGRID[] = "POPKEY_HGRID";
-static char TYPE_SPIRAL[] = "POPKEY_SPIRAL";
-static char TYPE_DWINDLE[] = "POPKEY_DWINDLE";
-static char TYPE_RESTORE[] = "POPKEY_RESTORE";
-static char TYPE_SWITCHF[] = "POPKEY_SWITCHF";
-static char TYPE_SWITCHB[] = "POPKEY_SWITCHB";
-static char TYPE_CLEANSNAPSHOT[] = "POPKEY_CLEANSNAPSHOT";
-static char TYPE_TAKESNAPSHOT[] = "POPKEY_TAKESNAPSHOT";
-static char TYPE_SHELL[] = "POPKEY_SHELL";
-static char TYPE_TOPGAP[] = "TOPGAP";
-static char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
-static char TYPE_EXCL_WTYPE[] = "EXCL_WTYPE";
-static char TYPE_INCL_WTYPE[] = "INCL_WTYPE";
-static char TYPE_AUTO[] = "AUTO";
-static char KEY_TILE[] = "rawkey control lcommand t";
-static char KEY_HGRID[] = "rawkey control lcommand g";
-static char KEY_SPIRAL[] = "rawkey control lcommand f";
-static char KEY_DWINDLE[] = "rawkey control lcommand d";
-static char KEY_RESTORE[] = "rawkey control lcommand r";
-static char KEY_SWITCHF[] = "rawkey control lcommand s";
-static char KEY_SWITCHB[] = "rawkey control lcommand x";
-static char KEY_CLEANSNAPSHOT[] = "rawkey control lcommand c";
-static char KEY_TAKESNAPSHOT[] = "rawkey control lcommand p";
-static char KEY_SHELL[] = "rawkey control lcommand return";
-static char NA[] = "0";
-
-static short autotile = FALSE;
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 
 static struct Library *iconbase;
-static struct Optdef defopts[] = {
-	{ TYPE_TILE, FUNC_TILE, KEY_TILE, KEYTYPE },
-	{ TYPE_HGRID, FUNC_HGRID, KEY_HGRID, KEYTYPE },
-	{ TYPE_SPIRAL, FUNC_SPIRAL, KEY_SPIRAL, KEYTYPE },
-	{ TYPE_DWINDLE, FUNC_DWINDLE, KEY_DWINDLE, KEYTYPE },
-	{ TYPE_RESTORE, FUNC_RESTORE, KEY_RESTORE, KEYTYPE },
-	{ TYPE_SWITCHF, FUNC_SWITCHF, KEY_SWITCHF, KEYTYPE },
-	{ TYPE_SWITCHB, FUNC_SWITCHB, KEY_SWITCHB, KEYTYPE },
-	{ TYPE_CLEANSNAPSHOT, FUNC_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE },
-	{ TYPE_TAKESNAPSHOT, FUNC_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE },
-	{ TYPE_SHELL, FUNC_SHELL, KEY_SHELL, KEYTYPE },
+
+Keys defkeys[] = {
+	{ TYPE_TILE, KEY_TILE, KEYTYPE, tile, {0} },
+	{ TYPE_HGRID, KEY_HGRID, KEYTYPE, hgrid, {0} },
+	{ TYPE_SPIRAL, KEY_SPIRAL, KEYTYPE, fibonacci, {.i = 0} },
+	{ TYPE_DWINDLE, KEY_DWINDLE, KEYTYPE, fibonacci, {.i = 1} },
+	{ TYPE_RESTORE, KEY_RESTORE, KEYTYPE, restore, {0} },
+	{ TYPE_SWITCHF, KEY_SWITCHF, KEYTYPE, switcher, {.i = 1} },
+	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE, switcher, {.i = 0} },
+	{ TYPE_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE, cleansnapshot, {0} },
+	{ TYPE_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE, takesnapshot, {0} },
+	{ TYPE_KEY_CMD_0, KEY_CMD_0, KEYTYPE, docmd, { .i = CMD_ID_0 } },
+	{ TYPE_KEY_CMD_1, KEY_CMD_1, KEYTYPE, docmd, { .i = CMD_ID_1 } },
+	{ TYPE_KEY_CMD_2, KEY_CMD_2, KEYTYPE, docmd, { .i = CMD_ID_2 } },
+	{ TYPE_KEY_CMD_3, KEY_CMD_3, KEYTYPE, docmd, { .i = CMD_ID_3 } },
+	{ TYPE_KEY_CMD_4, KEY_CMD_4, KEYTYPE, docmd, { .i = CMD_ID_4 } },
+	{ TYPE_KEY_CMD_5, KEY_CMD_5, KEYTYPE, docmd, { .i = CMD_ID_5 } },
+	{ TYPE_KEY_CMD_6, KEY_CMD_6, KEYTYPE, docmd, { .i = CMD_ID_7 } },
+	{ TYPE_KEY_CMD_7, KEY_CMD_7, KEYTYPE, docmd, { .i = CMD_ID_7 } },
+	{ TYPE_KEY_CMD_8, KEY_CMD_8, KEYTYPE, docmd, { .i = CMD_ID_8 } },
+	{ TYPE_KEY_CMD_9, KEY_CMD_9, KEYTYPE, docmd, { .i = CMD_ID_9 } },
+};
+
+Opts defopts[] = {
 	{ TYPE_TOPGAP, TOPGAP_ID, NA, OPTTYPE },
 	{ TYPE_DEFAULT_TOPGAP, DEFAULT_TOPGAP_ID, NA, OPTTYPE },
-	{ TYPE_EXCL_WTYPE, EXCL_WTYPE_ID, NA, OPTTYPE },
-	{ TYPE_INCL_WTYPE, INCL_WTYPE_ID, NA, OPTTYPE },
-	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE }
+	{ TYPE_BOTTOMGAP, BOTTOMGAP_ID, NA, OPTTYPE },
+	{ TYPE_LEFTGAP, LEFTGAP_ID, NA, OPTTYPE },
+	{ TYPE_RIGHTGAP, RIGHTGAP_ID, NA, OPTTYPE },
+	{ TYPE_AUTO, AUTO_ID, NA, OPTTYPE },
+	{ TYPE_AUTO_INTERVAL_MICRO, AUTO_INTERVAL_MICRO_ID, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_3, EXCL_WTYPE_ID_3, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_4, EXCL_WTYPE_ID_4, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_5, EXCL_WTYPE_ID_5, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_6, EXCL_WTYPE_ID_6, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_7, EXCL_WTYPE_ID_7, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_8, EXCL_WTYPE_ID_8, NA, OPTTYPE },
+	{ TYPE_EXCL_WTYPE_9, EXCL_WTYPE_ID_9, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_0, INCL_WTYPE_ID_0, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_1, INCL_WTYPE_ID_1, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_2, INCL_WTYPE_ID_2, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_3, INCL_WTYPE_ID_3, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_4, INCL_WTYPE_ID_4, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_5, INCL_WTYPE_ID_5, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_6, INCL_WTYPE_ID_6, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_7, INCL_WTYPE_ID_7, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_8, INCL_WTYPE_ID_8, NA, OPTTYPE },
+	{ TYPE_INCL_WTYPE_9, INCL_WTYPE_ID_9, NA, OPTTYPE },
+	{ TYPE_CONLINE_0, CONLINE_ID_0, NA, OPTTYPE },
+	{ TYPE_CONLINE_1, CONLINE_ID_1, NA, OPTTYPE },
+	{ TYPE_CONLINE_2, CONLINE_ID_2, NA, OPTTYPE },
+	{ TYPE_CONLINE_3, CONLINE_ID_3, NA, OPTTYPE },
+	{ TYPE_CONLINE_4, CONLINE_ID_4, NA, OPTTYPE },
+	{ TYPE_CONLINE_5, CONLINE_ID_5, NA, OPTTYPE },
+	{ TYPE_CONLINE_6, CONLINE_ID_6, NA, OPTTYPE },
+	{ TYPE_CONLINE_7, CONLINE_ID_7, NA, OPTTYPE },
+	{ TYPE_CONLINE_8, CONLINE_ID_8, NA, OPTTYPE },
+	{ TYPE_CONLINE_9, CONLINE_ID_9, NA, OPTTYPE },
+	{ TYPE_CMD_0, CMD_ID_0, NA, OPTTYPE },
+	{ TYPE_CMD_1, CMD_ID_1, NA, OPTTYPE },
+	{ TYPE_CMD_2, CMD_ID_2, NA, OPTTYPE },
+	{ TYPE_CMD_3, CMD_ID_3, NA, OPTTYPE },
+	{ TYPE_CMD_4, CMD_ID_4, NA, OPTTYPE },
+	{ TYPE_CMD_5, CMD_ID_5, NA, OPTTYPE },
+	{ TYPE_CMD_6, CMD_ID_6, NA, OPTTYPE },
+	{ TYPE_CMD_7, CMD_ID_7, NA, OPTTYPE },
+	{ TYPE_CMD_8, CMD_ID_8, NA, OPTTYPE },
+	{ TYPE_CMD_9, CMD_ID_9, NA, OPTTYPE },
 };
+
+Cmdstore cmds[] = {0};
+Wtypestore wtypes[] = {0};
 
 static struct NewBroker MyBroker =
 {
@@ -77,50 +102,103 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 {
 	size_t i;
 	BOOL rc = FALSE;
-	size_t arrsizes;
+	size_t keyarrsize;
+	size_t optarrsize;
 	struct Popkeys* keys;
 
-	keys = malloc(sizeof(*defopts) * sizeof(*keys));
-	arrsizes = sizeof(defopts) / sizeof(*defopts);
+	exclude_wtype = 0;
+	include_wtype = 0;
 
+	optarrsize = sizeof(defopts) / sizeof(*defopts);
+        keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
 
-	for (i = 0; i < arrsizes ; ++i) {
+	for (i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		if(tt_optvalue == NULL) {
-			if(defopts[i].tt_type == KEYTYPE ) {
-				keys[i].rawcombo = defopts[i].defaultval;
-			} 
-		} else {
-			if (defopts[i].tt_type == KEYTYPE) {
-				keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
-			} else if(defopts[i].tt_type == OPTTYPE ) {
-				switch (defopts[i].cxint) {
-					case TOPGAP_ID: 	
-						topgap = atoi((const char *)tt_optvalue);
-						break;
-					case DEFAULT_TOPGAP_ID: 	
-						topgap = calcgap();
-						break;
-					case EXCL_WTYPE_ID:
-						strncpy(exclude_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
-						break;
-					case INCL_WTYPE_ID:
-						strncpy(include_wtype,tt_optvalue,(strlen(tt_optvalue))+1);
-						break;
-					case AUTO_ID:
-						autotile = TRUE;
-						break;
-					default:
-						break;
+		if(tt_optvalue) {
+
+			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
+				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+					cmds->con_strings[defopts[i].cxint - CONLINE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(cmds->con_strings[defopts[i].cxint - CONLINE_ID_0]) {
+						strcpy((char *)cmds->con_strings[defopts[i].cxint - CONLINE_ID_0],tt_optvalue);
+					}
 				}
 			}
+
+			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
+				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+					cmds->cmd_strings[defopts[i].cxint - CMD_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(cmds->cmd_strings[defopts[i].cxint - CMD_ID_0]) {
+						strcpy((char *)cmds->cmd_strings[defopts[i].cxint - CMD_ID_0],tt_optvalue);
+					}
+				}
+			}
+
+			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
+				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+					wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0]) {
+						strcpy((char *)wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0],tt_optvalue);
+					}
+				}
+				if(exclude_wtype == 0) {
+					exclude_wtype = 1;
+				}
+			}
+
+			if(defopts[i].cxint >= INCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
+				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
+					wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
+					if(wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0]) {
+						strcpy((char *)wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0],tt_optvalue);
+					}
+				}
+				if(include_wtype == 0) {
+					include_wtype = 1;
+				}
+			}
+
+			switch (defopts[i].cxint) {
+				case TOPGAP_ID: 	
+					topgap = atoi((const char *)tt_optvalue);
+					break;
+				case DEFAULT_TOPGAP_ID: 	
+					topgap = calcgap();
+					break;
+				case BOTTOMGAP_ID: 	
+					bottomgap = atoi((const char *)tt_optvalue);
+					break;
+				case LEFTGAP_ID: 	
+					leftgap = atoi((const char *)tt_optvalue);
+					break;
+				case RIGHTGAP_ID: 	
+					rightgap = atoi((const char *)tt_optvalue);
+					break;
+				case AUTO_ID:
+					autotile = TRUE;
+					break;
+				case AUTO_INTERVAL_MICRO_ID:
+					auto_interval = strtoul((const char *)tt_optvalue,NULL,10);
+					break;
+				default:
+					break;
+			}
 		}
-	
-		
+	}
+
+	keys = malloc(sizeof(*keys) * keyarrsize);
+
+	for (i = 0; i < keyarrsize ; ++i) {
+		keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
+
+		if(keys[i].rawcombo == NULL) {
+			keys[i].rawcombo = defkeys[i].defaultval;
+		}
+
 		if(keys[i].rawcombo != NULL) {
 			CxObj *filter;
-			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, defopts[i].cxint)))
+			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
 			{
 				AttachCxObj(broker, filter);
  
@@ -133,19 +211,35 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 			}
 		}
 	}
+
+	if(exclude_wtype) {
+		qsort(wtypes->excl_strings, WTYPE_MAX, sizeof(*wtypes->excl_strings), cstring_cmp);
+	}
+
+	if(include_wtype) {
+		qsort(wtypes->incl_strings, WTYPE_MAX, sizeof(*wtypes->incl_strings), cstring_cmp);
+	}
+
 	free(keys);
 	return rc;
 }
  
 short int commo(void)
 {
+
+	struct timeval currentval;
+
 	struct MsgPort *mp = CreateMsgPort();
 	static struct DiskObject *diskobj;
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
 	static int wincount = 0;
-	current_layout = 0;
 	static short first_run = TRUE;
+	int i;
+	int lock = 1;
+
+	current_layout = 0;
+	auto_interval = AUTO_INTERVAL_MICRO_DEF;
 
 	if(!(iconbase = OpenLibrary(iconlib,37))) {
 		DeleteMsgPort(mp);
@@ -183,10 +277,12 @@ short int commo(void)
 				while (running)
 				{
 					if(autotile) {
-						wincount = countwindows();
-						WaitTOF();	
-						if(wincount != (countwindows()) || first_run == TRUE) {
-							defkeyfuncs[*current_layout].func();
+						wincount = countwindows(lock);
+						currentval.tv_secs = 0;
+						currentval.tv_micro = auto_interval;
+						(void)time_delay( &currentval, UNIT_MICROHZ );
+						if(wincount != (countwindows(lock)) || first_run == TRUE) {
+							defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 							if(first_run == TRUE) {
 								first_run = FALSE;
 							}
@@ -226,12 +322,10 @@ short int commo(void)
 						}
 						else if (type == CXM_IEVENT)
 						{
-							if (id == defopts[id].cxint) {
-								if(id <= (TILE_FUNC_LIMIT)) {
-									*current_layout = id;
-								}
-								defkeyfuncs[id].func();
+							if(id <= (TILE_FUNC_LIMIT)) {
+								*current_layout = id;
 							}
+							defkeys[id].func(&defkeys[id].arg);
 						}
 					}
 				}
@@ -244,6 +338,31 @@ short int commo(void)
 		}
 		DeleteMsgPort(mp);
 	}
+
+	for (i = 0; i < CMD_MAX; ++i) {
+		if(cmds->con_strings[i]) {
+			free(cmds->con_strings[i]);
+		}
+		if(cmds->cmd_strings[i]) {
+			free(cmds->cmd_strings[i]);
+		}
+	}
  
+	for (i = 0; i < WTYPE_MAX; ++i) {
+		if(wtypes->excl_strings[i]) {
+			free(wtypes->excl_strings[i]);
+		}
+		if(wtypes->incl_strings[i]) {
+			free(wtypes->incl_strings[i]);
+		}
+	}
+
 	return 0;
 }
+
+int cstring_cmp(const void *a, const void *b) 
+{ 
+	const char **ia = (const char **)a;
+	const char **ib = (const char **)b;
+	return strcmp(*ia, *ib);
+} 

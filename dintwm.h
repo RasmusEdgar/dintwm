@@ -10,30 +10,118 @@
 #include <exec/types.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
+#include <devices/timer.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
-//#define CALCGAP			(screen->BarHeight + screen->WBorBottom - 3)
 
-#define TT_MAX_LENGTH 128
+enum dintwm_identifiers {
+	DEFAULT_TOPGAP = 0,
+	KEYTYPE = 1,
+	OPTTYPE = 2,
+	STORE = 1,
+	RESTORE = 2,
+	FREE = 3,
+	COMMODITIZE = -1,
+	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
+	GAP_ERR = -3, // Gaps are too small or too big
+	UNKNOWN = -4, // Unknown option
+	MISSING = -5, // Missing argument
+	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
+	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
+	FUNC_TILE = 0, // tile function identifier
+	FUNC_HGRID = 1, // hgrid function identifier
+	FUNC_SPIRAL = 2, // spiral function identifier
+	FUNC_DWINDLE = 3, // dwindle function identifier
+	FUNC_PRINTUSAGE = 42, // printusage function identifier
+	TT_MAX_LENGTH = 128, // Tooltype Max Length
+	K_CGAP_ID = 301, // longopts ketopts id
+	TOPGAP_ID = 400, // topgap type identifier
+	DEFAULT_TOPGAP_ID = 401, // default topgap identifier
+	BOTTOMGAP_ID = 402, // bottomgap type identifier
+	LEFTGAP_ID = 403, // leftgap type iNewshell command dentifier
+	RIGHTGAP_ID = 404, // rightgap type identifier
+	WTYPE_MAX = 9,
+	EXCL_WTYPE_ID_0 = 600, // exclude window type identifier
+	EXCL_WTYPE_ID_1 = 601, // exclude window type identifier
+	EXCL_WTYPE_ID_2 = 602, // exclude window type identifier
+	EXCL_WTYPE_ID_3 = 603, // exclude window type identifier
+	EXCL_WTYPE_ID_4 = 604, // exclude window type identifier
+	EXCL_WTYPE_ID_5 = 605, // exclude window type identifier
+	EXCL_WTYPE_ID_6 = 606, // exclude window type identifier
+	EXCL_WTYPE_ID_7 = 607, // exclude window type identifier
+	EXCL_WTYPE_ID_8 = 608, // exclude window type identifier
+	EXCL_WTYPE_ID_9 = 609, // exclude window type identifier
+	INCL_WTYPE_ID_0 = 700, // include window type identifier
+	INCL_WTYPE_ID_1 = 701, // include window type identifier
+	INCL_WTYPE_ID_2 = 702, // include window type identifier
+	INCL_WTYPE_ID_3 = 703, // include window type identifier
+	INCL_WTYPE_ID_4 = 704, // include window type identifier
+	INCL_WTYPE_ID_5 = 705, // include window type identifier
+	INCL_WTYPE_ID_6 = 706, // include window type identifier
+	INCL_WTYPE_ID_7 = 707, // include window type identifier
+	INCL_WTYPE_ID_8 = 708, // include window type identifier
+	INCL_WTYPE_ID_9 = 709, // include window type identifier
+	CMD_MAX = 9, // Number of custom cmds
+	CONLINE_ID_0 = 800, // conline identifier
+	CONLINE_ID_1 = 801, // conline identifier
+	CONLINE_ID_2 = 802, // conline identifier
+	CONLINE_ID_3 = 803, // conline identifier
+	CONLINE_ID_4 = 804, // conline identifier
+	CONLINE_ID_5 = 805, // conline identifier
+	CONLINE_ID_6 = 806, // conline identifier
+	CONLINE_ID_7 = 807, // conline identifier
+	CONLINE_ID_8 = 808, // conline identifier
+	CONLINE_ID_9 = 809, // conline identifier
+	CMD_ID_0 = 900, // cmd spawn identifier
+	CMD_ID_1 = 901, // cmd spawn identifier
+	CMD_ID_2 = 902, // cmd spawn identifier
+	CMD_ID_3 = 903, // cmd spawn identifier
+	CMD_ID_4 = 904, // cmd spawn identifier
+	CMD_ID_5 = 905, // cmd spawn identifier
+	CMD_ID_6 = 906, // cmd spawn identifier
+	CMD_ID_7 = 907, // cmd spawn identifier
+	CMD_ID_8 = 908, // cmd spawn identifier
+	CMD_ID_9 = 909, // cmd spawn identifier
+	AUTO_ID = 1000, // AUTO TILE
+	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE
+	AUTO_INTERVAL_MICRO_DEF = 15000 // AUTO TILE
+};
+
+typedef union {
+	int i;
+	const void *v;
+} Arg;
 
 // dintwm main functions shared
-void tile(void);
-void hgrid(void);
-void spiral(void);
-void dwindle(void);
-void restore(void);
-void switchf(void);
-void switchb(void);
-void takesnapshot(void);
-void cleansnapshot(void);
+void tile(const Arg *arg);
+void hgrid(const Arg *arg);
+void fibonacci(const Arg *arg);
+void spiral(const Arg *arg);
+void dwindle(const Arg *arg);
+void restore(const Arg *arg);
+void switcher(const Arg *arg);
+void takesnapshot(const Arg *arg);
+void cleansnapshot(const Arg *arg);
 void printusage(void);
-int countwindows(void);
-void doshell(void);
+int countwindows(int l);
+void docmd(const Arg *arg);
 int calcgap(void);
+int cstring_cmp(const void *a, const void *b);
+
 int topgap;
+int bottomgap;
+int leftgap;
+int rightgap;
 long int *current_layout;
-char exclude_wtype[TT_MAX_LENGTH];
-char include_wtype[TT_MAX_LENGTH];
+int exclude_wtype;
+int include_wtype;
+long unsigned int auto_interval;
+
+// timer stuff
+void delete_timer (struct timerequest *);
+struct timerequest *create_timer( ULONG );
+void wait_for_timer(struct timerequest *, struct timeval *);
+LONG time_delay    ( struct timeval *, ULONG );
 
 // Screen shared struct
 struct Screen *screen;
@@ -41,46 +129,37 @@ struct Screen *screen;
 // commodity headers
 short int commo(void);
 
-struct Optdef {
-	char *optname;
-        long cxint;
-	char *defaultval;
-	int tt_type;
-};
-
 struct Popkeys {
         char *rawcombo;
 };
 
-struct Keyfuncdef {
-        void (*func)(void);
-};
-	
-struct Opts* opts;
+typedef struct {
+	char *optname;
+        long cxint;
+	char *defaultval;
+	int tt_type;
+} Opts;
 
-// tile function headers;
-extern struct Keyfuncdef defkeyfuncs[]; 
-enum dintwm_identifiers {
-	COMMODITIZE = -1,
-	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
-	GAP_ERR = -3, // Can not call two tile functions from cli
-	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
-	TILE_FUNC_LIMIT = 3, // switcher funcetion - maximum limit of tiling layouts to switch through
-	FUNC_TILE = 0, // tile function identifier
-	FUNC_HGRID = 1, // hgrid function identifier
-	FUNC_SPIRAL = 2, // spiral function identifier
-	FUNC_DWINDLE = 3, // dwindle function identifier
-	FUNC_RESTORE = 4, // restore function identifier
-	FUNC_SWITCHF = 5, // switchf function identifier
-	FUNC_SWITCHB = 6, // switchb function identifier
-	FUNC_CLEANSNAPSHOT = 7, // Clean snapshot
-	FUNC_TAKESNAPSHOT = 8, // Take snapshot
-	FUNC_SHELL = 9, // printusage function identifier
-	FUNC_PRINTUSAGE = 10, // printusage function identifier
-	K_CGAP_ID = 301, // longopts ketopts id
-	TOPGAP_ID = 900, // topgap type identifier
-	DEFAULT_TOPGAP_ID = 901, // default topgap identifier
-	EXCL_WTYPE_ID = 902, // exclude window type identifier
-	INCL_WTYPE_ID = 903, // exclude window type identifier
-	AUTO_ID = 1000 // AUTO TILE
-};
+
+typedef struct {
+	char *optname;
+	char *defaultval;
+	int tt_type;
+	void (*func)(const Arg *);
+	const Arg arg;
+} Keys;
+
+typedef struct {
+	unsigned char *cmd_strings[CMD_MAX];
+	unsigned char *con_strings[CMD_MAX];
+} Cmdstore;
+
+typedef struct {
+	unsigned char *excl_strings[WTYPE_MAX];
+	unsigned char *incl_strings[WTYPE_MAX];
+} Wtypestore;
+
+extern Cmdstore cmds[];
+extern Wtypestore wtypes[];
+extern Keys defkeys[];
+extern Opts defopts[];
