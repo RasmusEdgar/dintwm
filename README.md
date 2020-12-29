@@ -15,7 +15,7 @@ Not working atm. Use crosscompiler from bebbo.
 
 ### Cross-compilation on Linux for AmigaOS (requires bebbo's m68k-amigaos-gcc fork)
 ```
-m68k-amigaos-gcc -o dintwm defkeyfuncs.c dintwm.c commodity.c -Wall -Wextra -Wtype-limits -noixemul
+m68k-amigaos-gcc -o dintwm timer.c dintwm.c commodity.c -Wall -Wextra -Wtype-limits -noixemul
 ```
 ## Running dintwm as a commodity
 
@@ -29,15 +29,21 @@ To run dintwm as a commodity:
   * POPKEY\_HGRID=, which is default set to "rawkey control lcommand g", grid layout
   * POPKEY\_SPIRAL=, which is default set to "rawkey control lcommand f", fibonacci variant layout
   * POPKEY\_DWINDLE=, which is default set to "rawkey control lcommand d", another fibonacci variant layout
-  * POPKEY\_RESTORE=, which is default set to "rawkey control lcommand r", enables restore of initial window placement
+  * POPKEY\_TAKESNAPSHOT=, which is default set to "rawkey control lcommand p", takes snapshot of window layout
+  * POPKEY\_CLEANSNAPSHOT=, which is default set to "rawkey control lcommand p", deletes snapshot of window layout
+  * POPKEY\_RESTORE=, which is default set to "rawkey control lcommand r", restores snapshot of window layout
   * POPKEY\_SWITCHF=, which is default set to "rawkey control lcommand s", flip through layouts forwards
   * POPKEY\_SWITCHB=, which is default set to "rawkey control lcommand s", flip through layouts backwards
-  * POPKEY\_SHELL=, spawns default newshell
+  * POPKEY\_CMD_0..9=, spawns custom commands. Defaults set to "rawkey control lcommand 0..9"
   * TOPGAP=, which is default set to 0, sets the top gap of the screen to show workbench bar
+  * RIGHTGAP=, which is default set to 0, sets a right gap 
+  * LEFTGAP=, which is default set to 0, sets a left gap
+  * BOTTOMGAP=, which is default set to 0, sets a bottom gap
   * DEFAULT\_TOPGAP=, which is default set to 0, sets automatically calculated top gap.
-  * EXCL\_WTYPE=, accepts window title, which default is set to nothing, exludes windows based on title
-  * INCL\_WTYPE=, accepts window title, which default is set to nothing, includes windows based on title
+  * EXCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, exludes windows based on title
+  * INCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, includes windows based on title
   * AUTO=, set to TRUE  (or anything really) to enable auto tiling. All new windows will be tiled.
+  * AUTO_INTERVAL_MICRO=, Set frequency for auto tiling. Default is 20000 microseconds
 3. Test it out using the following command: ```dintwm -C``` or simply run dintwm without options.
 4. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
 5. Check its status in System->Tools->Commodities->Exchange, you can also kill dintwm from here.
@@ -78,9 +84,11 @@ dintwm -g -b
 - ~~Make dintwm dynamical, by saving position of windows before tiling.~~
 - ~~Float -> Tile -> Float behaviour~~
 - ~~Enable auto tiling when new windows appear.~~
-- Add leftgap, rightgap and bottomgap
+- ~~Add leftgap, rightgap and bottomgap~~
 - Add dintwm bar
 - Create dmenu like feature if no suitable menu is found on aminet
+- Stop commodity with hotkey
+- Use github actions to build and package dintwm release
 
 ## Note on licensing
 
