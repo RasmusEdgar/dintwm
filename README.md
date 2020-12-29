@@ -40,7 +40,7 @@ To run dintwm as a commodity:
   * LEFTGAP=, which is default set to 0, sets a left gap
   * BOTTOMGAP=, which is default set to 0, sets a bottom gap
   * DEFAULT\_TOPGAP=, which is default set to 0, sets automatically calculated top gap.
-  * EXCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, exludes windows based on title
+  * EXCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, excludes windows based on title
   * INCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, includes windows based on title
   * AUTO=, set to TRUE  (or anything really) to enable auto tiling. All new windows will be tiled.
   * AUTO_INTERVAL_MICRO=, Set frequency for auto tiling. Default is 20000 microseconds
