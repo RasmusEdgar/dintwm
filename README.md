@@ -76,8 +76,20 @@ dintwm -t
 
 With a gap for the workbench titlebar.
 ```
-dintwm -g -b
+dintwm -g -u
 ``` 
+
+With custom gaps all around:
+```
+dintwm -U 45 -B 45 -L 45 -R 45 -t
+```
+
+That is, you could basically set tiling to occur where ever you decide on the screen.
+
+```
+dintwm -U 320 -L 320 -t
+```
+
 ## TODO
 
 - ~~Create an optional Dintwm commodity to enable hotkeys~~
