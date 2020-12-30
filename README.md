@@ -21,9 +21,13 @@ m68k-amigaos-gcc -o dintwm timer.c dintwm.c commodity.c -Wall -Wextra -Wtype-lim
 ## Demo
 
 Vanilla without any tooltype tweaks:
+
 ![Vanilla](https://github.com/RasmusEdgar/dintwm/blob/master/demo/vanilla.gif)
 
-Force tiling into specific screen area by gapping:
+Force tiling into specific screen area by setting tooltypes:  
+TOPGAP=320   
+LEFTGAP=320 
+
 ![Gap tiling into area](https://github.com/RasmusEdgar/dintwm/blob/master/demo/gap_to_area.gif)
 
 ## Running dintwm as a commodity
