@@ -136,7 +136,6 @@ struct Popkeys {
 typedef struct {
 	char *optname;
         long cxint;
-	char *defaultval;
 	int tt_type;
 } Opts;
 
