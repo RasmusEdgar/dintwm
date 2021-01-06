@@ -120,7 +120,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	for (i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH+1) < TT_MAX_LENGTH))) {
+		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < TT_MAX_LENGTH))) {
 
 			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0); 
@@ -336,10 +336,10 @@ short int commo(void)
 static short alloc_opts (char *t, Ostore *s, size_t i, int subtract) {
 	int cxint = defopts[i].cxint - subtract;
 
-	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH+1)) * sizeof(unsigned char));
+	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH)) * sizeof(unsigned char));
 
 	if(s->strings[cxint]) {
-		snprintf((char *)s->strings[cxint],TT_MAX_LENGTH, "%s", t);
+		(void)snprintf((char *)s->strings[cxint],TT_MAX_LENGTH, "%s", t);
 		return(TRUE);
 	} else {
 		return(FALSE);

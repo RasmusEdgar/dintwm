@@ -531,19 +531,19 @@ short docmd(const Arg *arg) {
 	unsigned char conline[TT_MAX_LENGTH];
 	unsigned char cmd[TT_MAX_LENGTH];
 
-	size_t conlen = strnlen((const char *)cons->strings[cmdid], TT_MAX_LENGTH+1);
-	size_t cmdlen = strnlen((const char *)cmds->strings[cmdid], TT_MAX_LENGTH+1);
+	size_t conlen = strnlen((const char *)cons->strings[cmdid], TT_MAX_LENGTH);
+	size_t cmdlen = strnlen((const char *)cmds->strings[cmdid], TT_MAX_LENGTH);
 
 	if (conlen != 0) {
-		snprintf((char *)conline, TT_MAX_LENGTH, "%s", cons->strings[cmdid]);
+		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s", cons->strings[cmdid]);
 	} else {
-		snprintf((char *)conline, TT_MAX_LENGTH, "%s", DEFCON);
+		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s", DEFCON);
 	}
 
 	if (cmdlen != 0) {
-		snprintf((char *)cmd, TT_MAX_LENGTH, "%s", cmds->strings[cmdid]);
+		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", cmds->strings[cmdid]);
 	} else {
-		snprintf((char *)cmd, TT_MAX_LENGTH, "%s", DEFCMD);
+		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", DEFCMD);
 	}
 
 	if((file = Open(conline, MODE_OLDFILE))) {

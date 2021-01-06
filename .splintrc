@@ -1,5 +1,6 @@
 -booltype BOOL
--weak
+#-weak
+-nullassign
 -D__stdargs=
 +ignoresigns
 -syntax
