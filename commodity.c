@@ -7,6 +7,8 @@ static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for A
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
+static short alloc_opts (char *tt_optvalue, Ostore *s, size_t i, int subtract); 
+static void free_opts (void);
 
 static struct Library *iconbase;
 
@@ -30,6 +32,7 @@ Keys defkeys[] = {
 	{ TYPE_KEY_CMD_7, KEY_CMD_7, KEYTYPE, docmd, { .i = CMD_ID_7 } },
 	{ TYPE_KEY_CMD_8, KEY_CMD_8, KEYTYPE, docmd, { .i = CMD_ID_8 } },
 	{ TYPE_KEY_CMD_9, KEY_CMD_9, KEYTYPE, docmd, { .i = CMD_ID_9 } },
+	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE, exit_cxm, {0} },
 };
 
 Opts defopts[] = {
@@ -82,8 +85,10 @@ Opts defopts[] = {
 	{ TYPE_CMD_9, CMD_ID_9, OPTTYPE },
 };
 
-Cmdstore cmds[] = {0};
-Wtypestore wtypes[] = {0};
+Ostore cmds[] = {0};
+Ostore cons[] = {0};
+Ostore incls[] = {0};
+Ostore excls[] = {0};
 
 static struct NewBroker MyBroker =
 {
@@ -115,45 +120,25 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	for (i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		if(tt_optvalue) {
+		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH+1) < TT_MAX_LENGTH))) {
 
 			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
-				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-					cmds->con_strings[defopts[i].cxint - CONLINE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-					if(cmds->con_strings[defopts[i].cxint - CONLINE_ID_0]) {
-						strcpy((char *)cmds->con_strings[defopts[i].cxint - CONLINE_ID_0],tt_optvalue);
-					}
-				}
+				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0); 
 			}
 
 			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
-				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-					cmds->cmd_strings[defopts[i].cxint - CMD_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-					if(cmds->cmd_strings[defopts[i].cxint - CMD_ID_0]) {
-						strcpy((char *)cmds->cmd_strings[defopts[i].cxint - CMD_ID_0],tt_optvalue);
-					}
-				}
+				rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0); 
 			}
 
 			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
-				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-					wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-					if(wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0]) {
-						strcpy((char *)wtypes->excl_strings[defopts[i].cxint - EXCL_WTYPE_ID_0],tt_optvalue);
-					}
-				}
+				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0); 
 				if(exclude_wtype == 0) {
 					exclude_wtype = 1;
 				}
 			}
 
 			if(defopts[i].cxint >= INCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
-				if(((strlen(tt_optvalue))+1) < TT_MAX_LENGTH ) {
-					wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0] = malloc((strlen(tt_optvalue)+1) * sizeof(unsigned char));
-					if(wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0]) {
-						strcpy((char *)wtypes->incl_strings[defopts[i].cxint - INCL_WTYPE_ID_0],tt_optvalue);
-					}
-				}
+				rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0); 
 				if(include_wtype == 0) {
 					include_wtype = 1;
 				}
@@ -161,25 +146,29 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 
 			switch (defopts[i].cxint) {
 				case TOPGAP_ID: 	
-					topgap = atoi((const char *)tt_optvalue);
+					//topgap = atoi((const char *)tt_optvalue);
+					topgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case DEFAULT_TOPGAP_ID: 	
 					topgap = calcgap();
 					break;
 				case BOTTOMGAP_ID: 	
-					bottomgap = atoi((const char *)tt_optvalue);
+					//bottomgap = atoi((const char *)tt_optvalue);
+					bottomgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case LEFTGAP_ID: 	
-					leftgap = atoi((const char *)tt_optvalue);
+					//leftgap = atoi((const char *)tt_optvalue);
+					leftgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case RIGHTGAP_ID: 	
-					rightgap = atoi((const char *)tt_optvalue);
+					//rightgap = atoi((const char *)tt_optvalue);
+					rightgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case AUTO_ID:
 					autotile = TRUE;
 					break;
 				case AUTO_INTERVAL_MICRO_ID:
-					auto_interval = strtoul((const char *)tt_optvalue,NULL,10);
+					auto_interval = strtoul((const char *)tt_optvalue,(char **)NULL,10);
 					break;
 				default:
 					break;
@@ -213,11 +202,11 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	}
 
 	if(exclude_wtype) {
-		qsort(wtypes->excl_strings, WTYPE_MAX, sizeof(*wtypes->excl_strings), cstring_cmp);
+		qsort(excls->strings, WTYPE_MAX, sizeof(*excls->strings), cstring_cmp);
 	}
 
 	if(include_wtype) {
-		qsort(wtypes->incl_strings, WTYPE_MAX, sizeof(*wtypes->incl_strings), cstring_cmp);
+		qsort(incls->strings, WTYPE_MAX, sizeof(*incls->strings), cstring_cmp);
 	}
 
 	free(keys);
@@ -233,10 +222,6 @@ short int commo(void)
 	static struct DiskObject *diskobj;
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
-	static int wincount = 0;
-	static short first_run = TRUE;
-	int i;
-	int lock = 1;
 
 	current_layout = 0;
 	auto_interval = AUTO_INTERVAL_MICRO_DEF;
@@ -274,6 +259,10 @@ short int commo(void)
 					return 1;
 				}
  
+				static int wincount = 0;
+				static short first_run = TRUE;
+				static int lock = 1;
+
 				while (running)
 				{
 					if(autotile) {
@@ -325,7 +314,7 @@ short int commo(void)
 							if(id <= (TILE_FUNC_LIMIT)) {
 								*current_layout = id;
 							}
-							defkeys[id].func(&defkeys[id].arg);
+							running = defkeys[id].func(&defkeys[id].arg);
 						}
 					}
 				}
@@ -339,30 +328,43 @@ short int commo(void)
 		DeleteMsgPort(mp);
 	}
 
-	for (i = 0; i < CMD_MAX; ++i) {
-		if(cmds->con_strings[i]) {
-			free(cmds->con_strings[i]);
-		}
-		if(cmds->cmd_strings[i]) {
-			free(cmds->cmd_strings[i]);
-		}
-	}
- 
-	for (i = 0; i < WTYPE_MAX; ++i) {
-		if(wtypes->excl_strings[i]) {
-			free(wtypes->excl_strings[i]);
-		}
-		if(wtypes->incl_strings[i]) {
-			free(wtypes->incl_strings[i]);
-		}
-	}
+	free_opts();
 
 	return 0;
 }
 
-int cstring_cmp(const void *a, const void *b) 
-{ 
-	const char **ia = (const char **)a;
-	const char **ib = (const char **)b;
-	return strcmp(*ia, *ib);
-} 
+static short alloc_opts (char *t, Ostore *s, size_t i, int subtract) {
+	int cxint = defopts[i].cxint - subtract;
+
+	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH+1)) * sizeof(unsigned char));
+
+	if(s->strings[cxint]) {
+		snprintf((char *)s->strings[cxint],TT_MAX_LENGTH, "%s", t);
+		return(TRUE);
+	} else {
+		return(FALSE);
+	}
+	
+}
+
+static void free_opts (void) {
+	int i;
+
+	for (i = 0; i < CMD_MAX; ++i) {
+		if(cons->strings[i]) {
+			free(cons->strings[i]);
+		}
+		if(cmds->strings[i]) {
+			free(cmds->strings[i]);
+		}
+	}
+ 
+	for (i = 0; i < WTYPE_MAX; ++i) {
+		if(excls->strings[i]) {
+			free(excls->strings[i]);
+		}
+		if(incls->strings[i]) {
+			free(incls->strings[i]);
+		}
+	}
+}

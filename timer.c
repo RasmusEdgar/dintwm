@@ -63,9 +63,9 @@ void wait_for_timer(struct timerequest *tr, struct timeval *tv) {
 }
 
 void delete_timer(struct timerequest *tr) {
-	struct MsgPort *tp;
 
 	if (tr != 0) {
+		struct MsgPort *tp;
 		tp = tr->tr_node.io_Message.mn_ReplyPort;
 
 		if (tp != 0)

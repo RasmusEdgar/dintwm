@@ -13,6 +13,8 @@
 #include <devices/timer.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
+#define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
+#define DEFCMD "NewShell"
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
@@ -40,7 +42,7 @@ enum dintwm_identifiers {
 	BOTTOMGAP_ID = 402, // bottomgap type identifier
 	LEFTGAP_ID = 403, // leftgap type iNewshell command dentifier
 	RIGHTGAP_ID = 404, // rightgap type identifier
-	WTYPE_MAX = 9,
+	WTYPE_MAX = 9, // Number excluded/included window titles
 	EXCL_WTYPE_ID_0 = 600, // exclude window type identifier
 	EXCL_WTYPE_ID_1 = 601, // exclude window type identifier
 	EXCL_WTYPE_ID_2 = 602, // exclude window type identifier
@@ -82,9 +84,9 @@ enum dintwm_identifiers {
 	CMD_ID_7 = 907, // cmd spawn identifier
 	CMD_ID_8 = 908, // cmd spawn identifier
 	CMD_ID_9 = 909, // cmd spawn identifier
-	AUTO_ID = 1000, // AUTO TILE
-	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE
-	AUTO_INTERVAL_MICRO_DEF = 15000 // AUTO TILE
+	AUTO_ID = 1000, // AUTO TILE ID
+	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE MICRO ID
+	AUTO_INTERVAL_MICRO_DEF = 15000 // AUTO TILE INTERVAL
 };
 
 typedef union {
@@ -93,20 +95,22 @@ typedef union {
 } Arg;
 
 // dintwm main functions shared
-void tile(const Arg *arg);
-void hgrid(const Arg *arg);
-void fibonacci(const Arg *arg);
-void spiral(const Arg *arg);
-void dwindle(const Arg *arg);
-void restore(const Arg *arg);
-void switcher(const Arg *arg);
-void takesnapshot(const Arg *arg);
-void cleansnapshot(const Arg *arg);
-void printusage(void);
+short tile(const Arg *arg);
+short hgrid(const Arg *arg);
+short fibonacci(const Arg *arg);
+short spiral(const Arg *arg);
+short dwindle(const Arg *arg);
+short restore(const Arg *arg);
+short switcher(const Arg *arg);
+short takesnapshot(const Arg *arg);
+short cleansnapshot(const Arg *arg);
+short printusage(void);
 int countwindows(int l);
-void docmd(const Arg *arg);
-int calcgap(void);
 int cstring_cmp(const void *a, const void *b);
+short docmd(const Arg *arg);
+int calcgap(void);
+short exit_cxm(const Arg *arg);
+size_t strnlen(const char *s, size_t maxlen);
 
 int topgap;
 int bottomgap;
@@ -144,21 +148,22 @@ typedef struct {
 	char *optname;
 	char *defaultval;
 	int tt_type;
-	void (*func)(const Arg *);
+	short (*func)(const Arg *);
 	const Arg arg;
 } Keys;
 
 typedef struct {
-	unsigned char *cmd_strings[CMD_MAX];
-	unsigned char *con_strings[CMD_MAX];
-} Cmdstore;
+	unsigned char *strings[CMD_MAX];
+} Ostore;
 
-typedef struct {
+/*	unsigned char *con_strings[CMD_MAX];
 	unsigned char *excl_strings[WTYPE_MAX];
-	unsigned char *incl_strings[WTYPE_MAX];
-} Wtypestore;
+	unsigned char *incl_strings[WTYPE_MAX];*/
 
-extern Cmdstore cmds[];
-extern Wtypestore wtypes[];
+extern Ostore cmds[];
+extern Ostore cons[];
+extern Ostore incls[];
+extern Ostore excls[];
+
 extern Keys defkeys[];
 extern Opts defopts[];

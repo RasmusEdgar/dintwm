@@ -17,6 +17,7 @@ char TYPE_KEY_CMD_6[] = "POPKEY_CMD_6";
 char TYPE_KEY_CMD_7[] = "POPKEY_CMD_7";
 char TYPE_KEY_CMD_8[] = "POPKEY_CMD_8";
 char TYPE_KEY_CMD_9[] = "POPKEY_CMD_9";
+char TYPE_KEY_CXM_EXIT[] = "POPKEY_CXM_EXIT";
 char TYPE_TOPGAP[] = "TOPGAP";
 char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
 char TYPE_BOTTOMGAP[] = "BOTTOMGAP";
@@ -64,6 +65,7 @@ char TYPE_CMD_6[] = "CMD_6";
 char TYPE_CMD_7[] = "CMD_7";
 char TYPE_CMD_8[] = "CMD_8";
 char TYPE_CMD_9[] = "CMD_9";
+// Change default rawkey combos from here. Leave above alone.
 char KEY_TILE[] = "rawkey control lcommand t";
 char KEY_HGRID[] = "rawkey control lcommand g";
 char KEY_SPIRAL[] = "rawkey control lcommand f";
@@ -83,6 +85,6 @@ char KEY_CMD_6[] = "rawkey control lcommand 6";
 char KEY_CMD_7[] = "rawkey control lcommand 7";
 char KEY_CMD_8[] = "rawkey control lcommand 8";
 char KEY_CMD_9[] = "rawkey control lcommand 9";
+char KEY_CXM_EXIT[] = "rawkey control lcommand q";
 
 short autotile = FALSE;
-
