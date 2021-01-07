@@ -6,8 +6,6 @@
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
-static struct Window *copywindowlist(void);
-static int skipper(struct Window *w);
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
@@ -18,12 +16,16 @@ static unsigned char restoretag = 'r';
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
 static int nolock = 0;
+static struct Screen *screen;
+static short printusage(void);
+static struct Window *copywindowlist(void);
+static int skipper(struct Window *w);
 
 int main(int argc, char **argv)
 {
 	ketopt_t opt = KETOPT_INIT;
 	static int c;
-	static int dint_opt_state = COMMODITIZE;
+	static int dint_opt_state = NOTSET;
 	static int dint_exit_state = EXIT_SUCCESS;
 	static int dint_fail_state = EXIT_SUCCESS;
 	static short rc;
@@ -87,22 +89,42 @@ int main(int argc, char **argv)
 				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'C':
-				dint_opt_state = dint_opt_state == COMMODITIZE ? COMMODITIZE : DOUBLE_OPTION_ERR;
+				dint_opt_state = COMMODITIZE;
 				break;
 			case 'd': 
-				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_DWINDLE : DOUBLE_OPTION_ERR;
+				if(dint_opt_state != NOTSET) {
+					dint_fail_state =  DOUBLE_OPTION_ERR;
+				} else {
+					dint_opt_state = FUNC_DWINDLE;
+				}
 				break;
 			case 'g':
-				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_HGRID : DOUBLE_OPTION_ERR;
+				if(dint_opt_state != NOTSET) {
+					dint_fail_state =  DOUBLE_OPTION_ERR;
+				} else {
+					dint_opt_state = FUNC_HGRID;
+				}
 				break;
 			case 'h':
-				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_PRINTUSAGE : DOUBLE_OPTION_ERR;
+				if(dint_opt_state != NOTSET) {
+					dint_fail_state =  DOUBLE_OPTION_ERR;
+				} else {
+					dint_opt_state = FUNC_PRINTUSAGE;
+				}
 				break;
 			case 's':
-				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_SPIRAL : DOUBLE_OPTION_ERR;
+				if(dint_opt_state != NOTSET) {
+					dint_fail_state =  DOUBLE_OPTION_ERR;
+				} else {
+					dint_opt_state = FUNC_SPIRAL;
+				}
 				break;
 			case 't':
-				dint_opt_state = dint_opt_state == COMMODITIZE ? FUNC_TILE : DOUBLE_OPTION_ERR;
+				if(dint_opt_state != NOTSET) {
+					dint_fail_state =  DOUBLE_OPTION_ERR;
+				} else {
+					dint_opt_state = FUNC_TILE;
+				}
 				break;
 			case ':':
 				dint_fail_state = MISSING;
@@ -120,22 +142,18 @@ int main(int argc, char **argv)
 			printf("Do not use two tile functions at the same time.\n");
 			dint_exit_state = EXIT_FAILURE;
 			goto exit_state;
-			break;
 		case GAP_ERR:
 			printf("Gap is larger or smaller than screen.\n");
 			dint_exit_state = EXIT_FAILURE;
 			goto exit_state;
-			break;
 		case UNKNOWN:
 			printf("unknown opt: -%c\n", opt.opt? opt.opt : ':');
 			dint_exit_state = EXIT_FAILURE;
 			goto exit_state;
-			break;
 		case MISSING:
 			printf("missing arg: -%c\n", opt.opt? opt.opt : ':');
 			dint_exit_state = EXIT_FAILURE;
 			goto exit_state;
-			break;
 		default:
 			break;
 	}
@@ -164,7 +182,7 @@ int main(int argc, char **argv)
 
 }
 
-short printusage(void)
+static short printusage(void)
 {
 
 	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",

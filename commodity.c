@@ -223,7 +223,6 @@ short int commo(void)
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
 
-	current_layout = 0;
 	auto_interval = AUTO_INTERVAL_MICRO_DEF;
 
 	if(!(iconbase = OpenLibrary(iconlib,37))) {

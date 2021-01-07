@@ -28,6 +28,7 @@ enum dintwm_identifiers {
 	GAP_ERR = -3, // Gaps are too small or too big
 	UNKNOWN = -4, // Unknown option
 	MISSING = -5, // Missing argument
+	NOTSET = -6, //
 	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
 	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
 	FUNC_TILE = 0, // tile function identifier
@@ -104,7 +105,6 @@ short restore(const Arg *arg);
 short switcher(const Arg *arg);
 short takesnapshot(const Arg *arg);
 short cleansnapshot(const Arg *arg);
-short printusage(void);
 int countwindows(int l);
 int cstring_cmp(const void *a, const void *b);
 short docmd(const Arg *arg);
@@ -127,8 +127,6 @@ struct timerequest *create_timer( ULONG );
 void wait_for_timer(struct timerequest *, struct timeval *);
 LONG time_delay    ( struct timeval *, ULONG );
 
-// Screen shared struct
-struct Screen *screen;
 
 // commodity headers
 short int commo(void);
