@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 //-V::677
 #include "dintwm.h"
 #include "config.h"
@@ -176,37 +178,42 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 		}
 	}
 
-	keys = malloc(sizeof(*keys) * keyarrsize);
-
-	for (i = 0; i < keyarrsize ; ++i) {
-		keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
-
-		if(keys[i].rawcombo == NULL) {
-			keys[i].rawcombo = defkeys[i].defaultval;
-		}
-
-		if(keys[i].rawcombo != NULL) {
-			CxObj *filter;
-			if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
-			{
-				AttachCxObj(broker, filter);
- 
-				if (CxObjError(filter) != 0) {
-					rc = FALSE;
-					break;
-				} else {
-					rc = TRUE;
-				}
-			}
-		}
-	}
-
 	if(exclude_wtype) {
 		qsort(excls->strings, WTYPE_MAX, sizeof(*excls->strings), cstring_cmp);
 	}
 
 	if(include_wtype) {
 		qsort(incls->strings, WTYPE_MAX, sizeof(*incls->strings), cstring_cmp);
+	}
+
+
+	keys = malloc(sizeof(*keys) * keyarrsize);
+
+	if(keys != NULL) {
+		for (i = 0; i < keyarrsize ; ++i) {
+			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
+
+			if(keys[i].rawcombo == NULL) {
+				keys[i].rawcombo = defkeys[i].defaultval;
+			}
+
+			if(keys[i].rawcombo != NULL) {
+				CxObj *filter;
+				if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
+				{
+					AttachCxObj(broker, filter);
+ 
+					if (CxObjError(filter) != 0) {
+						rc = FALSE;
+						break;
+					} else {
+						rc = TRUE;
+					}
+				}
+			}
+		}
+	} else {
+		rc = FALSE;
 	}
 
 	free(keys);

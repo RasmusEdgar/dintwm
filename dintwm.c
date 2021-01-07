@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 //-V::677
 #include "dintwm.h"
 #include "ketopt.h"
@@ -229,9 +231,9 @@ int skipper(struct Window *w)
 		}
 	}
 
-	if (include_wtype == 0) {
+	/*if (include_wtype == 0) {
 		goto exit_noskip;
-	}
+	}*/
 
 	exit_skip:
 		return 1;
@@ -456,7 +458,8 @@ struct Window *copywindowlist(void) {
 		*next = malloc(sizeof(**next));
 		if (*next == NULL) {
 			unlockbasescreen(&ilock, &screen);
-			exit(EXIT_FAILURE);
+			free(dst);
+			return(NULL);
 		}
 
 		(*next)->Title = w->Title;
@@ -483,7 +486,11 @@ short takesnapshot(const Arg *arg) {
 	cleansnapshot(0);
 	windowliststore = copywindowlist();	
 
-	return(TRUE);
+	if(windowliststore != NULL) {
+		return(TRUE);
+	} else {
+		return(FALSE);
+	}
 }
 
 short cleansnapshot(const Arg *arg) {
