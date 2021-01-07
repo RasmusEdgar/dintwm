@@ -65,7 +65,8 @@ static int ketopt(ketopt_t *s, int argc, char *argv[], int permute, const char *
 		s->ind = s->i - s->n_args;
 		return -1;
 	}
-	if (argv[s->i][0] == '-' && argv[s->i][1] == '-') { /* "--" or a long option */
+	//if (argv[s->i][0] == '-' && argv[s->i][1] == '-') { /* "--" or a long option */
+	if (argv[s->i][1] == '-') { /* "--" or a long option */
 		if (argv[s->i][2] == '\0') { /* a bare "--" */
 			ketopt_permute(argv, s->i, s->n_args);
 			++s->i, s->ind = s->i - s->n_args;
