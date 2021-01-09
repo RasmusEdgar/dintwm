@@ -1,9 +1,10 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 //-V::677
-#include "dintwm.h"
-#include "ketopt.h"
+// Copyright 2021 Rasmus Edgar
+#include "./dintwm.h"
 #include <dos/dostags.h>
+#include "./ketopt.h"
 
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
@@ -13,7 +14,6 @@ static int skip = 0;
 static struct Window *window;
 static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
-//static const int fact = 550;
 static unsigned char restoretag = 'r';
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
@@ -606,7 +606,6 @@ short docmd(const Arg *arg)
 	} else {
 		return(FALSE);
 	}
-
 }
 
 int calcgap(void)

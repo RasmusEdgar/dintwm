@@ -10,7 +10,7 @@ static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts (char *tt_optvalue, Ostore *s, size_t i, int subtract); 
-static void free_all (void);
+static void free_opts (void);
 
 static struct Library *iconbase;
 
@@ -334,12 +334,13 @@ short int commo(void)
 		DeleteMsgPort(mp);
 	}
 
-	free_all();
+	free_opts();
 
 	return 0;
 }
 
-static short alloc_opts (char *t, Ostore *s, size_t i, int subtract) {
+static short alloc_opts (char *t, Ostore *s, size_t i, int subtract)
+{
 	int cxint = defopts[i].cxint - subtract;
 
 	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH)) * sizeof(unsigned char));
@@ -353,7 +354,8 @@ static short alloc_opts (char *t, Ostore *s, size_t i, int subtract) {
 	
 }
 
-static void free_all (void) {
+static void free_opts (void)
+{
 	int i;
 
 	for (i = 0; i < CMD_MAX; ++i) {
