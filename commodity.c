@@ -134,33 +134,33 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 			}
 
 			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
-				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0); 
+				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
 				if(exclude_wtype == 0) {
 					exclude_wtype = 1;
 				}
 			}
 
 			if(defopts[i].cxint >= INCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
-				rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0); 
+				rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0);
 				if(include_wtype == 0) {
 					include_wtype = 1;
 				}
 			}
 
 			switch (defopts[i].cxint) {
-				case TOPGAP_ID: 	
+				case TOPGAP_ID:
 					topgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
-				case DEFAULT_TOPGAP_ID: 	
+				case DEFAULT_TOPGAP_ID:
 					topgap = calcgap();
 					break;
-				case BOTTOMGAP_ID: 	
+				case BOTTOMGAP_ID:
 					bottomgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
-				case LEFTGAP_ID: 	
+				case LEFTGAP_ID:
 					leftgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
-				case RIGHTGAP_ID: 	
+				case RIGHTGAP_ID:
 					rightgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case AUTO_ID:
@@ -169,7 +169,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 				case AUTO_INTERVAL_MICRO_ID:
 					auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
-				case TILE_FACT_ID: 	
+				case TILE_FACT_ID:
 					fact = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				default:
@@ -202,7 +202,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 				if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
 				{
 					AttachCxObj(broker, filter);
- 
+
 					if (CxObjError(filter) != 0) {
 						rc = FALSE;
 						break;
@@ -219,7 +219,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 	free(keys);
 	return rc;
 }
- 
+
 short int commo(void)
 {
 	struct timeval currentval;
@@ -240,30 +240,30 @@ short int commo(void)
 		DeleteMsgPort(mp);
 		return 1;
 	}
- 
+
 	if (mp)
 	{
 		CxObj *broker;
- 
+
 		MyBroker.nb_Port = mp;
 		broker = CxBroker(&MyBroker, NULL);
- 
+
 		if (broker)
 		{
 			CxMsg *msg;
- 
+
 			if (attachtooltypes(broker, mp, diskobj))
 			{
 				CloseLibrary(iconbase);
 				FreeDiskObject(diskobj);
 
 				BOOL running = TRUE;
- 
+
 				if(ActivateCxObj(broker, 1) != 0) {
 					DeleteMsgPort(mp);
 					return 1;
 				}
- 
+
 				static int wincount = 0;
 				static short first_run = TRUE;
 				static int lock = 1;
@@ -284,14 +284,14 @@ short int commo(void)
 					} else {
 						(void)WaitPort(mp);
 					}
- 
+
 					while ((msg = (void *)GetMsg(mp)))
 					{
 						long id = CxMsgID(msg);
 						unsigned long type = CxMsgType(msg);
- 
+
 						ReplyMsg((struct Message *)msg);
- 
+
 						if (type == CXM_COMMAND)
 						{
 							switch (id)
@@ -322,9 +322,9 @@ short int commo(void)
 					}
 				}
 			}
- 
+
 			DeleteCxObjAll(broker);
- 
+
 			while ((msg = (void *)GetMsg(mp)))
 				ReplyMsg((struct Message *)msg);
 		}
@@ -362,7 +362,7 @@ static void free_opts(void)
 			free(cmds->strings[i]);
 		}
 	}
- 
+
 	for (i = 0; i < WTYPE_MAX; ++i) {
 		if(excls->strings[i]) {
 			free(excls->strings[i]);

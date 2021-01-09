@@ -1,7 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 // Copyright 2021 Rasmus Edgar
-#include "dintwm.h"
+#include "./dintwm.h"
 
 struct timerequest *create_timer(unsigned long unit)
 {
@@ -55,7 +55,6 @@ LONG time_delay(struct timeval *tv, ULONG unit) {
 }
 
 void wait_for_timer(struct timerequest *tr, struct timeval *tv) {
-
 	tr->tr_node.io_Command = TR_ADDREQUEST;	/* add a new timer request */
 
 /* structure assignment */
@@ -66,7 +65,6 @@ void wait_for_timer(struct timerequest *tr, struct timeval *tv) {
 }
 
 void delete_timer(struct timerequest *tr) {
-
 	if (tr != 0) {
 		struct MsgPort *tp;
 		tp = tr->tr_node.io_Message.mn_ReplyPort;
