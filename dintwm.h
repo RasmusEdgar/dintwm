@@ -87,7 +87,9 @@ enum dintwm_identifiers {
 	CMD_ID_9 = 909, // cmd spawn identifier
 	AUTO_ID = 1000, // AUTO TILE ID
 	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE MICRO ID
-	AUTO_INTERVAL_MICRO_DEF = 15000 // AUTO TILE INTERVAL
+	AUTO_INTERVAL_MICRO_DEF = 15000, // AUTO TILE INTERVAL
+	TILE_FACT_DEF = 550, // Default mfact value
+	TILE_FACT_ID = 1200 // mfact opt id
 };
 
 typedef union {
@@ -111,6 +113,7 @@ short docmd(const Arg *arg);
 int calcgap(void);
 short exit_cxm(const Arg *arg);
 size_t strnlen(const char *s, size_t maxlen);
+int fact;
 
 int topgap;
 int bottomgap;

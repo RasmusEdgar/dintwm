@@ -13,7 +13,7 @@ static int skip = 0;
 static struct Window *window;
 static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
-static const int fact = 550;
+//static const int fact = 550;
 static unsigned char restoretag = 'r';
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
@@ -22,6 +22,7 @@ static struct Screen *screen;
 static short printusage(void);
 static struct Window *copywindowlist(void);
 static int skipper(struct Window *w);
+static void free_list(struct Window * wlist);
 
 int main(int argc, char **argv)
 {
@@ -43,7 +44,6 @@ int main(int argc, char **argv)
 					dint_fail_state = MISSING;
 					break;
 				}
-				//topgap = atoi(opt.arg);
 				topgap = (int)strtol(opt.arg, (char **)NULL, 10);
 				lockbasescreen(&ilock, &screen);
 				if (topgap > screen->Height || topgap < 0) {
@@ -56,7 +56,6 @@ int main(int argc, char **argv)
 					dint_fail_state = MISSING;
 					break;
 				}
-				//bottomgap = atoi(opt.arg);
 				bottomgap = (int)strtol(opt.arg, (char **)NULL, 10);
 				lockbasescreen(&ilock, &screen);
 				if (bottomgap > screen->Height || bottomgap < 0) {
@@ -69,7 +68,6 @@ int main(int argc, char **argv)
 					dint_fail_state = MISSING;
 					break;
 				}
-				//leftgap = atoi(opt.arg);
 				leftgap = (int)strtol(opt.arg, (char **)NULL, 10);
 				lockbasescreen(&ilock, &screen);
 				if (leftgap > screen->Width || leftgap < 0) {
@@ -82,7 +80,6 @@ int main(int argc, char **argv)
 					dint_fail_state = MISSING;
 					break;
 				}
-				//rightgap = atoi(opt.arg);
 				rightgap = (int)strtol(opt.arg, (char **)NULL, 10);
 				lockbasescreen(&ilock, &screen);
 				if (rightgap > screen->Width || rightgap < 0) {
@@ -91,7 +88,11 @@ int main(int argc, char **argv)
 				unlockbasescreen(&ilock, &screen);
 				break;
 			case 'C':
-				dint_opt_state = COMMODITIZE;
+				if(dint_opt_state != NOTSET) {
+					dint_fail_state =  DOUBLE_OPTION_ERR;
+				} else {
+					dint_opt_state = COMMODITIZE;
+				}
 				break;
 			case 'd': 
 				if(dint_opt_state != NOTSET) {
@@ -160,15 +161,18 @@ int main(int argc, char **argv)
 			break;
 	}
 
+	// If no arg is used, set to commoditize
+	if(dint_opt_state != NOTSET) {
+		dint_fail_state =  DOUBLE_OPTION_ERR;
+	} else {
+		dint_opt_state = COMMODITIZE;
+	}
 	
 	switch (dint_opt_state) {
 		case COMMODITIZE:
 			if ((rc = commo()) != 0) {
 				dint_exit_state = EXIT_FAILURE;
 				goto exit_state;
-			}
-			if (windowliststore != NULL) {
-				free(windowliststore);
 			}
 			break;
 		case FUNC_PRINTUSAGE:
@@ -180,6 +184,9 @@ int main(int argc, char **argv)
 	}
 
 	exit_state:
+		if (windowliststore != NULL) {
+			free_list(windowliststore);
+		}	
 		exit(dint_exit_state);
 
 }
@@ -203,7 +210,7 @@ static short printusage(void)
 	return(TRUE);
 }
 
-int skipper(struct Window *w)
+static int skipper(struct Window *w)
 {
 	if (w->Flags & BACKDROP) {
 		goto exit_skip;
@@ -229,11 +236,9 @@ int skipper(struct Window *w)
 		} else {
 			goto exit_skip;
 		}
-	}
-
-	/*if (include_wtype == 0) {
+	} else {
 		goto exit_noskip;
-	}*/
+	}
 
 	exit_skip:
 		return 1;
@@ -243,7 +248,8 @@ int skipper(struct Window *w)
 
 }
 
-void cwb(struct Window *w, int wx, int wy, int ww, int wh) {
+void cwb(struct Window *w, int wx, int wy, int ww, int wh)
+{
 	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
 	WindowToFront(w);
 }
@@ -254,6 +260,10 @@ short tile(const Arg *arg)
 
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
+
+	if (!fact) {
+		fact = TILE_FACT_DEF;
+	}
 
 	lockbasescreen(&ilock, &screen);
 
@@ -422,6 +432,7 @@ short fibonacci(const Arg *arg)
 
 short switcher(const Arg *arg)
 {
+	short rc;
 	if(*current_layout < TILE_FUNC_LIMIT && *layout_number == LAYOUT_START) {
 		*layout_number = *current_layout;
 	}
@@ -431,20 +442,21 @@ short switcher(const Arg *arg)
 		if(*layout_number > TILE_FUNC_LIMIT) {
 			*layout_number = 0;
 		} 
-		defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
+		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
 	} else {
 		(*layout_number)--;
 		if(*layout_number < 0) {
 			*layout_number = TILE_FUNC_LIMIT;
 		} 
-		defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
+		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
 	}
 	*current_layout = *layout_number;
 
-	return(TRUE);
+	return(rc);
 }
 
-struct Window *copywindowlist(void) {
+struct Window *copywindowlist(void)
+{
 	lockbasescreen(&ilock, &screen);
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
 
@@ -481,29 +493,33 @@ struct Window *copywindowlist(void) {
 	return dst;
 }
 
-short takesnapshot(const Arg *arg) {
+short takesnapshot(const Arg *arg)
+{
+	short rc;
 	(void)arg;
-	cleansnapshot(0);
+	rc = cleansnapshot(0);
 	windowliststore = copywindowlist();	
 
-	if(windowliststore != NULL) {
+	if(windowliststore != NULL || rc) {
 		return(TRUE);
 	} else {
 		return(FALSE);
 	}
 }
 
-short cleansnapshot(const Arg *arg) {
+short cleansnapshot(const Arg *arg)
+{
 	(void)arg;
 	if(windowliststore != NULL) {
-		free(windowliststore);
+		free_list(windowliststore);
 		windowliststore = NULL;
 	}
 
 	return(TRUE);
 }
 
-short restore(const Arg *arg) {
+short restore(const Arg *arg)
+{
 	(void)arg;
 	if(windowliststore != NULL) {
 		lockbasescreen(&ilock, &screen);
@@ -531,7 +547,8 @@ short restore(const Arg *arg) {
 	return(TRUE);
 }
 
-int countwindows(int l) {
+int countwindows(int l)
+{
 	int wincount;
 	if(l) {
 		lockbasescreen(&ilock, &screen);	
@@ -549,7 +566,8 @@ int countwindows(int l) {
 	return wincount;
 }
 
-short docmd(const Arg *arg) {
+short docmd(const Arg *arg)
+{
 	int cmdid = arg->i - CMD_ID_0;
 	struct TagItem stags[5];
     	long int file;
@@ -591,7 +609,8 @@ short docmd(const Arg *arg) {
 
 }
 
-int calcgap(void) {
+int calcgap(void)
+{
 	int bheight;
 	lockbasescreen(&ilock, &screen);
 	bheight = screen->BarHeight + 1;
@@ -599,24 +618,25 @@ int calcgap(void) {
 	return(bheight);
 }
 
-void lockbasescreen(unsigned long *il, struct Screen **s)
+static void lockbasescreen(unsigned long *il, struct Screen **s)
 {
 	*il = LockIBase(0L);
 	*s = LockPubScreen(NULL);
 }
 
-void unlockbasescreen(unsigned long *il, struct Screen **s)
+static void unlockbasescreen(unsigned long *il, struct Screen **s)
 {
 	UnlockPubScreen(NULL, *s);
 	UnlockIBase(*il);
 }
 
-short exit_cxm(const Arg *arg) {
+short exit_cxm(const Arg *arg)
+{
 	(void)arg;
 	return(FALSE);
 }
 
-int cstring_cmp(const void *a, const void *b) 
+int cstring_cmp(const void *a, const void *b)
 { 
 	const char **ia = (const char **)a;
 	const char **ib = (const char **)b;
@@ -632,4 +652,15 @@ size_t strnlen(const char *s, size_t maxlen)
 			break;
 	}
 	return (len);
+}
+
+static void free_list(struct Window * wlist)
+{
+	struct Window* next_win;
+
+	while(wlist != NULL) {
+		next_win = wlist->NextWindow;
+		free(wlist);
+		wlist = next_win;
+	}
 }

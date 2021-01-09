@@ -10,7 +10,7 @@ static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts (char *tt_optvalue, Ostore *s, size_t i, int subtract); 
-static void free_opts (void);
+static void free_all (void);
 
 static struct Library *iconbase;
 
@@ -45,6 +45,7 @@ Opts defopts[] = {
 	{ TYPE_RIGHTGAP, RIGHTGAP_ID, OPTTYPE },
 	{ TYPE_AUTO, AUTO_ID, OPTTYPE },
 	{ TYPE_AUTO_INTERVAL_MICRO, AUTO_INTERVAL_MICRO_ID, OPTTYPE },
+	{ TYPE_TILE_FACT, TILE_FACT_ID, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE },
@@ -148,22 +149,18 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 
 			switch (defopts[i].cxint) {
 				case TOPGAP_ID: 	
-					//topgap = atoi((const char *)tt_optvalue);
 					topgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case DEFAULT_TOPGAP_ID: 	
 					topgap = calcgap();
 					break;
 				case BOTTOMGAP_ID: 	
-					//bottomgap = atoi((const char *)tt_optvalue);
 					bottomgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case LEFTGAP_ID: 	
-					//leftgap = atoi((const char *)tt_optvalue);
 					leftgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case RIGHTGAP_ID: 	
-					//rightgap = atoi((const char *)tt_optvalue);
 					rightgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case AUTO_ID:
@@ -171,6 +168,9 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 					break;
 				case AUTO_INTERVAL_MICRO_ID:
 					auto_interval = strtoul((const char *)tt_optvalue,(char **)NULL,10);
+					break;
+				case TILE_FACT_ID: 	
+					fact = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				default:
 					break;
@@ -277,7 +277,7 @@ short int commo(void)
 						currentval.tv_micro = auto_interval;
 						(void)time_delay( &currentval, UNIT_MICROHZ );
 						if(wincount != (countwindows(lock)) || first_run == TRUE) {
-							defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+							running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 							if(first_run == TRUE) {
 								first_run = FALSE;
 							}
@@ -334,7 +334,7 @@ short int commo(void)
 		DeleteMsgPort(mp);
 	}
 
-	free_opts();
+	free_all();
 
 	return 0;
 }
@@ -353,7 +353,7 @@ static short alloc_opts (char *t, Ostore *s, size_t i, int subtract) {
 	
 }
 
-static void free_opts (void) {
+static void free_all (void) {
 	int i;
 
 	for (i = 0; i < CMD_MAX; ++i) {
@@ -373,4 +373,5 @@ static void free_opts (void) {
 			free(incls->strings[i]);
 		}
 	}
+
 }
