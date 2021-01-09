@@ -1,16 +1,17 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 //-V::677
-#include "dintwm.h"
-#include "config.h"
+// Copyright 2021 Rasmus Edgar
+#include "./dintwm.h"
+#include "./config.h"
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for AmigaOS";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
 static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
-static short alloc_opts (char *tt_optvalue, Ostore *s, size_t i, int subtract); 
-static void free_opts (void);
+static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
+static void free_opts(void);
 
 static struct Library *iconbase;
 
@@ -124,13 +125,12 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
 		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < TT_MAX_LENGTH))) {
-
 			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
-				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0); 
+				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0);
 			}
 
 			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
-				rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0); 
+				rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0);
 			}
 
 			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
@@ -167,7 +167,7 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
 					autotile = TRUE;
 					break;
 				case AUTO_INTERVAL_MICRO_ID:
-					auto_interval = strtoul((const char *)tt_optvalue,(char **)NULL,10);
+					auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case TILE_FACT_ID: 	
 					fact = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
@@ -222,7 +222,6 @@ static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObje
  
 short int commo(void)
 {
-
 	struct timeval currentval;
 
 	struct MsgPort *mp = CreateMsgPort();
@@ -232,7 +231,7 @@ short int commo(void)
 
 	auto_interval = AUTO_INTERVAL_MICRO_DEF;
 
-	if(!(iconbase = OpenLibrary(iconlib,37))) {
+	if(!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
 		return 1;
 	}
@@ -275,7 +274,7 @@ short int commo(void)
 						wincount = countwindows(lock);
 						currentval.tv_secs = 0;
 						currentval.tv_micro = auto_interval;
-						(void)time_delay( &currentval, UNIT_MICROHZ );
+						(void)time_delay(&currentval, UNIT_MICROHZ);
 						if(wincount != (countwindows(lock)) || first_run == TRUE) {
 							running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 							if(first_run == TRUE) {
@@ -314,9 +313,7 @@ short int commo(void)
 								default:
 									break;
 							}
-						}
-						else if (type == CXM_IEVENT)
-						{
+						} else if (type == CXM_IEVENT) {
 							if(id <= (TILE_FUNC_LIMIT)) {
 								*current_layout = id;
 							}
@@ -339,22 +336,21 @@ short int commo(void)
 	return 0;
 }
 
-static short alloc_opts (char *t, Ostore *s, size_t i, int subtract)
+static short alloc_opts(char *t, Ostore *s, size_t i, int subtract)
 {
 	int cxint = defopts[i].cxint - subtract;
 
 	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH)) * sizeof(unsigned char));
 
 	if(s->strings[cxint]) {
-		(void)snprintf((char *)s->strings[cxint],TT_MAX_LENGTH, "%s", t);
+		(void)snprintf((char *)s->strings[cxint], TT_MAX_LENGTH, "%s", t);
 		return(TRUE);
 	} else {
 		return(FALSE);
 	}
-	
 }
 
-static void free_opts (void)
+static void free_opts(void)
 {
 	int i;
 
@@ -375,5 +371,4 @@ static void free_opts (void)
 			free(incls->strings[i]);
 		}
 	}
-
 }

@@ -22,7 +22,7 @@ static struct Screen *screen;
 static short printusage(void);
 static struct Window *copywindowlist(void);
 static int skipper(struct Window *w);
-static void free_list(struct Window * wlist);
+static void free_list(struct Window *wlist);
 
 int main(int argc, char **argv)
 {
@@ -33,181 +33,178 @@ int main(int argc, char **argv)
 	static int dint_fail_state = EXIT_SUCCESS;
 	static short rc;
 
-
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:Cdghst", 0)) >= 0) {
 		switch (c) {
-			case 'u':
-				topgap = calcgap();
-				break;
-			case 'U':
-				if(*opt.arg == '-') {
-					dint_fail_state = MISSING;
-					break;
-				}
-				topgap = (int)strtol(opt.arg, (char **)NULL, 10);
-				lockbasescreen(&ilock, &screen);
-				if (topgap > screen->Height || topgap < 0) {
-					dint_fail_state = GAP_ERR;
-				}
-				unlockbasescreen(&ilock, &screen);
-				break;
-			case 'B':
-				if(*opt.arg == '-') {
-					dint_fail_state = MISSING;
-					break;
-				}
-				bottomgap = (int)strtol(opt.arg, (char **)NULL, 10);
-				lockbasescreen(&ilock, &screen);
-				if (bottomgap > screen->Height || bottomgap < 0) {
-					dint_fail_state = GAP_ERR;
-				}
-				unlockbasescreen(&ilock, &screen);
-				break;
-			case 'L':
-				if(*opt.arg == '-') {
-					dint_fail_state = MISSING;
-					break;
-				}
-				leftgap = (int)strtol(opt.arg, (char **)NULL, 10);
-				lockbasescreen(&ilock, &screen);
-				if (leftgap > screen->Width || leftgap < 0) {
-					dint_fail_state = GAP_ERR;
-				}
-				unlockbasescreen(&ilock, &screen);
-				break;
-			case 'R':
-				if(*opt.arg == '-') {
-					dint_fail_state = MISSING;
-					break;
-				}
-				rightgap = (int)strtol(opt.arg, (char **)NULL, 10);
-				lockbasescreen(&ilock, &screen);
-				if (rightgap > screen->Width || rightgap < 0) {
-					dint_fail_state = GAP_ERR;
-				}
-				unlockbasescreen(&ilock, &screen);
-				break;
-			case 'C':
-				if(dint_opt_state != NOTSET) {
-					dint_fail_state =  DOUBLE_OPTION_ERR;
-				} else {
-					dint_opt_state = COMMODITIZE;
-				}
-				break;
-			case 'd': 
-				if(dint_opt_state != NOTSET) {
-					dint_fail_state =  DOUBLE_OPTION_ERR;
-				} else {
-					dint_opt_state = FUNC_DWINDLE;
-				}
-				break;
-			case 'g':
-				if(dint_opt_state != NOTSET) {
-					dint_fail_state =  DOUBLE_OPTION_ERR;
-				} else {
-					dint_opt_state = FUNC_HGRID;
-				}
-				break;
-			case 'h':
-				if(dint_opt_state != NOTSET) {
-					dint_fail_state =  DOUBLE_OPTION_ERR;
-				} else {
-					dint_opt_state = FUNC_PRINTUSAGE;
-				}
-				break;
-			case 's':
-				if(dint_opt_state != NOTSET) {
-					dint_fail_state =  DOUBLE_OPTION_ERR;
-				} else {
-					dint_opt_state = FUNC_SPIRAL;
-				}
-				break;
-			case 't':
-				if(dint_opt_state != NOTSET) {
-					dint_fail_state =  DOUBLE_OPTION_ERR;
-				} else {
-					dint_opt_state = FUNC_TILE;
-				}
-				break;
-			case ':':
+		case 'u':
+			topgap = calcgap();
+			break;
+		case 'U':
+			if (*opt.arg == '-') {
 				dint_fail_state = MISSING;
 				break;
-			case '?':
-				dint_fail_state = UNKNOWN;
+			}
+			topgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			lockbasescreen(&ilock, &screen);
+			if (topgap > screen->Height || topgap < 0) {
+				dint_fail_state = GAP_ERR;
+			}
+			unlockbasescreen(&ilock, &screen);
+			break;
+		case 'B':
+			if (*opt.arg == '-') {
+				dint_fail_state = MISSING;
 				break;
-			default:
+			}
+			bottomgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			lockbasescreen(&ilock, &screen);
+			if (bottomgap > screen->Height || bottomgap < 0) {
+				dint_fail_state = GAP_ERR;
+			}
+			unlockbasescreen(&ilock, &screen);
+			break;
+		case 'L':
+			if (*opt.arg == '-') {
+				dint_fail_state = MISSING;
 				break;
+			}
+			leftgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			lockbasescreen(&ilock, &screen);
+			if (leftgap > screen->Width || leftgap < 0) {
+				dint_fail_state = GAP_ERR;
+			}
+			unlockbasescreen(&ilock, &screen);
+			break;
+		case 'R':
+			if (*opt.arg == '-') {
+				dint_fail_state = MISSING;
+				break;
+			}
+			rightgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			lockbasescreen(&ilock, &screen);
+			if (rightgap > screen->Width || rightgap < 0) {
+				dint_fail_state = GAP_ERR;
+			}
+			unlockbasescreen(&ilock, &screen);
+			break;
+		case 'C':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = COMMODITIZE;
+			}
+			break;
+		case 'd':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = FUNC_DWINDLE;
+			}
+			break;
+		case 'g':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = FUNC_HGRID;
+			}
+			break;
+		case 'h':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = FUNC_PRINTUSAGE;
+			}
+			break;
+		case 's':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = FUNC_SPIRAL;
+			}
+			break;
+		case 't':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = FUNC_TILE;
+			}
+			break;
+		case ':':
+			dint_fail_state = MISSING;
+			break;
+		case '?':
+			dint_fail_state = UNKNOWN;
+			break;
+		default:
+			break;
 		}
 	}
 
 	switch (dint_fail_state) {
-		case DOUBLE_OPTION_ERR:
-			printf("Do not use two tile functions at the same time.\n");
-			dint_exit_state = EXIT_FAILURE;
-			goto exit_state;
-		case GAP_ERR:
-			printf("Gap is larger or smaller than screen.\n");
-			dint_exit_state = EXIT_FAILURE;
-			goto exit_state;
-		case UNKNOWN:
-			printf("unknown opt: -%c\n", opt.opt? opt.opt : ':');
-			dint_exit_state = EXIT_FAILURE;
-			goto exit_state;
-		case MISSING:
-			printf("missing arg: -%c\n", opt.opt? opt.opt : ':');
-			dint_exit_state = EXIT_FAILURE;
-			goto exit_state;
-		default:
-			break;
+	case DOUBLE_OPTION_ERR:
+		printf("Do not use two tile functions at the same time.\n");
+		dint_exit_state = EXIT_FAILURE;
+		goto exit_state;
+	case GAP_ERR:
+		printf("Gap is larger or smaller than screen.\n");
+		dint_exit_state = EXIT_FAILURE;
+		goto exit_state;
+	case UNKNOWN:
+		printf("unknown opt: -%c\n", opt.opt ? opt.opt : ':');
+		dint_exit_state = EXIT_FAILURE;
+		goto exit_state;
+	case MISSING:
+		printf("missing arg: -%c\n", opt.opt ? opt.opt : ':');
+		dint_exit_state = EXIT_FAILURE;
+		goto exit_state;
+	default:
+		break;
 	}
 
 	// If no arg is used, set to commoditize
-	if(dint_opt_state != NOTSET) {
-		dint_fail_state =  DOUBLE_OPTION_ERR;
+	if (dint_opt_state != NOTSET) {
+		dint_fail_state = DOUBLE_OPTION_ERR;
 	} else {
 		dint_opt_state = COMMODITIZE;
 	}
-	
+
 	switch (dint_opt_state) {
-		case COMMODITIZE:
-			if ((rc = commo()) != 0) {
-				dint_exit_state = EXIT_FAILURE;
-				goto exit_state;
-			}
-			break;
-		case FUNC_PRINTUSAGE:
-			dint_exit_state = printusage();
-			break;
-		default:
-			dint_exit_state = defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
-			break;
+	case COMMODITIZE:
+		if ((rc = commo()) != 0) {
+			dint_exit_state = EXIT_FAILURE;
+			goto exit_state;
+		}
+		break;
+	case FUNC_PRINTUSAGE:
+		dint_exit_state = printusage();
+		break;
+	default:
+		dint_exit_state =
+		    defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
+		break;
 	}
 
-	exit_state:
-		if (windowliststore != NULL) {
-			free_list(windowliststore);
-		}	
-		exit(dint_exit_state);
-
+exit_state:
+	if (windowliststore != NULL) {
+		free_list(windowliststore);
+	}
+	exit(dint_exit_state);
 }
 
 static short printusage(void)
 {
-
 	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-		"Options:",
-		"-d: Fibonacci dwindle",
-		"-g: Horizontal grid",
-		"-t: Tile with left master",
-		"-s: Fibonacci spiral",
-		"<other arg> -u: Add workbench bar gap",
-		"<other arg> -U<int>: Add custom top gap",
-		"<other arg> -B<int>: Add custom bottom gap",
-		"<other arg> -L<int>: Add custom left gap",
-		"<other arg> -R<int>: Add custom right gap",
-		"-h: This message");
+	       "Options:",
+	       "-d: Fibonacci dwindle",
+	       "-g: Horizontal grid",
+	       "-t: Tile with left master",
+	       "-s: Fibonacci spiral",
+	       "<other arg> -u: Add workbench bar gap",
+	       "<other arg> -U<int>: Add custom top gap",
+	       "<other arg> -B<int>: Add custom bottom gap",
+	       "<other arg> -L<int>: Add custom left gap",
+	       "<other arg> -R<int>: Add custom right gap", "-h: This message");
 
-	return(TRUE);
+	return (TRUE);
 }
 
 static int skipper(struct Window *w)
@@ -225,13 +222,17 @@ static int skipper(struct Window *w)
 	}
 
 	if (exclude_wtype != 0) {
-		if(bsearch(&w->Title, excls->strings, WTYPE_MAX, sizeof(char *), cstring_cmp)) {
+		if (bsearch
+		    (&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
+		     cstring_cmp)) {
 			goto exit_skip;
 		}
 	}
 
 	if (include_wtype != 0) {
-		if(bsearch(&w->Title, incls->strings, WTYPE_MAX, sizeof(char *), cstring_cmp)) {
+		if (bsearch
+		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
+		     cstring_cmp)) {
 			goto exit_noskip;
 		} else {
 			goto exit_skip;
@@ -240,21 +241,21 @@ static int skipper(struct Window *w)
 		goto exit_noskip;
 	}
 
-	exit_skip:
-		return 1;
+exit_skip:
+	return 1;
 
-	exit_noskip:
-		return 0;
-
+exit_noskip:
+	return 0;
 }
 
 void cwb(struct Window *w, int wx, int wy, int ww, int wh)
 {
-	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
+	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww,
+			(short int)wh);
 	WindowToFront(w);
 }
 
-short tile(const Arg *arg)
+short tile(const Arg * arg)
 {
 	(void)arg;
 
@@ -274,7 +275,7 @@ short tile(const Arg *arg)
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
-		return(TRUE);
+		return (TRUE);
 	}
 
 	if (wincount > nmaster) {
@@ -305,10 +306,10 @@ short tile(const Arg *arg)
 	}
 	unlockbasescreen(&ilock, &screen);
 
-	return(TRUE);
+	return (TRUE);
 }
 
-short hgrid(const Arg *arg)
+short hgrid(const Arg * arg)
 {
 	(void)arg;
 
@@ -324,7 +325,7 @@ short hgrid(const Arg *arg)
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
-		return(TRUE);
+		return (TRUE);
 	}
 
 	for (wnr = 0, window = screen->FirstWindow; window;
@@ -358,10 +359,10 @@ short hgrid(const Arg *arg)
 	}
 	unlockbasescreen(&ilock, &screen);
 
-	return(TRUE);
+	return (TRUE);
 }
 
-short fibonacci(const Arg *arg)
+short fibonacci(const Arg * arg)
 {
 	int wnr, wincount;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
@@ -427,32 +428,34 @@ short fibonacci(const Arg *arg)
 	}
 	unlockbasescreen(&ilock, &screen);
 
-	return(TRUE);
+	return (TRUE);
 }
 
-short switcher(const Arg *arg)
+short switcher(const Arg * arg)
 {
 	short rc;
-	if(*current_layout < TILE_FUNC_LIMIT && *layout_number == LAYOUT_START) {
+	if (*current_layout < TILE_FUNC_LIMIT && *layout_number == LAYOUT_START) {
 		*layout_number = *current_layout;
 	}
-		
-	if(arg->i) {
+
+	if (arg->i) {
 		(*layout_number)++;
-		if(*layout_number > TILE_FUNC_LIMIT) {
+		if (*layout_number > TILE_FUNC_LIMIT) {
 			*layout_number = 0;
-		} 
-		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
+		}
+		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].
+						    arg);
 	} else {
 		(*layout_number)--;
-		if(*layout_number < 0) {
+		if (*layout_number < 0) {
 			*layout_number = TILE_FUNC_LIMIT;
-		} 
-		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
+		}
+		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].
+						    arg);
 	}
 	*current_layout = *layout_number;
 
-	return(rc);
+	return (rc);
 }
 
 struct Window *copywindowlist(void)
@@ -460,8 +463,7 @@ struct Window *copywindowlist(void)
 	lockbasescreen(&ilock, &screen);
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
 
-	while (w)
-	{
+	while (w) {
 		if ((skip = skipper(w)) == 1) {
 			w = w->NextWindow;
 			continue;
@@ -471,7 +473,7 @@ struct Window *copywindowlist(void)
 		if (*next == NULL) {
 			unlockbasescreen(&ilock, &screen);
 			free(dst);
-			return(NULL);
+			return (NULL);
 		}
 
 		(*next)->Title = w->Title;
@@ -493,46 +495,49 @@ struct Window *copywindowlist(void)
 	return dst;
 }
 
-short takesnapshot(const Arg *arg)
+short takesnapshot(const Arg * arg)
 {
 	short rc;
 	(void)arg;
 	rc = cleansnapshot(0);
-	windowliststore = copywindowlist();	
+	windowliststore = copywindowlist();
 
-	if(windowliststore != NULL || rc) {
-		return(TRUE);
+	if (windowliststore != NULL || rc) {
+		return (TRUE);
 	} else {
-		return(FALSE);
+		return (FALSE);
 	}
 }
 
-short cleansnapshot(const Arg *arg)
+short cleansnapshot(const Arg * arg)
 {
 	(void)arg;
-	if(windowliststore != NULL) {
+	if (windowliststore != NULL) {
 		free_list(windowliststore);
 		windowliststore = NULL;
 	}
 
-	return(TRUE);
+	return (TRUE);
 }
 
-short restore(const Arg *arg)
+short restore(const Arg * arg)
 {
 	(void)arg;
-	if(windowliststore != NULL) {
+	if (windowliststore != NULL) {
 		lockbasescreen(&ilock, &screen);
 		struct Window *storehead = windowliststore;
 		for (window = screen->FirstWindow; window;
-			window = window->NextWindow) {
+		     window = window->NextWindow) {
 			if ((skip = skipper(window)) == 1) {
 				windowliststore = windowliststore->NextWindow;
 				continue;
 			}
 
 			if (windowliststore->ExtData == window->ExtData) {
-				cwb(window, windowliststore->LeftEdge, windowliststore->TopEdge, windowliststore->Width, windowliststore->Height);
+				cwb(window, windowliststore->LeftEdge,
+				    windowliststore->TopEdge,
+				    windowliststore->Width,
+				    windowliststore->Height);
 				WindowToFront(window);
 			} else {
 				WindowToBack(window);
@@ -544,67 +549,70 @@ short restore(const Arg *arg)
 		unlockbasescreen(&ilock, &screen);
 	}
 
-	return(TRUE);
+	return (TRUE);
 }
 
 int countwindows(int l)
 {
 	int wincount;
-	if(l) {
-		lockbasescreen(&ilock, &screen);	
+	if (l) {
+		lockbasescreen(&ilock, &screen);
 	}
-        for (wincount = 0, window = screen->FirstWindow; window;
-             window = window->NextWindow, wincount++) {
-                if ((skip = skipper(window)) == 1) {
-                        wincount--;
-                        continue;
-                }
-        }
-	if(l) {
+	for (wincount = 0, window = screen->FirstWindow; window;
+	     window = window->NextWindow, wincount++) {
+		if ((skip = skipper(window)) == 1) {
+			wincount--;
+			continue;
+		}
+	}
+	if (l) {
 		unlockbasescreen(&ilock, &screen);
 	}
 	return wincount;
 }
 
-short docmd(const Arg *arg)
+short docmd(const Arg * arg)
 {
 	int cmdid = arg->i - CMD_ID_0;
 	struct TagItem stags[5];
-    	long int file;
+	long int file;
 	unsigned char conline[TT_MAX_LENGTH];
 	unsigned char cmd[TT_MAX_LENGTH];
 
-	size_t conlen = strnlen((const char *)cons->strings[cmdid], TT_MAX_LENGTH);
-	size_t cmdlen = strnlen((const char *)cmds->strings[cmdid], TT_MAX_LENGTH);
+	size_t conlen =
+	    strnlen((const char *)cons->strings[cmdid], TT_MAX_LENGTH);
+	size_t cmdlen =
+	    strnlen((const char *)cmds->strings[cmdid], TT_MAX_LENGTH);
 
 	if (conlen != 0) {
-		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s", cons->strings[cmdid]);
+		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s",
+			       cons->strings[cmdid]);
 	} else {
 		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s", DEFCON);
 	}
 
 	if (cmdlen != 0) {
-		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", cmds->strings[cmdid]);
+		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s",
+			       cmds->strings[cmdid]);
 	} else {
 		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", DEFCMD);
 	}
 
-	if((file = Open(conline, MODE_OLDFILE))) {
+	if ((file = Open(conline, MODE_OLDFILE))) {
+		stags[0].ti_Tag = SYS_Input;
+		stags[0].ti_Data = (long unsigned int)file;
+		stags[1].ti_Tag = SYS_Output;
+		stags[1].ti_Data = 0;
+		stags[2].ti_Tag = SYS_Asynch;
+		stags[2].ti_Data = TRUE;
+		stags[3].ti_Tag = SYS_UserShell;
+		stags[3].ti_Data = TRUE;
+		stags[4].ti_Tag = TAG_DONE;
+		(void)SystemTagList(cmd, stags);
 
-        	stags[0].ti_Tag = SYS_Input;
-        	stags[0].ti_Data = (long unsigned int)file;
-        	stags[1].ti_Tag = SYS_Output;
-        	stags[1].ti_Data = 0;
-        	stags[2].ti_Tag = SYS_Asynch;
-        	stags[2].ti_Data = TRUE;
-        	stags[3].ti_Tag = SYS_UserShell;
-        	stags[3].ti_Data = TRUE;
-        	stags[4].ti_Tag = TAG_DONE;
-		(void)SystemTagList(cmd,stags);
-
-		return(TRUE);
+		return (TRUE);
 	} else {
-		return(FALSE);
+		return (FALSE);
 	}
 }
 
@@ -614,7 +622,7 @@ int calcgap(void)
 	lockbasescreen(&ilock, &screen);
 	bheight = screen->BarHeight + 1;
 	unlockbasescreen(&ilock, &screen);
-	return(bheight);
+	return (bheight);
 }
 
 static void lockbasescreen(unsigned long *il, struct Screen **s)
@@ -629,18 +637,18 @@ static void unlockbasescreen(unsigned long *il, struct Screen **s)
 	UnlockIBase(*il);
 }
 
-short exit_cxm(const Arg *arg)
+short exit_cxm(const Arg * arg)
 {
 	(void)arg;
-	return(FALSE);
+	return (FALSE);
 }
 
 int cstring_cmp(const void *a, const void *b)
-{ 
+{
 	const char **ia = (const char **)a;
 	const char **ib = (const char **)b;
 	return strcmp(*ia, *ib);
-} 
+}
 
 size_t strnlen(const char *s, size_t maxlen)
 {
@@ -653,11 +661,11 @@ size_t strnlen(const char *s, size_t maxlen)
 	return (len);
 }
 
-static void free_list(struct Window * wlist)
+static void free_list(struct Window *wlist)
 {
-	struct Window* next_win;
+	struct Window *next_win;
 
-	while(wlist != NULL) {
+	while (wlist != NULL) {
 		next_win = wlist->NextWindow;
 		free(wlist);
 		wlist = next_win;
