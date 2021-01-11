@@ -9,7 +9,7 @@ static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for AmigaOS";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
-static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
+static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
 
@@ -107,10 +107,10 @@ static struct NewBroker MyBroker =
         0
 };
 
-static BOOL attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
+static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
 	size_t i;
-	BOOL rc = FALSE;
+	short rc = FALSE;
 	size_t keyarrsize;
 	size_t optarrsize;
 	struct Popkeys* keys;
@@ -248,77 +248,74 @@ short int commo(void)
 		MyBroker.nb_Port = mp;
 		broker = CxBroker(&MyBroker, NULL);
 
-		if (broker)
+
+		if ((attachtooltypes(broker, mp, diskobj)) && broker)
 		{
 			CxMsg *msg;
+			CloseLibrary(iconbase);
+			FreeDiskObject(diskobj);
 
-			if (attachtooltypes(broker, mp, diskobj))
+			short running = TRUE;
+
+			if(ActivateCxObj(broker, 1) != 0) {
+				DeleteMsgPort(mp);
+				return 1;
+			}
+
+			static int wincount = 0;
+			static short first_run = TRUE;
+			static int lock = 1;
+
+			while (running)
 			{
-				CloseLibrary(iconbase);
-				FreeDiskObject(diskobj);
-
-				BOOL running = TRUE;
-
-				if(ActivateCxObj(broker, 1) != 0) {
-					DeleteMsgPort(mp);
-					return 1;
+				if(autotile) {
+					wincount = countwindows(lock);
+					currentval.tv_secs = 0;
+					currentval.tv_micro = auto_interval;
+					(void)time_delay(&currentval, UNIT_MICROHZ);
+					if(wincount != (countwindows(lock)) || first_run == TRUE) {
+						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+						if(first_run == TRUE) {
+							first_run = FALSE;
+						}
+					}
+				} else {
+					(void)WaitPort(mp);
 				}
 
-				static int wincount = 0;
-				static short first_run = TRUE;
-				static int lock = 1;
-
-				while (running)
+				while ((msg = (void *)GetMsg(mp)))
 				{
-					if(autotile) {
-						wincount = countwindows(lock);
-						currentval.tv_secs = 0;
-						currentval.tv_micro = auto_interval;
-						(void)time_delay(&currentval, UNIT_MICROHZ);
-						if(wincount != (countwindows(lock)) || first_run == TRUE) {
-							running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
-							if(first_run == TRUE) {
-								first_run = FALSE;
-							}
-						}
-					} else {
-						(void)WaitPort(mp);
-					}
+					long id = CxMsgID(msg);
+					unsigned long type = CxMsgType(msg);
 
-					while ((msg = (void *)GetMsg(mp)))
+					ReplyMsg((struct Message *)msg);
+
+					if (type == CXM_COMMAND)
 					{
-						long id = CxMsgID(msg);
-						unsigned long type = CxMsgType(msg);
-
-						ReplyMsg((struct Message *)msg);
-
-						if (type == CXM_COMMAND)
+						switch (id)
 						{
-							switch (id)
-							{
-								case CXCMD_UNIQUE:
-									printf("Commodity is already running. Quitting.\n");
-									running = FALSE;
-									break;
-								case CXCMD_DISABLE:
-								case CXCMD_ENABLE:
-									break;
-								case CXCMD_KILL:
-									running = FALSE;
-									break;
-								case CXCMD_APPEAR:
-									break;
-								case CXCMD_DISAPPEAR:
-									break;
-								default:
-									break;
-							}
-						} else if (type == CXM_IEVENT) {
-							if(id <= (TILE_FUNC_LIMIT)) {
-								*current_layout = id;
-							}
-							running = defkeys[id].func(&defkeys[id].arg);
+							case CXCMD_UNIQUE:
+								printf("Commodity is already running. Quitting.\n");
+								running = FALSE;
+								break;
+							case CXCMD_DISABLE:
+							case CXCMD_ENABLE:
+								break;
+							case CXCMD_KILL:
+								running = FALSE;
+								break;
+							case CXCMD_APPEAR:
+								break;
+							case CXCMD_DISAPPEAR:
+								break;
+							default:
+								break;
 						}
+					} else if (type == CXM_IEVENT) {
+						if(id <= (TILE_FUNC_LIMIT)) {
+							*current_layout = id;
+						}
+						running = defkeys[id].func(&defkeys[id].arg);
 					}
 				}
 			}

@@ -1,7 +1,6 @@
--booltype BOOL
-#-weak
+#-booltype BOOL
+-weak
 -D__stdargs=
 +ignoresigns
 -syntax
 -type
--compdestroy

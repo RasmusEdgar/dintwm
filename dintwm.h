@@ -1,3 +1,4 @@
+// Copyright 2021 Rasmus Edgar
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -28,8 +29,8 @@ enum dintwm_identifiers {
 	GAP_ERR = -3, // Gaps are too small or too big
 	UNKNOWN = -4, // Unknown option
 	MISSING = -5, // Missing argument
-	NOTSET = -6, //
-	LAYOUT_START = -1, // switcher function - determines if current_layot should be set 
+	NOTSET = -6, // Notset var
+	LAYOUT_START = -1, // switcher function - determines if current_layot should be set
 	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
 	FUNC_TILE = 0, // tile function identifier
 	FUNC_HGRID = 1, // hgrid function identifier
@@ -125,10 +126,10 @@ int include_wtype;
 long unsigned int auto_interval;
 
 // timer stuff
-void delete_timer (struct timerequest *);
-struct timerequest *create_timer( ULONG );
+void delete_timer(struct timerequest *);
+struct timerequest *create_timer(ULONG);
 void wait_for_timer(struct timerequest *, struct timeval *);
-LONG time_delay    ( struct timeval *, ULONG );
+LONG time_delay(struct timeval *, ULONG);
 
 
 // commodity headers

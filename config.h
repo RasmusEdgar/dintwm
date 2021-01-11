@@ -1,3 +1,4 @@
+// Copyright 2021 Rasmus Edgar
 char TYPE_TILE[] = "POPKEY_TILE";
 char TYPE_HGRID[] = "POPKEY_HGRID";
 char TYPE_SPIRAL[] = "POPKEY_SPIRAL";
