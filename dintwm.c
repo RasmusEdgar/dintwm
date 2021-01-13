@@ -21,7 +21,7 @@ static int nolock = 0;
 static struct Screen *screen;
 static short printusage(void);
 static struct Window *copywindowlist(void);
-static int skipper(struct Window *w);
+static short skipper(struct Window *w);
 static void free_list(struct Window *wlist);
 
 int main(int argc, char **argv)
@@ -207,25 +207,28 @@ static short printusage(void)
 	return (TRUE);
 }
 
-static int skipper(struct Window *w)
+static short skipper(struct Window *w)
 {
+	short exit_skip = SKIP;
+	short exit_noskip = NOSKIP;
+
 	if (w->Flags & BACKDROP) {
-		goto exit_skip;
+		 return(exit_skip);
 	}
 
 	if (w->Flags & GIMMEZEROZERO) {
-		goto exit_skip;
+		return(exit_skip);
 	}
 
 	if (strcmp("Workbench", (const char *)w->Title) == 0) {
-		goto exit_skip;
+		return(exit_skip);
 	}
 
 	if (exclude_wtype != 0) {
 		if (bsearch
 		    (&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
-			goto exit_skip;
+			return(exit_skip);
 		}
 	}
 
@@ -233,19 +236,15 @@ static int skipper(struct Window *w)
 		if (bsearch
 		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
-			goto exit_noskip;
+			return(exit_noskip);
 		} else {
-			goto exit_skip;
+			return(exit_skip);
 		}
 	} else {
-		goto exit_noskip;
+		return(exit_noskip);
 	}
 
-exit_skip:
-	return 1;
-
-exit_noskip:
-	return 0;
+	return(exit_noskip);
 }
 
 void cwb(struct Window *w, int wx, int wy, int ww, int wh)
@@ -275,7 +274,7 @@ short tile(const Arg * arg)
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
-		return (TRUE);
+		return(TRUE);
 	}
 
 	if (wincount > nmaster) {
@@ -286,7 +285,7 @@ short tile(const Arg * arg)
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wnr++) {
-		if ((skip = skipper(window)) == 1) {
+		if ((skip = skipper(window)) == SKIP) {
 			wnr--;
 			continue;
 		}
@@ -306,7 +305,7 @@ short tile(const Arg * arg)
 	}
 	unlockbasescreen(&ilock, &screen);
 
-	return (TRUE);
+	return(TRUE);
 }
 
 short hgrid(const Arg * arg)
@@ -325,12 +324,12 @@ short hgrid(const Arg * arg)
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
-		return (TRUE);
+		return(TRUE);
 	}
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wnr++) {
-		if ((skip = skipper(window)) == 1) {
+		if ((skip = skipper(window)) == SKIP) {
 			wnr--;
 			continue;
 		}
@@ -359,7 +358,7 @@ short hgrid(const Arg * arg)
 	}
 	unlockbasescreen(&ilock, &screen);
 
-	return (TRUE);
+	return(TRUE);
 }
 
 short fibonacci(const Arg * arg)
@@ -381,7 +380,7 @@ short fibonacci(const Arg * arg)
 
 	for (wnr = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow) {
-		if ((skip = skipper(window)) == 1) {
+		if ((skip = skipper(window)) == SKIP) {
 			wnr--;
 			continue;
 		}
@@ -428,7 +427,7 @@ short fibonacci(const Arg * arg)
 	}
 	unlockbasescreen(&ilock, &screen);
 
-	return (TRUE);
+	return(TRUE);
 }
 
 short switcher(const Arg * arg)
@@ -455,7 +454,7 @@ short switcher(const Arg * arg)
 	}
 	*current_layout = *layout_number;
 
-	return (rc);
+	return(rc);
 }
 
 struct Window *copywindowlist(void)
@@ -464,7 +463,7 @@ struct Window *copywindowlist(void)
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
 
 	while (w) {
-		if ((skip = skipper(w)) == 1) {
+		if ((skip = skipper(w)) == SKIP) {
 			w = w->NextWindow;
 			continue;
 		}
@@ -473,7 +472,7 @@ struct Window *copywindowlist(void)
 		if (*next == NULL) {
 			unlockbasescreen(&ilock, &screen);
 			free(dst);
-			return (NULL);
+			return(NULL);
 		}
 
 		(*next)->Title = w->Title;
@@ -528,7 +527,7 @@ short restore(const Arg * arg)
 		struct Window *storehead = windowliststore;
 		for (window = screen->FirstWindow; window;
 		     window = window->NextWindow) {
-			if ((skip = skipper(window)) == 1) {
+			if ((skip = skipper(window)) == SKIP) {
 				windowliststore = windowliststore->NextWindow;
 				continue;
 			}
@@ -560,7 +559,7 @@ int countwindows(int l)
 	}
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
-		if ((skip = skipper(window)) == 1) {
+		if ((skip = skipper(window)) == SKIP) {
 			wincount--;
 			continue;
 		}

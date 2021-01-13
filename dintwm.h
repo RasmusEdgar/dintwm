@@ -22,6 +22,8 @@ enum dintwm_identifiers {
 	KEYTYPE = 1,
 	OPTTYPE = 2,
 	STORE = 1,
+	NOSKIP = 0,
+	SKIP = 1,
 	RESTORE = 2,
 	FREE = 3,
 	COMMODITIZE = -1,
