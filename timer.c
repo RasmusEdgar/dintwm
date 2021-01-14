@@ -41,16 +41,16 @@ struct timerequest *create_timer(unsigned long unit)
 /* more precise timer than AmigaDOS Delay() */
 LONG time_delay(struct timeval *tv, ULONG unit) {
 	struct timerequest *tr;
-/* get a pointer to an initialized timer request block */
+	/* get a pointer to an initialized timer request block */
 	tr = create_timer(unit);
 
-/* any nonzero return says timedelay routine didn't work. */
+	/* any nonzero return says timedelay routine didn't work. */
 	if (tr == NULL)
 		return (-1L);
 
 	wait_for_timer(tr, tv);
 
-/* deallocate temporary structures */
+	/* deallocate temporary structures */
 	delete_timer(tr);
 	return (0L);
 }
@@ -58,10 +58,10 @@ LONG time_delay(struct timeval *tv, ULONG unit) {
 void wait_for_timer(struct timerequest *tr, struct timeval *tv) {
 	tr->tr_node.io_Command = TR_ADDREQUEST;	/* add a new timer request */
 
-/* structure assignment */
+	/* structure assignment */
 	tr->tr_time = *tv;
 
-/* post request to the timer -- will go to sleep till done */
+	/* post request to the timer -- will go to sleep till done */
 	(void)DoIO((struct IORequest *)tr);
 }
 

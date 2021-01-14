@@ -209,26 +209,23 @@ static short printusage(void)
 
 static short skipper(struct Window *w)
 {
-	short exit_skip = SKIP;
-	short exit_noskip = NOSKIP;
-
 	if (w->Flags & BACKDROP) {
-		 return(exit_skip);
+		 return(SKIP);
 	}
 
 	if (w->Flags & GIMMEZEROZERO) {
-		return(exit_skip);
+		return(SKIP);
 	}
 
 	if (strcmp("Workbench", (const char *)w->Title) == 0) {
-		return(exit_skip);
+		return(SKIP);
 	}
 
 	if (exclude_wtype != 0) {
 		if (bsearch
 		    (&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
-			return(exit_skip);
+			return(SKIP);
 		}
 	}
 
@@ -236,15 +233,13 @@ static short skipper(struct Window *w)
 		if (bsearch
 		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
-			return(exit_noskip);
+			return(NOSKIP);
 		} else {
-			return(exit_skip);
+			return(SKIP);
 		}
-	} else {
-		return(exit_noskip);
 	}
 
-	return(exit_noskip);
+	return(NOSKIP);
 }
 
 void cwb(struct Window *w, int wx, int wy, int ww, int wh)

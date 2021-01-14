@@ -110,6 +110,7 @@ static struct NewBroker MyBroker =
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
 	size_t i;
+	size_t l;
 	short rc = FALSE;
 	size_t keyarrsize;
 	size_t optarrsize;
@@ -124,15 +125,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	for (i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < TT_MAX_LENGTH))) {
-			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
-				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0);
-			}
-
-			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
-				rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0);
-			}
-
+		if((tt_optvalue) && ((l = strnlen(tt_optvalue, TT_MAX_LENGTH) < TT_MAX_LENGTH))) {
 			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
 				if(exclude_wtype == 0) {
@@ -145,6 +138,14 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 				if(include_wtype == 0) {
 					include_wtype = 1;
 				}
+			}
+
+			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
+				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0);
+			}
+
+			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
+				rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0);
 			}
 
 			switch (defopts[i].cxint) {
