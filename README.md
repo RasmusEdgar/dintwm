@@ -57,7 +57,8 @@ To run dintwm as a commodity:
   * EXCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, excludes windows based on title
   * INCL\_WTYPE\_0..9=, Enumerated option. Accepts window title, which default is set to nothing, includes windows based on title
   * AUTO=, set to TRUE  (or anything really) to enable auto tiling. All new windows will be tiled.
-  * AUTO_INTERVAL_MICRO=, Set frequency for auto tiling. Default is 20000 microseconds
+  * AUTO\_INTERVAL\_MICRO=, Set frequency for auto tiling. Default is 20000 microseconds
+  * TILE_FACT=, size factor of master window in tiling function, default set to 550 (0.55)
 3. Test it out using the following command: ```dintwm -C``` or simply run dintwm without options.
 4. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
 5. Check its status in System->Tools->Commodities->Exchange, you can also kill dintwm from here.
@@ -70,7 +71,7 @@ POPKEY_HGRID=rawkey control shift x
 POPKEY_SPIRAL=rawkey control shift c
 POPKEY_DWINDLE=rawkey control shift v
 TOPGAP=30
-EXCL_WTYPE=Commodities
+EXCL_WTYPE_0=Commodities
 ```
 
 ## Running dintwm from CLI
@@ -113,7 +114,7 @@ dintwm -U 320 -L 320 -t
 - ~~Add leftgap, rightgap and bottomgap~~
 - Add dintwm bar
 - Create dmenu like feature if no suitable menu is found on aminet
-- Stop commodity with hotkey
+- ~~ Stop commodity with hotkey ~~
 - Use github actions to build and package dintwm release
 
 ## Note on licensing
