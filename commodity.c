@@ -110,7 +110,7 @@ static struct NewBroker MyBroker =
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
 	size_t i;
-	size_t l;
+	size_t l = 0;
 	short rc = FALSE;
 	size_t keyarrsize;
 	size_t optarrsize;
@@ -125,9 +125,11 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	for (i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		l = strnlen(tt_optvalue, TT_MAX_LENGTH);
+		if(tt_optvalue != NULL) {
+			l = strnlen(tt_optvalue, TT_MAX_LENGTH);
+		}
 
-		if((tt_optvalue != NULL) && (l < TT_MAX_LENGTH)) {
+		if((l) && (l < TT_MAX_LENGTH)) {
 			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
 				if(exclude_wtype == 0) {

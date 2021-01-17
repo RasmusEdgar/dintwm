@@ -26,6 +26,10 @@ ifdef strict
 CFLAGS = $(CFLAGSSTRICT)
 TEMPS = $(SOURCES:.c=.i) $(SOURCES:.c=.s)
 LOGS = $(SOURCES:.c=.log)
+PEXCL = */opt/amiga/*
+ifdef misra
+PLOGFLAG = -a MISRA:1,2
+endif
 endif
 
 all : $(OBJECTS)
@@ -35,8 +39,8 @@ ifdef strict
 	 $(CPPCHECKCMD) $(CPPCHECKOPTS) $(HEADERS) $(SOURCES)
 	 $(FLAWCMD) $(FLAWOPTS) $(HEADERS) $(SOURCES)
 	 $(SPLINTCMD) $(SOURCES) $(SPLINTARGS)
-	 $(foreach elem,$(SOURCES),pvs-studio --cfg PVS-Studio.cfg --source-file $(elem) --i-file $(elem:.c=.i) --output-file $(elem:.c=.log)${newline})
-	 $(foreach elem,$(SOURCES),plog-converter -t csv $(elem:.c=.log)${newline})
+	 $(foreach elem,$(SOURCES),pvs-studio --cfg PVS-Studio.cfg --exclude-path $(PEXCL) --source-file $(elem) --i-file $(elem:.c=.i) --output-file $(elem:.c=.log)${newline})
+	 $(foreach elem,$(SOURCES),plog-converter $(PLOGFLAG) -t csv $(elem:.c=.log)${newline})
 endif
 
 
