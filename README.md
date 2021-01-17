@@ -48,6 +48,7 @@ To run dintwm as a commodity:
   * POPKEY\_SWITCHF=, which is default set to "rawkey control lcommand s", flip through layouts forwards
   * POPKEY\_SWITCHB=, which is default set to "rawkey control lcommand s", flip through layouts backwards
   * POPKEY\_CMD_0..9=, spawns custom commands. Defaults set to "rawkey control lcommand 0..9"
+  * POPKEY\_CXM_EXIT=, which is default set to "rawkey control lcommand q", exits commodity
   * TOPGAP=, which is default set to 0, sets the top gap of the screen to show workbench bar
   * RIGHTGAP=, which is default set to 0, sets a right gap 
   * LEFTGAP=, which is default set to 0, sets a left gap
