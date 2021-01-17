@@ -114,7 +114,7 @@ dintwm -U 320 -L 320 -t
 - ~~Add leftgap, rightgap and bottomgap~~
 - Add dintwm bar
 - Create dmenu like feature if no suitable menu is found on aminet
-- ~~ Stop commodity with hotkey ~~
+- ~~Stop commodity with hotkey~~
 - Use github actions to build and package dintwm release
 
 ## Note on licensing
