@@ -116,7 +116,6 @@ short docmd(const Arg *arg);
 int calcgap(void);
 short exit_cxm(const Arg *arg);
 size_t strnlen(const char *s, size_t maxlen);
-int fact;
 
 int topgap;
 int bottomgap;
@@ -171,3 +170,5 @@ extern Ostore excls[];
 
 extern Keys defkeys[];
 extern Opts defopts[];
+
+extern int fact;

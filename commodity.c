@@ -14,6 +14,7 @@ static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
 
 static struct Library *iconbase;
+int fact = TILE_FACT_DEF;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE, tile, {0} },
