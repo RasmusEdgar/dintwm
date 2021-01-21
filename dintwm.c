@@ -267,10 +267,6 @@ short tile(const Arg * arg)
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
-	/*if (!fact) {
-		fact = TILE_FACT_DEF;
-	}*/
-
 	lockbasescreen(&ilock, &screen);
 
 	sh = screen->Height - (bottomgap + topgap);
