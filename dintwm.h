@@ -159,10 +159,6 @@ typedef struct {
 	unsigned char *strings[CMD_MAX];
 } Ostore;
 
-/*	unsigned char *con_strings[CMD_MAX];
-	unsigned char *excl_strings[WTYPE_MAX];
-	unsigned char *incl_strings[WTYPE_MAX];*/
-
 extern Ostore cmds[];
 extern Ostore cons[];
 extern Ostore incls[];
