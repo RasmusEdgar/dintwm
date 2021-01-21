@@ -1,6 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-//-V::677
 // Copyright 2021 Rasmus Edgar
 #include "./dintwm.h"
 #include <dos/dostags.h>
@@ -31,6 +30,7 @@ int main(int argc, char **argv)
 	static int dint_opt_state = NOTSET;
 	static int dint_exit_state = EXIT_SUCCESS;
 	static int dint_fail_state = EXIT_SUCCESS;
+	static int not_known;
 
 	fact = TILE_FACT_DEF;
 
@@ -134,6 +134,7 @@ int main(int argc, char **argv)
 			break;
 		case '?':
 			dint_fail_state = UNKNOWN;
+			not_known = opt.opt;
 			break;
 		default:
 			// Do nothing
@@ -151,11 +152,20 @@ int main(int argc, char **argv)
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	case UNKNOWN:
-		printf("unknown opt: -%c\n", opt.opt ? opt.opt : ':');
+		if (opt.opt != 0) {
+			printf("unknown opt: -%c\n", not_known);
+		} else {
+			printf("unknown opt: -%c\n", ':');
+		}
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	case MISSING:
-		printf("missing arg: -%c\n", opt.opt ? opt.opt : ':');
+		if (opt.opt != 0) {
+			printf("missing arg: -%c\n", opt.opt);
+		} else {
+			printf("missing arg: -%c\n", ':');
+		}
+		printf("missing arg: -%c\n", opt.opt != 0 ? opt.opt : (int)':');
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	default:
@@ -594,15 +604,16 @@ short docmd(const Arg * arg)
 	}
 
 	if ((file = Open(conline, MODE_OLDFILE))) {
-		stags[0].ti_Tag = SYS_Input;
+		// Will not fix MISRA warnings from amiga NDK
+		stags[0].ti_Tag = SYS_Input; //-V2544 //-V2568
 		stags[0].ti_Data = (long unsigned int)file;
-		stags[1].ti_Tag = SYS_Output;
-		stags[1].ti_Data = 0;
-		stags[2].ti_Tag = SYS_Asynch;
-		stags[2].ti_Data = TRUE;
-		stags[3].ti_Tag = SYS_UserShell;
-		stags[3].ti_Data = TRUE;
-		stags[4].ti_Tag = TAG_DONE;
+		stags[1].ti_Tag = SYS_Output; //-V2544 //-V2568
+		stags[1].ti_Data = 0; //-V2568
+		stags[2].ti_Tag = SYS_Asynch; //-V2544 //-V2568
+		stags[2].ti_Data = TRUE; //-V2568
+		stags[3].ti_Tag = SYS_UserShell; //-V2544 //-V2568
+		stags[3].ti_Data = TRUE; //-V2568
+		stags[4].ti_Tag = TAG_DONE; //-V2568
 		(void)SystemTagList(cmd, stags);
 
 		return TRUE;
@@ -650,7 +661,7 @@ size_t strnlen(const char *s, size_t maxlen)
 	size_t len;
 
 	for (len = (size_t)0; len < maxlen; len++, s++) {
-		if (*s != '\0') {
+		if (*s == '\0') {
 			break;
 		}
 	}

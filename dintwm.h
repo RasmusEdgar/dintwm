@@ -16,6 +16,49 @@
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 #define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
 #define DEFCMD "NewShell"
+#define	EXCL_WTYPE_ID_0 600 // exclude window type identifier
+#define	EXCL_WTYPE_ID_1 601 // exclude window type identifier
+#define	EXCL_WTYPE_ID_2 602 // exclude window type identifier
+#define	EXCL_WTYPE_ID_3 603 // exclude window type identifier
+#define	EXCL_WTYPE_ID_4 604 // exclude window type identifier
+#define	EXCL_WTYPE_ID_5 605 // exclude window type identifier
+#define	EXCL_WTYPE_ID_6 606 // exclude window type identifier
+#define	EXCL_WTYPE_ID_7 607 // exclude window type identifier
+#define	EXCL_WTYPE_ID_8 608 // exclude window type identifier
+#define	EXCL_WTYPE_ID_9 609 // exclude window type identifier
+#define	INCL_WTYPE_ID_0 700 // include window type identifier
+#define	INCL_WTYPE_ID_1 701 // include window type identifier
+#define	INCL_WTYPE_ID_2 702 // include window type identifier
+#define	INCL_WTYPE_ID_3 703 // include window type identifier
+#define	INCL_WTYPE_ID_4 704 // include window type identifier
+#define	INCL_WTYPE_ID_5 705 // include window type identifier
+#define	INCL_WTYPE_ID_6 706 // include window type identifier
+#define	INCL_WTYPE_ID_7 707 // include window type identifier
+#define	INCL_WTYPE_ID_8 708 // include window type identifier
+#define	INCL_WTYPE_ID_9 709 // include window type identifier
+#define	CONLINE_ID_0 800 // conline identifier
+#define	CONLINE_ID_1 801 // conline identifier
+#define	CONLINE_ID_2 802 // conline identifier
+#define	CONLINE_ID_3 803 // conline identifier
+#define	CONLINE_ID_4 804 // conline identifier
+#define	CONLINE_ID_5 805 // conline identifier
+#define	CONLINE_ID_6 806 // conline identifier
+#define	CONLINE_ID_7 807 // conline identifier
+#define	CONLINE_ID_8 808 // conline identifier
+#define	CONLINE_ID_9 809 // conline identifier
+#define	CMD_ID_0 900 // cmd spawn identifier
+#define	CMD_ID_1 901 // cmd spawn identifier
+#define	CMD_ID_2 902 // cmd spawn identifier
+#define	CMD_ID_3 903 // cmd spawn identifier
+#define	CMD_ID_4 904 // cmd spawn identifier
+#define	CMD_ID_5 905 // cmd spawn identifier
+#define	CMD_ID_6 906 // cmd spawn identifier
+#define	CMD_ID_7 907 // cmd spawn identifier
+#define	CMD_ID_8 908 // cmd spawn identifier
+#define	CMD_ID_9 909 // cmd spawn identifier
+#define WTYPE_MAX 9 // Number excluded/included window titles
+#define CMD_MAX 9 // Number of custom cmds
+#define AUTO_INTERVAL_MICRO_DEF 15000 // AUTO TILE INTERVAL
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
@@ -46,51 +89,8 @@ enum dintwm_identifiers {
 	BOTTOMGAP_ID = 402, // bottomgap type identifier
 	LEFTGAP_ID = 403, // leftgap type iNewshell command dentifier
 	RIGHTGAP_ID = 404, // rightgap type identifier
-	WTYPE_MAX = 9, // Number excluded/included window titles
-	EXCL_WTYPE_ID_0 = 600, // exclude window type identifier
-	EXCL_WTYPE_ID_1 = 601, // exclude window type identifier
-	EXCL_WTYPE_ID_2 = 602, // exclude window type identifier
-	EXCL_WTYPE_ID_3 = 603, // exclude window type identifier
-	EXCL_WTYPE_ID_4 = 604, // exclude window type identifier
-	EXCL_WTYPE_ID_5 = 605, // exclude window type identifier
-	EXCL_WTYPE_ID_6 = 606, // exclude window type identifier
-	EXCL_WTYPE_ID_7 = 607, // exclude window type identifier
-	EXCL_WTYPE_ID_8 = 608, // exclude window type identifier
-	EXCL_WTYPE_ID_9 = 609, // exclude window type identifier
-	INCL_WTYPE_ID_0 = 700, // include window type identifier
-	INCL_WTYPE_ID_1 = 701, // include window type identifier
-	INCL_WTYPE_ID_2 = 702, // include window type identifier
-	INCL_WTYPE_ID_3 = 703, // include window type identifier
-	INCL_WTYPE_ID_4 = 704, // include window type identifier
-	INCL_WTYPE_ID_5 = 705, // include window type identifier
-	INCL_WTYPE_ID_6 = 706, // include window type identifier
-	INCL_WTYPE_ID_7 = 707, // include window type identifier
-	INCL_WTYPE_ID_8 = 708, // include window type identifier
-	INCL_WTYPE_ID_9 = 709, // include window type identifier
-	CMD_MAX = 9, // Number of custom cmds
-	CONLINE_ID_0 = 800, // conline identifier
-	CONLINE_ID_1 = 801, // conline identifier
-	CONLINE_ID_2 = 802, // conline identifier
-	CONLINE_ID_3 = 803, // conline identifier
-	CONLINE_ID_4 = 804, // conline identifier
-	CONLINE_ID_5 = 805, // conline identifier
-	CONLINE_ID_6 = 806, // conline identifier
-	CONLINE_ID_7 = 807, // conline identifier
-	CONLINE_ID_8 = 808, // conline identifier
-	CONLINE_ID_9 = 809, // conline identifier
-	CMD_ID_0 = 900, // cmd spawn identifier
-	CMD_ID_1 = 901, // cmd spawn identifier
-	CMD_ID_2 = 902, // cmd spawn identifier
-	CMD_ID_3 = 903, // cmd spawn identifier
-	CMD_ID_4 = 904, // cmd spawn identifier
-	CMD_ID_5 = 905, // cmd spawn identifier
-	CMD_ID_6 = 906, // cmd spawn identifier
-	CMD_ID_7 = 907, // cmd spawn identifier
-	CMD_ID_8 = 908, // cmd spawn identifier
-	CMD_ID_9 = 909, // cmd spawn identifier
 	AUTO_ID = 1000, // AUTO TILE ID
 	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE MICRO ID
-	AUTO_INTERVAL_MICRO_DEF = 15000, // AUTO TILE INTERVAL
 	TILE_FACT_DEF = 550, // Default mfact value
 	TILE_FACT_ID = 1200 // mfact opt id
 };

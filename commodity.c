@@ -1,6 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-//-V::677
 // Copyright 2021 Rasmus Edgar
 #include "./dintwm.h"
 #include "./config.h"
@@ -9,7 +8,7 @@ static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for AmigaOS";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
-static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
+_Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
 
@@ -101,16 +100,15 @@ static struct NewBroker MyBroker =
         COMMODITY_NAME,
         COMMODITY_TITLE,
         COMMODITY_DESC,
-        NBU_UNIQUE | NBU_NOTIFY,
+        NBU_UNIQUE | NBU_NOTIFY, //-V2544
         0,
         0,
         0,
         0
 };
 
-static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
+_Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
-	size_t i;
 	short rc = FALSE;
 	size_t keyarrsize;
 	size_t optarrsize;
@@ -122,10 +120,10 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	optarrsize = sizeof(defopts) / sizeof(*defopts);
         keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
 
-	for (i = 0; i < optarrsize ; ++i) {
+	for (size_t i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < TT_MAX_LENGTH))) {
+		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
 			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
 				if(exclude_wtype == 0) {
@@ -174,6 +172,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 					fact = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				default:
+					// Do nothing
 					break;
 			}
 		}
@@ -191,7 +190,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	keys = malloc(sizeof(*keys) * keyarrsize);
 
 	if(keys != NULL) {
-		for (i = 0; i < keyarrsize ; ++i) {
+		for (size_t i = 0; i < keyarrsize ; ++i) {
 			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
 
 			if(keys[i].rawcombo == NULL) {
@@ -230,7 +229,7 @@ short int commo(void)
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
 
-	auto_interval = AUTO_INTERVAL_MICRO_DEF;
+	auto_interval = (unsigned long)AUTO_INTERVAL_MICRO_DEF;
 
 	if(!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
@@ -250,7 +249,7 @@ short int commo(void)
 		broker = CxBroker(&MyBroker, NULL);
 
 
-		if ((attachtooltypes(broker, mp, diskobj)) && broker)
+		if ((attachtooltypes(broker, mp, diskobj)) && (broker != NULL))
 		{
 			CxMsg *msg;
 			CloseLibrary(iconbase);
@@ -271,7 +270,7 @@ short int commo(void)
 			{
 				if(autotile) {
 					wincount = countwindows(lock);
-					currentval.tv_secs = 0;
+					currentval.tv_secs = 0UL;
 					currentval.tv_micro = auto_interval;
 					(void)time_delay(&currentval, UNIT_MICROHZ);
 					if(wincount != (countwindows(lock)) || first_run == TRUE) {
@@ -289,9 +288,9 @@ short int commo(void)
 					long id = CxMsgID(msg);
 					unsigned long type = CxMsgType(msg);
 
-					ReplyMsg((struct Message *)msg);
+					ReplyMsg((struct Message *)msg); //-V2545
 
-					if (type == CXM_COMMAND)
+					if (type == (unsigned long)CXM_COMMAND) //-V2544
 					{
 						switch (id)
 						{
@@ -310,9 +309,10 @@ short int commo(void)
 							case CXCMD_DISAPPEAR:
 								break;
 							default:
+								// Do nothing
 								break;
 						}
-					} else if (type == CXM_IEVENT) {
+					} else if (type == (unsigned long)CXM_IEVENT) { //-V2544
 						if(id <= (TILE_FUNC_LIMIT)) {
 							*current_layout = id;
 						}
@@ -323,8 +323,9 @@ short int commo(void)
 
 			DeleteCxObjAll(broker);
 
-			while ((msg = (void *)GetMsg(mp)))
-				ReplyMsg((struct Message *)msg);
+			while ((msg = (void *)GetMsg(mp))) {
+				ReplyMsg((struct Message *)msg); //-V2545
+			}
 		}
 		DeleteMsgPort(mp);
 	}
