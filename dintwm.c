@@ -220,6 +220,16 @@ static short printusage(void)
 
 static short skipper(struct Window *w)
 {
+	if (include_wtype != 0) {
+		if (bsearch
+		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
+		     cstring_cmp)) {
+			return NOSKIP;
+		} else {
+			return SKIP;
+		}
+	}
+
 	if (w->Flags & (unsigned long)BACKDROP) {
 		 return SKIP;
 	}
@@ -236,16 +246,6 @@ static short skipper(struct Window *w)
 		if (bsearch
 		    (&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
-			return SKIP;
-		}
-	}
-
-	if (include_wtype != 0) {
-		if (bsearch
-		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
-		     cstring_cmp)) {
-			return NOSKIP;
-		} else {
 			return SKIP;
 		}
 	}
@@ -381,11 +381,12 @@ short fibonacci(const Arg * arg)
 	wh = sh;
 
 	for (wnr = 0, window = screen->FirstWindow; window;
-	     window = window->NextWindow) {
+	     window = window->NextWindow, wnr++) {
 		if ((skip = skipper(window)) == SKIP) {
 			wnr--;
 			continue;
 		}
+		printf("winnr: %d\n", wnr);
 
 		if (wnr < wincount - 1) {
 			if (wnr % 2 != 0) {
@@ -424,7 +425,7 @@ short fibonacci(const Arg * arg)
 		} else if (wnr == 1) {
 			ww = sw - ww;
 		}
-		wnr++;
+		//wnr++;
 		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
