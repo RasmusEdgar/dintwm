@@ -386,7 +386,6 @@ short fibonacci(const Arg * arg)
 			wnr--;
 			continue;
 		}
-		printf("winnr: %d\n", wnr);
 
 		if (wnr < wincount - 1) {
 			if (wnr % 2 != 0) {
@@ -425,7 +424,6 @@ short fibonacci(const Arg * arg)
 		} else if (wnr == 1) {
 			ww = sw - ww;
 		}
-		//wnr++;
 		cwb(window, wx, wy, ww, wh);
 	}
 	unlockbasescreen(&ilock, &screen);
