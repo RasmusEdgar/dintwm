@@ -626,6 +626,53 @@ int calcgap(void)
 	return bheight;
 }
 
+short changegaps(const Arg *arg)
+{
+	switch(arg->i) {
+	case TOPGAP_ID:
+		topgap += topgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		break;
+	case BOTTOMGAP_ID:
+		bottomgap += bottomgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		break;
+	case LEFTGAP_ID:
+		leftgap += leftgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		break;
+	case RIGHTGAP_ID:
+		rightgap += rightgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		break;
+	case -TOPGAP_ID:
+		topgap = (topgap - gap_change_value) > 0 ? topgap - gap_change_value : 0;
+		break;
+	case -BOTTOMGAP_ID:
+		bottomgap = (bottomgap - gap_change_value) > 0 ? bottomgap - gap_change_value : 0;
+		break;
+	case -LEFTGAP_ID:
+		leftgap = (leftgap - gap_change_value) > 0 ? leftgap - gap_change_value : 0;
+		break;
+	case -RIGHTGAP_ID:
+		rightgap = (rightgap - gap_change_value) > 0 ? rightgap - gap_change_value : 0;
+		break;
+	case INCALLGAPS_ID:
+		topgap += topgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		bottomgap += bottomgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		leftgap += leftgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		rightgap += rightgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		break;
+	case DECALLGAPS_ID:
+		topgap = (topgap - gap_change_value) > 0 ? topgap - gap_change_value : 0;
+		bottomgap = (bottomgap - gap_change_value) > 0 ? bottomgap - gap_change_value : 0;
+		leftgap = (leftgap - gap_change_value) > 0 ? leftgap - gap_change_value : 0;
+		rightgap = (rightgap - gap_change_value) > 0 ? rightgap - gap_change_value : 0;
+		break;
+	default:
+		// Do nothing
+		break;
+	}
+
+	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+}
+
 static void lockbasescreen(unsigned long *il, struct Screen **s)
 {
 	*il = LockIBase(0L);

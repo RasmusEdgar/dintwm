@@ -14,6 +14,7 @@ static void free_opts(void);
 
 static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
+int gap_change_value = GAP_CHANGE_VALUE_DEF;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE, tile, {0} },
@@ -25,6 +26,16 @@ Keys defkeys[] = {
 	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE, switcher, {.i = 0} },
 	{ TYPE_CLEANSNAPSHOT, KEY_CLEANSNAPSHOT, KEYTYPE, cleansnapshot, {0} },
 	{ TYPE_TAKESNAPSHOT, KEY_TAKESNAPSHOT, KEYTYPE, takesnapshot, {0} },
+	{ TYPE_INCTOPGAP, KEY_INCTOPGAP, KEYTYPE, changegaps, {.i = TOPGAP_ID} },
+	{ TYPE_INCBOTTOMGAP, KEY_INCBOTTOMGAP, KEYTYPE, changegaps, {.i = BOTTOMGAP_ID} },
+	{ TYPE_INCLEFTGAP, KEY_INCLEFTGAP, KEYTYPE, changegaps, {.i = LEFTGAP_ID} },
+	{ TYPE_INCRIGHTGAP, KEY_INCRIGHTGAP, KEYTYPE, changegaps, {.i = RIGHTGAP_ID} },
+	{ TYPE_DECTOPGAP, KEY_DECTOPGAP, KEYTYPE, changegaps, {.i = -TOPGAP_ID} },
+	{ TYPE_DECBOTTOMGAP, KEY_DECBOTTOMGAP, KEYTYPE, changegaps, {.i = -BOTTOMGAP_ID} },
+	{ TYPE_DECLEFTGAP, KEY_DECLEFTGAP, KEYTYPE, changegaps, {.i = -LEFTGAP_ID} },
+	{ TYPE_DECRIGHTGAP, KEY_DECRIGHTGAP, KEYTYPE, changegaps, {.i = -RIGHTGAP_ID} },
+	{ TYPE_INCALLGAPS, KEY_INCALLGAPS, KEYTYPE, changegaps, {.i = INCALLGAPS_ID} },
+	{ TYPE_DECALLGAPS, KEY_DECALLGAPS, KEYTYPE, changegaps, {.i = DECALLGAPS_ID} },
 	{ TYPE_KEY_CMD_0, KEY_CMD_0, KEYTYPE, docmd, { .i = CMD_ID_0 } },
 	{ TYPE_KEY_CMD_1, KEY_CMD_1, KEYTYPE, docmd, { .i = CMD_ID_1 } },
 	{ TYPE_KEY_CMD_2, KEY_CMD_2, KEYTYPE, docmd, { .i = CMD_ID_2 } },
@@ -47,6 +58,7 @@ Opts defopts[] = {
 	{ TYPE_AUTO, AUTO_ID, OPTTYPE },
 	{ TYPE_AUTO_INTERVAL_MICRO, AUTO_INTERVAL_MICRO_ID, OPTTYPE },
 	{ TYPE_TILE_FACT, TILE_FACT_ID, OPTTYPE },
+	{ TYPE_GAP_CHANGE_VALUE, GAP_CHANGE_VALUE_ID, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE },
@@ -161,6 +173,9 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					break;
 				case RIGHTGAP_ID:
 					rightgap = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
+					break;
+				case GAP_CHANGE_VALUE_ID:
+					gap_change_value = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
 				case AUTO_ID:
 					autotile = TRUE;

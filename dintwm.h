@@ -58,7 +58,17 @@
 #define	CMD_ID_9 909 // cmd spawn identifier
 #define WTYPE_MAX 9 // Number excluded/included window titles
 #define CMD_MAX 9 // Number of custom cmds
-#define AUTO_INTERVAL_MICRO_DEF 15000 // AUTO TILE INTERVAL
+#define	TOPGAP_ID 400 // topgap type identifier
+#define	DEFAULT_TOPGAP_ID 401 // default topgap identifier
+#define BOTTOMGAP_ID 402 // bottomgap type identifier
+#define	LEFTGAP_ID 403 // leftgap type iNewshell command dentifier
+#define	RIGHTGAP_ID 404 // rightgap type identifier
+#define INCALLGAPS_ID 405 // increase all gaps identifier
+#define DECALLGAPS_ID 406 // decrease all gaps identifier
+#define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
+#define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
+#define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
+#define AUTO_INTERVAL_MICRO_DEF 15000 // default AUTO_TILE INTERVAL
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
@@ -84,11 +94,6 @@ enum dintwm_identifiers {
 	FUNC_PRINTUSAGE = 42, // printusage function identifier
 	TT_MAX_LENGTH = 128, // Tooltype Max Length
 	K_CGAP_ID = 301, // longopts ketopts id
-	TOPGAP_ID = 400, // topgap type identifier
-	DEFAULT_TOPGAP_ID = 401, // default topgap identifier
-	BOTTOMGAP_ID = 402, // bottomgap type identifier
-	LEFTGAP_ID = 403, // leftgap type iNewshell command dentifier
-	RIGHTGAP_ID = 404, // rightgap type identifier
 	AUTO_ID = 1000, // AUTO TILE ID
 	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE MICRO ID
 	TILE_FACT_DEF = 550, // Default mfact value
@@ -110,6 +115,7 @@ short restore(const Arg *arg);
 short switcher(const Arg *arg);
 short takesnapshot(const Arg *arg);
 short cleansnapshot(const Arg *arg);
+short changegaps(const Arg *arg);
 int countwindows(int l);
 int cstring_cmp(const void *a, const void *b);
 short docmd(const Arg *arg);
@@ -168,3 +174,4 @@ extern Keys defkeys[];
 extern Opts defopts[];
 
 extern int fact;
+extern int gap_change_value;
