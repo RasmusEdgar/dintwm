@@ -4,8 +4,8 @@ on: [push]
 
 jobs:
   build:
-    if: "contains(github.event.commits[0].message, '[build]')"
     runs-on: ubuntu-latest
+    if: "contains(github.event.commits[0].message, '[build]')"
     container:
       image: docker.pkg.github.com/rasmusedgar/dintwm/dintwmbuild:latest
     steps:
