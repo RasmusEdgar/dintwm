@@ -60,6 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dintwm.lha
+          asset_path: ./package/dintwm.lha
           asset_name: dintwm.lha
           asset_content_type: application/octet-stream
