@@ -220,7 +220,7 @@ static short printusage(void)
 
 static short skipper(struct Window *w)
 {
-	if (include_wtype != 0) {
+	if (include_wtype != 0 && exclude_wtype == 0) {
 		if (bsearch
 		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
@@ -242,7 +242,7 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
-	if (exclude_wtype != 0) {
+	if (exclude_wtype != 0 && include_wtype == 0) {
 		if (bsearch
 		    (&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
 		     cstring_cmp)) {
