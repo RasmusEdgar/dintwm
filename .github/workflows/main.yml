@@ -42,7 +42,7 @@ jobs:
           mkdir -p package/dintwm
           cp {dintwm,dintwm.info} package/dintwm/
           cd package
-          lha c dintwm.lha dintwm/ 
+          lha co5 dintwm.lha dintwm/ 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
