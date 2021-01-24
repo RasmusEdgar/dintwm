@@ -17,6 +17,11 @@ Not working atm. Use crosscompiler from bebbo.
 ```
 m68k-amigaos-gcc -o dintwm timer.c dintwm.c commodity.c -Wall -Wextra -Wtype-limits -noixemul
 ```
+or
+
+```
+make all
+```
 
 ## Demo
 
@@ -50,7 +55,7 @@ POPKEY_HGRID=rawkey control shift x
 POPKEY_SPIRAL=rawkey control shift c
 POPKEY_DWINDLE=rawkey control shift v
 TOPGAP=30
-EXCL_WTYPE_0=Commodities
+EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 ```
 
 ## Tooltype Options Table
@@ -63,7 +68,7 @@ EXCL_WTYPE_0=Commodities
 | POPKEY\_DWINDLE | rawkey control lcommand d | another fibonacci variant layout | NA |
 | POPKEY\_TAKESNAPSHOT | rawkey control lcommand p | takes snapshot of current window layout | NA |
 | POPKEY\_CLEANSNAPSHOT | rawkey control lcommand c | deletes snapshot of window layout | NA |
-| POPKEY\_RESTOR | rawkey control lcommand r | restores snapshot of window layout | NA |
+| POPKEY\_RESTORE | rawkey control lcommand r | restores snapshot of window layout | NA |
 | POPKEY\_SWITCHF | rawkey control lcommand s | flip through layouts forwards | NA |
 | POPKEY\_SWITCHB | rawkey control lcommand x | flip through layouts backwards | NA |
 | POPKEY\_INCTOPGAP | rawkey control lcommand cursor\_up | increase topgap while running | GAP\_CHANGE\_VALUE |
@@ -86,7 +91,7 @@ EXCL_WTYPE_0=Commodities
 | CONLINE\_0..9 | emtpy | sets custom conline for the matching CMD\_0..9 | CMD\_0..9 |
 | EXCL\_WTYPE\_0..9 | empty | excludes windows based on window->Title | deactivates INCL\_WTYPE\_0..9 |
 | INCL\_WTYPE\_0..9 | empty | includes windows based on window->Title | deactivates EXCL\_WTYPE\_0..9 |
-| AUTO | TRUE | enable auto tilingr, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_MICRO |
+| AUTO | empty | enable auto tilingr, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_MICRO |
 | TILE\_FACT | 550 | size factor of master window (val / 1000)  in tiling function | POPKEY_TILE |
 
 ## Running dintwm from CLI
