@@ -23,6 +23,7 @@ jobs:
           retention-days: 1
 
   package:
+    needs: [build]
     runs-on: ubuntu-latest
     if: "contains(github.event.commits[0].message, '[pkg]')"
     container:
