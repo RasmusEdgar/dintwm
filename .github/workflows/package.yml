@@ -1,10 +1,11 @@
 name: package dintwm
 
-on: [push]
-  branches:
-    - "!*"
-  tags:
-    - "v*"
+on: 
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "v*"
 
 jobs:
   package:
