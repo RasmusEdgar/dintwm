@@ -17,9 +17,15 @@ jobs:
         password: ${{ secrets.EDGAR_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-      - name: Download a single artifact
-        uses: actions/download-artifact@v2
+      #- name: Download a single artifact
+      #  uses: actions/download-artifact@v2
+      #  with:
+      #    name: dintwm
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: main.yml
           name: dintwm
       - name: Package
         run: |
