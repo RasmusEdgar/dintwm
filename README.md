@@ -86,8 +86,9 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | BOTTOMGAP | 0 | sets a bottom gap | NA |
 | LEFTGAP | 0 | sets a left gap | NA |
 | RIGHTGAP | 0 | sets a right gap | NA |
+| GAP\_CHANGE\_VALUE | 20 | sets the increment/decrement value for gap adjustment | *GAP |
 | DEFAULT\_TOPGAP | FALSE | set automatically calculated gap | NA |
-| CND\_0..9 | empty | sets custom commands to spawn, like a shell or a program | CONLINE\_0..9 |
+| CMD\_0..9 | empty | sets custom commands to spawn, like a shell or a program | CONLINE\_0..9 |
 | CONLINE\_0..9 | emtpy | sets custom conline for the matching CMD\_0..9 | CMD\_0..9 |
 | EXCL\_WTYPE\_0..9 | empty | excludes windows based on window->Title | deactivates INCL\_WTYPE\_0..9 |
 | INCL\_WTYPE\_0..9 | empty | includes windows based on window->Title | deactivates EXCL\_WTYPE\_0..9 |
