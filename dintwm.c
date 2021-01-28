@@ -220,6 +220,18 @@ static short printusage(void)
 
 static short skipper(struct Window *w)
 {
+	if (w->Flags & (unsigned long)WFLG_BACKDROP) {
+		 return SKIP;
+	}
+
+	if (w->Flags & (unsigned long)WFLG_GIMMEZEROZERO) {
+		return SKIP;
+	}
+
+	if (strcmp("Workbench", (const char *)w->Title) == 0) {
+		return SKIP;
+	}
+
 	if (include_wtype != 0 && exclude_wtype == 0) {
 		if (bsearch
 		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
@@ -228,18 +240,6 @@ static short skipper(struct Window *w)
 		} else {
 			return SKIP;
 		}
-	}
-
-	if (w->Flags & (unsigned long)BACKDROP) {
-		 return SKIP;
-	}
-
-	if (w->Flags & (unsigned long)GIMMEZEROZERO) {
-		return SKIP;
-	}
-
-	if (strcmp("Workbench", (const char *)w->Title) == 0) {
-		return SKIP;
 	}
 
 	if (exclude_wtype != 0 && include_wtype == 0) {
