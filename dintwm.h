@@ -68,7 +68,7 @@
 #define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
-#define AUTO_INTERVAL_MICRO_DEF 15000 // default AUTO_TILE INTERVAL
+#define AUTO_INTERVAL_MICRO_DEF 100000 // default AUTO_TILE INTERVAL in microseconds
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
