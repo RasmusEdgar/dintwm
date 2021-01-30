@@ -93,6 +93,7 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | EXCL\_WTYPE\_0..9 | empty | excludes windows based on window->Title | deactivates INCL\_WTYPE\_0..9 |
 | INCL\_WTYPE\_0..9 | empty | includes windows based on window->Title | deactivates EXCL\_WTYPE\_0..9 |
 | AUTO | empty | enable auto tilingr, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_MICRO |
+| AUTO\INTERVAL\_MICRO | 100000 | Auto tile refresh rate, how often it checks for new windoes. Set to 100k microseconds | AUTO |
 | TILE\_FACT | 550 | size factor of master window (val / 1000)  in tiling function | POPKEY_TILE |
 
 ## Running dintwm from CLI
