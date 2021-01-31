@@ -98,7 +98,7 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 
 ## Running dintwm from CLI
 
-Again Dintwm will ignore the workbench window and backdropped windows.
+Again Dintwm will ignore the workbench window, backdropped windows and gimmezerozero windows.
 
 Open some windows.
 
