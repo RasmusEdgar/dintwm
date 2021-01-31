@@ -127,6 +127,8 @@ That is, you could basically set tiling to occur where ever you decide on the sc
 dintwm -U 320 -L 320 -t
 ```
 
+It is of course possible to use something as FKey to bind the above commands to your own HotKeys and thereby using Dintwm as manual tiling utility.
+
 ## TODO
 
 - ~~Create an optional Dintwm commodity to enable hotkeys~~
