@@ -41,11 +41,11 @@ Dintwm will ignore the workbench window and backdropped windows.
 
 To run dintwm as a commodity:
 
-1. Create a default tooltype (icon) for dintwm
-2. Add options you need, the following are available. See Tooltype Options Table section.
-3. Test it out using the following command: ```dintwm -C``` or simply run dintwm without options.
-4. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
-5. Check its status in System->Tools->Commodities->Exchange, you can also kill dintwm from here.
+1. Add the tooltypes you need to the included dintwm.info file. See Tooltype Options Table section.
+2. Test it out using the following command: ```dintwm -C``` or simply run dintwm without options.
+3. When done drag the dintwm icon file to wbstartup and dintwm should run after reboot.
+4. Check its status in System->Tools->Commodities->Exchange, you can also kill dintwm from here.
+5. Dintwm can be exited at any time with Ctrl+Lcommand+q (lcommand is also known as Left Amiga Modifier Key)
 
 The tooltypes in the dintwm file could look like this:  
 
