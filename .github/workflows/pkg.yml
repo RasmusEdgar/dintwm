@@ -24,7 +24,7 @@ jobs:
           path: dintwm
           retention-days: 1
 
-  package:
+  pkg:
     needs: [pkgbuild]
     runs-on: ubuntu-latest
     container:
