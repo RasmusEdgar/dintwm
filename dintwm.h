@@ -69,14 +69,23 @@
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
 #define AUTO_INTERVAL_MICRO_DEF 100000 // default AUTO_TILE INTERVAL in microseconds
+#define RESTORE_FLAG (1U << 0)
+#define WS_0 (1U << 1)
+#define WS_1 (1U << 2)
+#define WS_2 (1U << 3)
+#define WS_3 (1U << 4)
+#define WS_4 (1U << 5)
+#define WS_5 (1U << 6)
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
-	KEYTYPE = 1,
-	OPTTYPE = 2,
-	STORE = 1,
 	NOSKIP = 0,
+	FRONT = 0,
+	BACK = 1,
+	KEYTYPE = 1,
+	STORE = 1,
 	SKIP = 1,
+	OPTTYPE = 2,
 	RESTORE = 2,
 	FREE = 3,
 	COMMODITIZE = -1,
@@ -102,6 +111,7 @@ enum dintwm_identifiers {
 
 typedef union {
 	int i;
+	unsigned int u;
 	const void *v;
 } Arg;
 
@@ -122,6 +132,7 @@ short docmd(const Arg *arg);
 int calcgap(void);
 short exit_cxm(const Arg *arg);
 size_t strnlen(const char *s, size_t maxlen);
+short changews(const Arg *arg);
 
 int topgap;
 int bottomgap;
@@ -131,6 +142,8 @@ long int *current_layout;
 int exclude_wtype;
 int include_wtype;
 long unsigned int auto_interval;
+unsigned char ws_flags;
+unsigned int current_ws;
 
 // timer stuff
 void delete_timer(struct timerequest *);

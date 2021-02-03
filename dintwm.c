@@ -13,7 +13,7 @@ static int skip = 0;
 static struct Window *window;
 static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
-static unsigned char restoretag = 'r';
+//static unsigned char restoretag = 'r';
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
 static int nolock = 0;
@@ -22,6 +22,7 @@ static short printusage(void);
 static struct Window *copywindowlist(void);
 static short skipper(struct Window *w);
 static void free_list(struct Window *wlist);
+static void moveallwin(int m);
 
 int main(int argc, char **argv)
 {
@@ -33,6 +34,10 @@ int main(int argc, char **argv)
 	static int not_known;
 
 	fact = TILE_FACT_DEF;
+	ws_flags = 0U;
+	ws_flags |= WS_0;
+	current_ws = 0U;
+	current_ws |= WS_0;
 
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:Cdghst", 0)) >= 0) {
 		switch (c) {
@@ -232,22 +237,30 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
-	if (include_wtype != 0 && exclude_wtype == 0) {
-		if (bsearch
-		    (&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
-		     cstring_cmp)) {
-			return NOSKIP;
-		} else {
-			return SKIP;
-		}
+	if (!w->ExtData) {
+		w->ExtData = (unsigned char *)current_ws;
 	}
 
-	if (exclude_wtype != 0 && include_wtype == 0) {
-		if (bsearch
-		    (&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
-		     cstring_cmp)) {
-			return SKIP;
+	if ((unsigned int)w->ExtData & current_ws) {
+		if (include_wtype != 0 && exclude_wtype == 0) {
+			if (bsearch
+		    	(&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
+		     	cstring_cmp)) {
+				return NOSKIP;
+			} else {
+				return SKIP;
+			}
 		}
+
+		if (exclude_wtype != 0 && include_wtype == 0) {
+			if (bsearch
+		    	(&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
+		     	cstring_cmp)) {
+				return SKIP;
+			}
+		}
+	} else {
+		return SKIP;
 	}
 
 	return NOSKIP;
@@ -463,6 +476,9 @@ struct Window *copywindowlist(void)
 	lockbasescreen(&ilock, &screen);
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
 
+	ws_flags |= RESTORE_FLAG|WS_1;
+
+
 	while (w) {
 		if ((skip = skipper(w)) == SKIP) {
 			w = w->NextWindow;
@@ -482,9 +498,20 @@ struct Window *copywindowlist(void)
 		(*next)->Width = w->Width;
 		(*next)->Height = w->Height;
 		(*next)->Flags = w->Flags;
-		(*next)->ExtData = &restoretag;
-		w->ExtData = &restoretag;
+		//(*next)->ExtData = &restoretag;
+		//w->ExtData = &restoretag;
+		(*next)->ExtData = &ws_flags;
+		w->ExtData = &ws_flags;
+		if((unsigned int)w->ExtData & RESTORE_FLAG) {
+			printf("Restoreflag set\n");
+		}
+		if((unsigned int)w->ExtData & WS_0) {
+			printf("WS_0 is set\n");
+		}
 
+		if((unsigned int)w->ExtData & WS_1) {
+			printf("WS_1 is set\n");
+		}
 		next = &(*next)->NextWindow;
 
 		w = w->NextWindow;
@@ -719,4 +746,57 @@ static void free_list(struct Window *wlist)
 		free(wlist);
 		wlist = next_win;
 	}
+}
+
+static void moveallwin(int m) {
+	lockbasescreen(&ilock, &screen);
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+		if ((skip = skipper(window)) == SKIP) {
+			continue;
+		}
+		if (m == FRONT) {
+			WindowToFront(window);
+		} else {
+			WindowToBack(window);
+		}
+	}
+	unlockbasescreen(&ilock, &screen);
+}
+
+
+short changews(const Arg * arg) {
+	if (current_ws & arg->u) {
+		return TRUE;
+	}
+
+	moveallwin(BACK);
+	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
+
+	switch(arg->u) {
+	case WS_0:
+		current_ws |= WS_0;
+		break;
+	case WS_1:
+		current_ws |= WS_1;
+		break;
+	case WS_2:
+		current_ws |= WS_2;
+		break;
+	case WS_3:
+		current_ws |= WS_3;
+		break;
+	case WS_4:
+		current_ws |= WS_4;
+		break;
+	case WS_5:
+		current_ws |= WS_5;
+		break;
+	default:
+		// Do nothing
+		break;
+	}
+	moveallwin(FRONT);
+
+	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }

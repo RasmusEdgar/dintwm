@@ -46,6 +46,12 @@ Keys defkeys[] = {
 	{ TYPE_KEY_CMD_7, KEY_CMD_7, KEYTYPE, docmd, { .i = CMD_ID_7 } },
 	{ TYPE_KEY_CMD_8, KEY_CMD_8, KEYTYPE, docmd, { .i = CMD_ID_8 } },
 	{ TYPE_KEY_CMD_9, KEY_CMD_9, KEYTYPE, docmd, { .i = CMD_ID_9 } },
+	{ TYPE_KEY_WS_0, KEY_WS_0, KEYTYPE, changews, { .u = WS_0 } },
+	{ TYPE_KEY_WS_1, KEY_WS_1, KEYTYPE, changews, { .u = WS_1 } },
+	{ TYPE_KEY_WS_2, KEY_WS_2, KEYTYPE, changews, { .u = WS_2 } },
+	{ TYPE_KEY_WS_3, KEY_WS_3, KEYTYPE, changews, { .u = WS_3 } },
+	{ TYPE_KEY_WS_4, KEY_WS_4, KEYTYPE, changews, { .u = WS_4 } },
+	{ TYPE_KEY_WS_5, KEY_WS_5, KEYTYPE, changews, { .u = WS_5 } },
 	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE, exit_cxm, {0} },
 };
 
