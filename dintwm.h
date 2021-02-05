@@ -133,6 +133,7 @@ int calcgap(void);
 short exit_cxm(const Arg *arg);
 size_t strnlen(const char *s, size_t maxlen);
 short changews(const Arg *arg);
+short movetows(const Arg *arg);
 
 int topgap;
 int bottomgap;
@@ -142,8 +143,9 @@ long int *current_layout;
 int exclude_wtype;
 int include_wtype;
 long unsigned int auto_interval;
-unsigned char ws_flags;
+unsigned int ws_flags;
 unsigned int current_ws;
+short backdropped;
 
 // timer stuff
 void delete_timer(struct timerequest *);

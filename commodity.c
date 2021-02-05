@@ -52,6 +52,12 @@ Keys defkeys[] = {
 	{ TYPE_KEY_WS_3, KEY_WS_3, KEYTYPE, changews, { .u = WS_3 } },
 	{ TYPE_KEY_WS_4, KEY_WS_4, KEYTYPE, changews, { .u = WS_4 } },
 	{ TYPE_KEY_WS_5, KEY_WS_5, KEYTYPE, changews, { .u = WS_5 } },
+	{ TYPE_KEY_CWS_0, KEY_CWS_0, KEYTYPE, movetows, { .u = WS_0 } },
+	{ TYPE_KEY_CWS_1, KEY_CWS_1, KEYTYPE, movetows, { .u = WS_1 } },
+	{ TYPE_KEY_CWS_2, KEY_CWS_2, KEYTYPE, movetows, { .u = WS_2 } },
+	{ TYPE_KEY_CWS_3, KEY_CWS_3, KEYTYPE, movetows, { .u = WS_3 } },
+	{ TYPE_KEY_CWS_4, KEY_CWS_4, KEYTYPE, movetows, { .u = WS_4 } },
+	{ TYPE_KEY_CWS_5, KEY_CWS_5, KEYTYPE, movetows, { .u = WS_5 } },
 	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE, exit_cxm, {0} },
 };
 

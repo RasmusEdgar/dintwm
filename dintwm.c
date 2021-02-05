@@ -13,7 +13,6 @@ static int skip = 0;
 static struct Window *window;
 static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
-//static unsigned char restoretag = 'r';
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
 static int nolock = 0;
@@ -35,9 +34,9 @@ int main(int argc, char **argv)
 
 	fact = TILE_FACT_DEF;
 	ws_flags = 0U;
-	ws_flags |= WS_0;
 	current_ws = 0U;
 	current_ws |= WS_0;
+	backdropped = FALSE;
 
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:Cdghst", 0)) >= 0) {
 		switch (c) {
@@ -226,7 +225,10 @@ static short printusage(void)
 static short skipper(struct Window *w)
 {
 	if (w->Flags & (unsigned long)WFLG_BACKDROP) {
-		 return SKIP;
+		backdropped = TRUE;
+		return SKIP;
+	} else {
+		backdropped = FALSE;
 	}
 
 	if (w->Flags & (unsigned long)WFLG_GIMMEZEROZERO) {
@@ -412,7 +414,9 @@ short fibonacci(const Arg * arg)
 				wy += wh;
 			}
 		}
-		if ((wnr % 4) == 0) {
+		if (wincount == 1) {
+			wh = sh;
+		} else if ((wnr % 4) == 0) {
 			if (arg->i != 0) {
 				wy += wh;
 			} else {
@@ -476,10 +480,10 @@ struct Window *copywindowlist(void)
 	lockbasescreen(&ilock, &screen);
 	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
 
-	ws_flags |= RESTORE_FLAG|WS_1;
+	ws_flags &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
+	ws_flags |= RESTORE_FLAG|current_ws;
 
-
-	while (w) {
+	while ((unsigned int)w->ExtData & current_ws) {
 		if ((skip = skipper(w)) == SKIP) {
 			w = w->NextWindow;
 			continue;
@@ -498,20 +502,8 @@ struct Window *copywindowlist(void)
 		(*next)->Width = w->Width;
 		(*next)->Height = w->Height;
 		(*next)->Flags = w->Flags;
-		//(*next)->ExtData = &restoretag;
-		//w->ExtData = &restoretag;
-		(*next)->ExtData = &ws_flags;
-		w->ExtData = &ws_flags;
-		if((unsigned int)w->ExtData & RESTORE_FLAG) {
-			printf("Restoreflag set\n");
-		}
-		if((unsigned int)w->ExtData & WS_0) {
-			printf("WS_0 is set\n");
-		}
-
-		if((unsigned int)w->ExtData & WS_1) {
-			printf("WS_1 is set\n");
-		}
+		(*next)->ExtData = (unsigned char *)ws_flags;
+		w->ExtData = (unsigned char *)ws_flags;
 		next = &(*next)->NextWindow;
 
 		w = w->NextWindow;
@@ -770,6 +762,10 @@ short changews(const Arg * arg) {
 		return TRUE;
 	}
 
+	if (backdropped) {
+		return TRUE;
+	}
+
 	moveallwin(BACK);
 	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
 
@@ -798,5 +794,27 @@ short changews(const Arg * arg) {
 	}
 	moveallwin(FRONT);
 
+	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+}
+
+short movetows(const Arg * arg) {
+	unsigned int setws = 0U;
+	lockbasescreen(&ilock, &screen);
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+		if ((skip = skipper(window)) == SKIP) {
+			continue;
+		}
+		if (window->Flags & (unsigned long)WINDOWACTIVE) {
+			if ((unsigned int)window->ExtData & RESTORE_FLAG) {
+				setws |= arg->u|RESTORE_FLAG;
+				window->ExtData = (unsigned char *)setws;
+			} else {
+				setws |= arg->u;
+				window->ExtData = (unsigned char *)setws;
+			}
+		}
+	}
+	unlockbasescreen(&ilock, &screen);
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
