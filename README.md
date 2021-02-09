@@ -66,9 +66,6 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | POPKEY\_HGRID   | rawkey control lcommand g | grid layout | NA |
 | POPKEY\_SPIRAL  | rawkey control lcommand f | fibonacci variant layout | NA |
 | POPKEY\_DWINDLE | rawkey control lcommand d | another fibonacci variant layout | NA |
-| POPKEY\_TAKESNAPSHOT | rawkey control lcommand p | takes snapshot of current window layout | NA |
-| POPKEY\_CLEANSNAPSHOT | rawkey control lcommand c | deletes snapshot of window layout | NA |
-| POPKEY\_RESTORE | rawkey control lcommand r | restores snapshot of window layout | NA |
 | POPKEY\_SWITCHF | rawkey control lcommand s | flip through layouts forwards | NA |
 | POPKEY\_SWITCHB | rawkey control lcommand x | flip through layouts backwards | NA |
 | POPKEY\_INCTOPGAP | rawkey control lcommand cursor\_up | increase topgap while running | GAP\_CHANGE\_VALUE |
@@ -81,6 +78,8 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | POPKEY\_INCALLGAPS | rawkey control lcommand numeric\_pad + | increase all gaps while running | GAP\_CHANGE\_VALUE |
 | POPKEY\_DECALLGAPS | rawkey control lcommand numeric\_pad -- | (double dash to escape special function of dash) decrease all gaps while running | GAP\_CHANGE\_VALUE |
 | POPKEY\_CMD_0..9 | spawns custom commands | rawkey control lcommand 0..9 | CMD_0..9, CONLINE_0..9 |
+| POPKEY\_WS_0..5 | change to virtual workspace | rawkey control lcommand numpad 0..5 | POPKEY_CWS_0..5 |
+| POPKEY\_CWS_0..5 | move active window to virtual workspace | rawkey control shift numpad 0..5 | POPKEY_CWS_0..5 |
 | POPKEY\_CXM_EXIT | rawkey control lcommand q | exits commodity | NA |
 | TOPGAP | 0 | sets the top gap of the screen | NA |
 | BOTTOMGAP | 0 | sets a bottom gap | NA |
@@ -92,13 +91,31 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | CONLINE\_0..9 | emtpy | sets custom conline for the matching CMD\_0..9 | CMD\_0..9 |
 | EXCL\_WTYPE\_0..9 | empty | excludes windows based on window->Title | deactivates INCL\_WTYPE\_0..9 |
 | INCL\_WTYPE\_0..9 | empty | includes windows based on window->Title | deactivates EXCL\_WTYPE\_0..9 |
-| AUTO | empty | enable auto tilingr, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_MICRO |
-| AUTO\_INTERVAL\_MICRO | 100000 | Auto tile refresh rate, how often it checks for new windoes. Set to 100k microseconds | AUTO |
+| AUTO | empty | enable auto tiling, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_MICRO |
+| AUTO\_INTERVAL\_MICRO | 100000 | Auto tile refresh rate, how often it checks for new windows. Set to 100k microseconds | AUTO |
 | TILE\_FACT | 550 | size factor of master window (val / 1000)  in tiling function | POPKEY_TILE |
+
+## Features explained
+
+Here is a short outline of the different features and their limitations.
+
+### Virtual workspaces
+
+Creates layers of window sets, which could also be seen as virtual workspaces and change be between using the POPKEY\_WS\_0..5 hotkeys.
+
+Move active window to another virtual workspace using the POPKEY\_CWS\_0..5 hotkeys.
+
+Since virtual workspaces depend on moving windows to be the back of the window stack, using it with a backdropped Workbench window will not work.
+
+To enable do not backdrop the workbench window.
 
 ## Running dintwm from CLI
 
 Again Dintwm will ignore the workbench window, backdropped windows and gimmezerozero windows.
+
+Auto tile for obvious reasons does not work in this mode.
+
+Virtual workspaces do not work.
 
 Open some windows.
 
@@ -132,14 +149,15 @@ It is of course possible to use something as FKey to bind the above commands to 
 ## TODO
 
 - ~~Create an optional Dintwm commodity to enable hotkeys~~
-- ~~Make dintwm dynamical, by saving position of windows before tiling.~~
+- ~~Make dintwm dynamical, by saving position of windows before tiling.~~ *Dropped*
 - ~~Float -> Tile -> Float behaviour~~
 - ~~Enable auto tiling when new windows appear.~~
 - ~~Add leftgap, rightgap and bottomgap~~
+- ~~Virtual workspaces~~
 - Add dintwm bar
 - Create dmenu like feature if no suitable menu is found on aminet
 - ~~Stop commodity with hotkey~~
-- Use github actions to build and package dintwm release
+- ~~Use github actions to build and package dintwm release~~
 
 ## Note on licensing
 

@@ -11,17 +11,15 @@ static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
-static struct Window *windowliststore = NULL;
 static const int nmaster = 1;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
 static int nolock = 0;
 static struct Screen *screen;
 static short printusage(void);
-static struct Window *copywindowlist(void);
 static short skipper(struct Window *w);
-static void free_list(struct Window *wlist);
 static void moveallwin(int m);
+static void clearextdata(void);
 
 int main(int argc, char **argv)
 {
@@ -33,7 +31,6 @@ int main(int argc, char **argv)
 	static int not_known;
 
 	fact = TILE_FACT_DEF;
-	ws_flags = 0U;
 	current_ws = 0U;
 	current_ws |= WS_0;
 	backdropped = FALSE;
@@ -199,9 +196,8 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (windowliststore != NULL) {
-		free_list(windowliststore);
-	}
+	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
+	clearextdata();
 	return dint_exit_state;
 }
 
@@ -475,100 +471,17 @@ short switcher(const Arg * arg)
 	return rc;
 }
 
-struct Window *copywindowlist(void)
+static void clearextdata(void)
 {
 	lockbasescreen(&ilock, &screen);
-	struct Window *dst = NULL, **next = &dst, *w = screen->FirstWindow;
-
-	ws_flags &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
-	ws_flags |= RESTORE_FLAG|current_ws;
-
-	while ((unsigned int)w->ExtData & current_ws) {
-		if ((skip = skipper(w)) == SKIP) {
-			w = w->NextWindow;
+	for (window = screen->FirstWindow; window;
+	     window = window->NextWindow) {
+		if ((skip = skipper(window)) == SKIP) {
 			continue;
 		}
-
-		*next = malloc(sizeof(**next));
-		if (*next == NULL) {
-			unlockbasescreen(&ilock, &screen);
-			free(dst);
-			return NULL;
-		}
-
-		(*next)->Title = w->Title;
-		(*next)->LeftEdge = w->LeftEdge;
-		(*next)->TopEdge = w->TopEdge;
-		(*next)->Width = w->Width;
-		(*next)->Height = w->Height;
-		(*next)->Flags = w->Flags;
-		(*next)->ExtData = (unsigned char *)ws_flags;
-		w->ExtData = (unsigned char *)ws_flags;
-		next = &(*next)->NextWindow;
-
-		w = w->NextWindow;
+		window->ExtData = NULL;
 	}
-	*next = NULL;
-
 	unlockbasescreen(&ilock, &screen);
-	return dst;
-}
-
-short takesnapshot(const Arg * arg)
-{
-	short rc;
-	(void)arg;
-	rc = cleansnapshot(0);
-	windowliststore = copywindowlist();
-
-	if (windowliststore != NULL || rc == 0) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
-}
-
-short cleansnapshot(const Arg * arg)
-{
-	(void)arg;
-	if (windowliststore != NULL) {
-		free_list(windowliststore);
-		windowliststore = NULL;
-	}
-
-	return TRUE;
-}
-
-short restore(const Arg * arg)
-{
-	(void)arg;
-	if (windowliststore != NULL) {
-		lockbasescreen(&ilock, &screen);
-		struct Window *storehead = windowliststore;
-		for (window = screen->FirstWindow; window;
-		     window = window->NextWindow) {
-			if ((skip = skipper(window)) == SKIP) {
-				windowliststore = windowliststore->NextWindow;
-				continue;
-			}
-
-			if (windowliststore->ExtData == window->ExtData) {
-				cwb(window, windowliststore->LeftEdge,
-				    windowliststore->TopEdge,
-				    windowliststore->Width,
-				    windowliststore->Height);
-				WindowToFront(window);
-			} else {
-				WindowToBack(window);
-				continue;
-			}
-			windowliststore = windowliststore->NextWindow;
-		}
-		windowliststore = storehead;
-		unlockbasescreen(&ilock, &screen);
-	}
-
-	return TRUE;
 }
 
 int countwindows(int l)
@@ -729,17 +642,6 @@ size_t strnlen(const char *s, size_t maxlen)
 	return len;
 }
 
-static void free_list(struct Window *wlist)
-{
-	struct Window *next_win;
-
-	while (wlist != NULL) {
-		next_win = wlist->NextWindow;
-		free(wlist);
-		wlist = next_win;
-	}
-}
-
 static void moveallwin(int m) {
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window;
@@ -806,13 +708,8 @@ short movetows(const Arg * arg) {
 			continue;
 		}
 		if (window->Flags & (unsigned long)WINDOWACTIVE) {
-			if ((unsigned int)window->ExtData & RESTORE_FLAG) {
-				setws |= arg->u|RESTORE_FLAG;
-				window->ExtData = (unsigned char *)setws;
-			} else {
-				setws |= arg->u;
-				window->ExtData = (unsigned char *)setws;
-			}
+			setws |= arg->u;
+			window->ExtData = (unsigned char *)setws;
 		}
 	}
 	unlockbasescreen(&ilock, &screen);
