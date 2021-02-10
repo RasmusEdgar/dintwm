@@ -35,6 +35,10 @@ LEFTGAP=320
 
 ![Gap tiling into area](https://github.com/RasmusEdgar/dintwm/blob/master/demo/gap_to_area.gif)
 
+Change between virtual workspaces and resize tiling area dynamically:
+
+![Virtual WSs and dynamic gaps](https://github.com/RasmusEdgar/dintwm/blob/master/demo/virtual_ws_gaps.gif)
+
 ## Running dintwm as a commodity
 
 Dintwm will ignore the workbench window and backdropped windows.
