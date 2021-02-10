@@ -55,7 +55,7 @@ Keys defkeys[] = {
 	{ TYPE_KEY_CWS_3, KEY_CWS_3, KEYTYPE, movetows, { .u = WS_3 } },
 	{ TYPE_KEY_CWS_4, KEY_CWS_4, KEYTYPE, movetows, { .u = WS_4 } },
 	{ TYPE_KEY_CWS_5, KEY_CWS_5, KEYTYPE, movetows, { .u = WS_5 } },
-	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE, exit_cxm, {0} },
+	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE, exit_cxm, {.s = FALSE} },
 };
 
 Opts defopts[] = {

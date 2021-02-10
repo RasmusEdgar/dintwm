@@ -476,10 +476,9 @@ static void clearextdata(void)
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window;
 	     window = window->NextWindow) {
-		if ((skip = skipper(window)) == SKIP) {
-			continue;
+		if (window->ExtData) {
+			window->ExtData = NULL;
 		}
-		window->ExtData = NULL;
 	}
 	unlockbasescreen(&ilock, &screen);
 }
@@ -619,8 +618,7 @@ static void unlockbasescreen(unsigned long *il, struct Screen **s)
 
 short exit_cxm(const Arg * arg)
 {
-	(void)arg;
-	return FALSE;
+	return arg->s;
 }
 
 int cstring_cmp(const void *a, const void *b)
@@ -669,31 +667,7 @@ short changews(const Arg * arg) {
 	}
 
 	moveallwin(BACK);
-	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
-
-	switch(arg->u) {
-	case WS_0:
-		current_ws |= WS_0;
-		break;
-	case WS_1:
-		current_ws |= WS_1;
-		break;
-	case WS_2:
-		current_ws |= WS_2;
-		break;
-	case WS_3:
-		current_ws |= WS_3;
-		break;
-	case WS_4:
-		current_ws |= WS_4;
-		break;
-	case WS_5:
-		current_ws |= WS_5;
-		break;
-	default:
-		// Do nothing
-		break;
-	}
+	current_ws = arg->u;
 	moveallwin(FRONT);
 
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));

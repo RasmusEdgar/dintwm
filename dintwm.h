@@ -110,6 +110,7 @@ enum dintwm_identifiers {
 typedef union {
 	int i;
 	unsigned int u;
+	short s;
 	const void *v;
 } Arg;
 
