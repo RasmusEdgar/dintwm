@@ -146,6 +146,19 @@ dintwm -U 320 -L 320 -t
 
 It is of course possible to use something as FKey to bind the above commands to your own HotKeys and thereby using Dintwm as manual tiling utility.
 
+Options are:
+
+* `-d`: Fibonacci dwindle
+* `-g`: Horizontal grid
+* `-t`: Tile with left master
+* `-s`: Fibonacci spiral
+* `<other arg> -u`: Add workbench top bar gap
+* `<other arg> -U<int>`: Add custom top gap
+* `<other arg> -B<int>`: Add custom bottom gap
+* `<other arg> -L<int>`: Add custom left gap
+* `<other arg> -R<int>`: Add custom right gap
+* `-h`: This message
+
 ## TODO
 
 - ~~Create an optional Dintwm commodity to enable hotkeys~~
