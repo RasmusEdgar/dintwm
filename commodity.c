@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 // Copyright 2021 Rasmus Edgar
 #include "./dintwm.h"
-#include "./config.h"
+#include "./cxm_config.h"
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for AmigaOS";
@@ -289,19 +289,31 @@ short int commo(void)
 			static int wincount = 0;
 			static short first_run = TRUE;
 			static int lock = 1;
+			static struct Window *awin_comp;
+
+			if(!wbw) {
+				running = init_wbar();
+				wincount = countwindows(lock);
+				update_wbar();
+			}
 
 			while (running)
 			{
 				if(autotile) {
+					awin_comp = active_win;
 					wincount = countwindows(lock);
 					currentval.tv_secs = 0UL;
 					currentval.tv_micro = auto_interval;
 					(void)time_delay(&currentval, UNIT_MICROHZ);
 					if(wincount != (countwindows(lock)) || first_run == TRUE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+						wbarcwb();
 						if(first_run == TRUE) {
 							first_run = FALSE;
 						}
+					}
+					if(awin_comp != active_win) {
+						update_wbar();
 					}
 				} else {
 					(void)WaitPort(mp);
@@ -341,6 +353,8 @@ short int commo(void)
 							*current_layout = id;
 						}
 						running = defkeys[id].func(&defkeys[id].arg);
+						wbarcwb();
+						update_wbar();
 					}
 				}
 			}

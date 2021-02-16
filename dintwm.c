@@ -4,10 +4,9 @@
 #include "./dintwm.h"
 #include <dos/dostags.h>
 #include "./ketopt.h"
+#include "./wbar_config.h"
 
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
-static void lockbasescreen(unsigned long *il, struct Screen **s);
-static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static unsigned long ilock;
 static int skip = 0;
 static struct Window *window;
@@ -20,6 +19,10 @@ static short printusage(void);
 static short skipper(struct Window *w);
 static void moveallwin(int m);
 static void clearextdata(void);
+static void lockbasescreen(unsigned long *il, struct Screen **s);
+static void unlockbasescreen(unsigned long *il, struct Screen **s);
+static inline unsigned char * mapws(void);
+static inline unsigned char * maptm(void);
 
 int main(int argc, char **argv)
 {
@@ -35,6 +38,11 @@ int main(int argc, char **argv)
 	current_ws |= WS_0;
 	backdropped = FALSE;
 
+	lockbasescreen(&ilock, &screen);
+	sheight = screen->Height;
+	swidth = screen->Width;
+	unlockbasescreen(&ilock, &screen);
+
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:Cdghst", 0)) >= 0) {
 		switch (c) {
 		case 'u':
@@ -46,11 +54,9 @@ int main(int argc, char **argv)
 				break;
 			}
 			topgap = (int)strtol(opt.arg, (char **)NULL, 10);
-			lockbasescreen(&ilock, &screen);
-			if (topgap > screen->Height || topgap < 0) {
+			if (topgap > sheight || topgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
-			unlockbasescreen(&ilock, &screen);
 			break;
 		case 'B':
 			if (*opt.arg == '-') {
@@ -58,11 +64,9 @@ int main(int argc, char **argv)
 				break;
 			}
 			bottomgap = (int)strtol(opt.arg, (char **)NULL, 10);
-			lockbasescreen(&ilock, &screen);
-			if (bottomgap > screen->Height || bottomgap < 0) {
+			if (bottomgap > sheight || bottomgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
-			unlockbasescreen(&ilock, &screen);
 			break;
 		case 'L':
 			if (*opt.arg == '-') {
@@ -70,11 +74,9 @@ int main(int argc, char **argv)
 				break;
 			}
 			leftgap = (int)strtol(opt.arg, (char **)NULL, 10);
-			lockbasescreen(&ilock, &screen);
-			if (leftgap > screen->Width || leftgap < 0) {
+			if (leftgap > swidth || leftgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
-			unlockbasescreen(&ilock, &screen);
 			break;
 		case 'R':
 			if (*opt.arg == '-') {
@@ -82,11 +84,9 @@ int main(int argc, char **argv)
 				break;
 			}
 			rightgap = (int)strtol(opt.arg, (char **)NULL, 10);
-			lockbasescreen(&ilock, &screen);
-			if (rightgap > screen->Width || rightgap < 0) {
+			if (rightgap > swidth || rightgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
-			unlockbasescreen(&ilock, &screen);
 			break;
 		case 'C':
 			if (dint_opt_state != NOTSET) {
@@ -184,6 +184,8 @@ int main(int argc, char **argv)
 	if (dint_exit_state != EXIT_FAILURE) {
 		switch (dint_opt_state) {
 		case COMMODITIZE:
+			wbarheight = WBAR_HEIGHT;
+			sheight = sheight - wbarheight;
 			dint_exit_state = commo();
 			break;
 		case FUNC_PRINTUSAGE:
@@ -198,6 +200,7 @@ int main(int argc, char **argv)
 
 	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
 	clearextdata();
+	CloseWindow(wbw);
 	return dint_exit_state;
 }
 
@@ -231,6 +234,10 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
+	if (w->Flags & (unsigned long)WFLG_BORDERLESS) {
+		return SKIP;
+	}
+
 	if (strcmp("Workbench", (const char *)w->Title) == 0) {
 		return SKIP;
 	}
@@ -238,6 +245,7 @@ static short skipper(struct Window *w)
 	if (!w->ExtData) {
 		w->ExtData = (unsigned char *)current_ws;
 	}
+
 
 	if ((unsigned int)w->ExtData & current_ws) {
 		if (include_wtype != 0 && exclude_wtype == 0) {
@@ -280,8 +288,10 @@ short tile(const Arg * arg)
 
 	lockbasescreen(&ilock, &screen);
 
-	sh = screen->Height - (bottomgap + topgap);
-	sw = screen->Width - (rightgap + leftgap);
+	//sh = screen->Height - (bottomgap + topgap);
+	//sw = screen->Width - (rightgap + leftgap);
+	sh = sheight - (bottomgap + topgap);
+	sw = swidth - (rightgap + leftgap);
 
 	wincount = countwindows(nolock);
 
@@ -330,8 +340,10 @@ short hgrid(const Arg * arg)
 
 	lockbasescreen(&ilock, &screen);
 
-	sh = screen->Height - (bottomgap + topgap);
-	sw = screen->Width - (rightgap + leftgap);
+	//sh = screen->Height - (bottomgap + topgap);
+	//sw = screen->Width - (rightgap + leftgap);
+	sh = sheight - (bottomgap + topgap);
+	sw = swidth - (rightgap + leftgap);
 
 	wincount = countwindows(nolock);
 
@@ -381,8 +393,10 @@ short fibonacci(const Arg * arg)
 
 	lockbasescreen(&ilock, &screen);
 
-	sh = screen->Height - (bottomgap + topgap);
-	sw = screen->Width - (rightgap + leftgap);
+	//sh = screen->Height - (bottomgap + topgap);
+	//sw = screen->Width - (rightgap + leftgap);
+	sh = sheight - (bottomgap + topgap);
+	sw = swidth - (rightgap + leftgap);
 
 	wincount = countwindows(nolock);
 
@@ -491,6 +505,9 @@ int countwindows(int l)
 	}
 	for (wincount = 0, window = screen->FirstWindow; window;
 	     window = window->NextWindow, wincount++) {
+		if (window->Flags & (unsigned long)WFLG_WINDOWACTIVE) {
+			active_win = window;
+		}
 		if ((skip = skipper(window)) == SKIP) {
 			wincount--;
 			continue;
@@ -561,16 +578,16 @@ short changegaps(const Arg *arg)
 {
 	switch(arg->i) {
 	case TOPGAP_ID:
-		topgap += topgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		topgap += topgap <= ((sheight - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
 		break;
 	case BOTTOMGAP_ID:
-		bottomgap += bottomgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		bottomgap += bottomgap <= ((sheight - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
 		break;
 	case LEFTGAP_ID:
-		leftgap += leftgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		leftgap += leftgap <= ((swidth - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
 		break;
 	case RIGHTGAP_ID:
-		rightgap += rightgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		rightgap += rightgap <= ((swidth - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
 		break;
 	case -TOPGAP_ID:
 		topgap = (topgap - gap_change_value) > 0 ? topgap - gap_change_value : 0;
@@ -585,10 +602,10 @@ short changegaps(const Arg *arg)
 		rightgap = (rightgap - gap_change_value) > 0 ? rightgap - gap_change_value : 0;
 		break;
 	case INCALLGAPS_ID:
-		topgap += topgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
-		bottomgap += bottomgap <= ((screen->Height - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
-		leftgap += leftgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
-		rightgap += rightgap <= ((screen->Width - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		topgap += topgap <= ((sheight - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		bottomgap += bottomgap <= ((sheight - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		leftgap += leftgap <= ((swidth - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
+		rightgap += rightgap <= ((swidth - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
 		break;
 	case DECALLGAPS_ID:
 		topgap = (topgap - gap_change_value) > 0 ? topgap - gap_change_value : 0;
@@ -688,4 +705,129 @@ short movetows(const Arg * arg) {
 	}
 	unlockbasescreen(&ilock, &screen);
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+}
+
+short init_wbar(void) {
+	struct TagItem tagitem[6];
+
+	lockbasescreen(&ilock, &screen);
+	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	tagitem[0].ti_Data = (unsigned long)(swidth - (leftgap + rightgap));
+	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
+	tagitem[1].ti_Data = (unsigned long)wbarheight;
+	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
+	tagitem[2].ti_Data = (unsigned long)(sheight - bottomgap);
+	//tagitem[2].ti_Data = 0;
+	tagitem[3].ti_Tag = WA_Borderless; //-V2544 //-V2568
+	tagitem[3].ti_Data = 1; //-V2568
+	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
+	tagitem[4].ti_Data = 1; //-V2568
+	tagitem[5].ti_Tag = TAG_DONE; //-V2544 //-V2568
+
+	wbw = OpenWindowTagList(NULL, tagitem);
+
+	if (!wbw) {
+		unlockbasescreen(&ilock, &screen);
+		return FALSE;
+	}
+
+	WindowToFront(wbw);
+	unlockbasescreen(&ilock, &screen);
+
+	return TRUE;
+}
+
+short update_wbar(void) {
+	barte = &teinit;
+
+	barbdata[0] = 1;
+	barbdata[1] = 1;
+	barbdata[2] = (short)((swidth - (leftgap + rightgap)) - 1);
+	barbdata[3] = 1;
+	barbdata[4] = (short)((swidth - (leftgap + rightgap)) -  1);
+	barbdata[5] = (short)(wbarheight - 1);
+	barbdata[6] = 1;
+	barbdata[7] = (short)(wbarheight - 1);
+	barbdata[8] = 1;
+	barbdata[9] = 1;
+
+	wstext.IText = mapws();
+	wstext.NextText = &modetext;
+
+	modetext.IText = maptm();
+	modetext.NextText = &wtitle;
+
+	(void)snprintf((char *)awin, TT_MAX_LENGTH, "%s", active_win->Title);
+
+	wtitle.IText = awin;
+
+	barb.XY = barbdata;
+
+	if (TextExtent(wbw->RPort, wstext.IText, strnlen((const char *)wstext.IText, TT_MAX_LENGTH), barte)) {
+		if(barte == NULL) {
+			return FALSE;
+		}
+		modetext.LeftEdge = (short)((int)wstext.LeftEdge+(int)barte->te_Width);
+	}
+
+	if (TextExtent(wbw->RPort, modetext.IText, strnlen((const char *)modetext.IText, TT_MAX_LENGTH), barte)) {
+		if(barte == NULL) {
+			return FALSE;
+		}
+		wtitle.LeftEdge = (short)((int)modetext.LeftEdge+(int)barte->te_Width);
+	}
+
+	SetRast(wbw->RPort, 0);
+	DrawBorder(wbw->RPort, &barb, 0, 0);
+	PrintIText(wbw->RPort, &wstext, 0, 0);
+
+	return TRUE;
+}
+
+void wbarcwb(void) {
+	lockbasescreen(&ilock, &screen);
+	cwb(wbw, leftgap, sheight - bottomgap, swidth - (leftgap + rightgap), WBAR_HEIGHT);
+	unlockbasescreen(&ilock, &screen);
+}
+
+static inline unsigned char * mapws(void)
+{
+	if (current_ws & WS_0) {
+		return ws_zero;
+	}
+	if (current_ws & WS_1) {
+		return ws_one;
+	}
+	if (current_ws & WS_2) {
+		return ws_two;
+	}
+	if (current_ws & WS_3) {
+		return ws_three;
+	}
+	if (current_ws & WS_4) {
+		return ws_four;
+	}
+	if (current_ws & WS_5) {
+		return ws_five;
+	}
+
+	return wbar_err;
+}
+
+static inline unsigned char * maptm(void)
+{
+	if (*current_layout == 0) {
+		return mode_tile;
+	}
+	if (*current_layout == 1) {
+		return mode_grid;
+	}
+	if (*current_layout == 2) {
+		return mode_dwindle;
+	}
+	if (*current_layout == 3) {
+		return mode_spiral;
+	}
+
+	return wbar_err;
 }

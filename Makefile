@@ -9,7 +9,7 @@ CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 -O0 -Wall -Wextra -Wformat=2 -Wmissing-i
 CC = m68k-amigaos-gcc
 CFLAGS =-std=c11 -O3 -noixemul -Wall -Wextra -s
 MAINHEADER = dintwm.h
-CONFHEADER = config.h
+CONFHEADER = cxm_config.h wbar_config.h
 EXTHEADERS = ketopt.h
 HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
 CPPLINTCMD = cpplint

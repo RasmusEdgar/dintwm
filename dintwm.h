@@ -75,6 +75,8 @@
 #define WS_3 (1U << 3)
 #define WS_4 (1U << 4)
 #define WS_5 (1U << 5)
+#define WBAR (1U << 6)
+#define WBAR_HEIGHT 20
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
@@ -130,6 +132,9 @@ short exit_cxm(const Arg *arg);
 size_t strnlen(const char *s, size_t maxlen);
 short changews(const Arg *arg);
 short movetows(const Arg *arg);
+short init_wbar(void);
+short update_wbar(void);
+void wbarcwb(void);
 
 int topgap;
 int bottomgap;
@@ -141,6 +146,11 @@ int include_wtype;
 long unsigned int auto_interval;
 unsigned int current_ws;
 short backdropped;
+struct Window *wbw;
+int sheight;
+int swidth;
+int wbarheight;
+struct Window *active_win;
 
 // timer stuff
 void delete_timer(struct timerequest *);
