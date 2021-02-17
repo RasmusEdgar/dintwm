@@ -14,7 +14,6 @@ static const int nmaster = 1;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
 static int nolock = 0;
-static struct Screen *screen;
 static short printusage(void);
 static short skipper(struct Window *w);
 static void moveallwin(int m);
@@ -37,6 +36,8 @@ int main(int argc, char **argv)
 	current_ws = 0U;
 	current_ws |= WS_0;
 	backdropped = FALSE;
+	wbarbgcolor[0] = 0U;
+	bar_on = FALSE;
 
 	lockbasescreen(&ilock, &screen);
 	sheight = screen->Height;
@@ -200,7 +201,9 @@ int main(int argc, char **argv)
 
 	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
 	clearextdata();
-	CloseWindow(wbw);
+	if (bar_on) {
+		CloseWindow(wbw);
+	}
 	return dint_exit_state;
 }
 
@@ -519,6 +522,19 @@ int countwindows(int l)
 	return wincount;
 }
 
+void getactive(void)
+{
+	lockbasescreen(&ilock, &screen);
+	for (window = screen->FirstWindow; window;
+	     window = window->NextWindow) {
+		if (window->Flags & (unsigned long)WFLG_WINDOWACTIVE) {
+			active_win = window;
+			break;
+		}
+	}
+	unlockbasescreen(&ilock, &screen);
+}
+
 short docmd(const Arg * arg)
 {
 	int cmdid = arg->i - (int)CMD_ID_0;
@@ -708,7 +724,7 @@ short movetows(const Arg * arg) {
 }
 
 short init_wbar(void) {
-	struct TagItem tagitem[6];
+	struct TagItem tagitem[7];
 
 	lockbasescreen(&ilock, &screen);
 	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
@@ -720,9 +736,11 @@ short init_wbar(void) {
 	//tagitem[2].ti_Data = 0;
 	tagitem[3].ti_Tag = WA_Borderless; //-V2544 //-V2568
 	tagitem[3].ti_Data = 1; //-V2568
-	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
+	tagitem[4].ti_Tag = WA_NoCareRefresh; //-V2544 //-V2568
 	tagitem[4].ti_Data = 1; //-V2568
-	tagitem[5].ti_Tag = TAG_DONE; //-V2544 //-V2568
+	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
+	tagitem[5].ti_Data = 0; //-V2568
+	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
 
 	wbw = OpenWindowTagList(NULL, tagitem);
 
@@ -757,9 +775,9 @@ short update_wbar(void) {
 	modetext.IText = maptm();
 	modetext.NextText = &wtitle;
 
-	(void)snprintf((char *)awin, TT_MAX_LENGTH, "%s", active_win->Title);
+	(void)snprintf((char *)awintitle, TT_MAX_LENGTH, "%s", active_win->Title);
 
-	wtitle.IText = awin;
+	wtitle.IText = awintitle;
 
 	barb.XY = barbdata;
 
@@ -777,7 +795,7 @@ short update_wbar(void) {
 		wtitle.LeftEdge = (short)((int)modetext.LeftEdge+(int)barte->te_Width);
 	}
 
-	SetRast(wbw->RPort, 0);
+	SetRast(wbw->RPort, *wbarbgcolor);
 	DrawBorder(wbw->RPort, &barb, 0, 0);
 	PrintIText(wbw->RPort, &wstext, 0, 0);
 

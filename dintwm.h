@@ -9,6 +9,7 @@
 #include <proto/dos.h>
 #include <proto/exec.h>
 #include <exec/types.h>
+#include <exec/lists.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
 #include <devices/timer.h>
@@ -66,6 +67,8 @@
 #define INCALLGAPS_ID 405 // increase all gaps identifier
 #define DECALLGAPS_ID 406 // decrease all gaps identifier
 #define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
+#define BAR_ID 408 // Bar identifier
+#define BAR_BG_COLOR_ID 409 // Bar bg color identifier
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
 #define AUTO_INTERVAL_MICRO_DEF 100000 // default AUTO_TILE INTERVAL in microseconds
@@ -125,6 +128,7 @@ short dwindle(const Arg *arg);
 short switcher(const Arg *arg);
 short changegaps(const Arg *arg);
 int countwindows(int l);
+void getactive(void);
 int cstring_cmp(const void *a, const void *b);
 short docmd(const Arg *arg);
 int calcgap(void);
@@ -150,7 +154,14 @@ struct Window *wbw;
 int sheight;
 int swidth;
 int wbarheight;
+struct Screen *screen;
 struct Window *active_win;
+unsigned char wbarbgcolor[TT_MAX_LENGTH];
+short bar_on;
+
+// Experiment
+//struct List *publist;
+//struct PubScreenNode *psnode;
 
 // timer stuff
 void delete_timer(struct timerequest *);

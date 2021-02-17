@@ -68,6 +68,8 @@ Opts defopts[] = {
 	{ TYPE_AUTO_INTERVAL_MICRO, AUTO_INTERVAL_MICRO_ID, OPTTYPE },
 	{ TYPE_TILE_FACT, TILE_FACT_ID, OPTTYPE },
 	{ TYPE_GAP_CHANGE_VALUE, GAP_CHANGE_VALUE_ID, OPTTYPE },
+	{ TYPE_BAR, BAR_ID, OPTTYPE },
+	{ TYPE_BAR_BG_COLOR, BAR_BG_COLOR_ID, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE },
@@ -186,6 +188,12 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 				case GAP_CHANGE_VALUE_ID:
 					gap_change_value = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
+				case BAR_ID:
+					bar_on = TRUE;
+					break;
+				case BAR_BG_COLOR_ID:
+					(void)snprintf((char *)wbarbgcolor, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
 				case AUTO_ID:
 					autotile = TRUE;
 					break;
@@ -286,35 +294,42 @@ short int commo(void)
 				return 1;
 			}
 
-			static int wincount = 0;
 			static short first_run = TRUE;
-			static int lock = 1;
 			static struct Window *awin_comp;
+			static struct Window *firstwin_comp;
 
-			if(!wbw) {
-				running = init_wbar();
-				wincount = countwindows(lock);
-				update_wbar();
+			if(bar_on) {
+				if(!wbw) {
+					running = init_wbar();
+					getactive();
+					awin_comp = active_win;
+					update_wbar();
+				}
 			}
 
 			while (running)
 			{
 				if(autotile) {
-					awin_comp = active_win;
-					wincount = countwindows(lock);
+					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) != (unsigned long)WFLG_WINDOWACTIVE) {
+						getactive();
+						awin_comp = active_win;
+						if (bar_on) {
+							update_wbar();
+						}
+					}
 					currentval.tv_secs = 0UL;
 					currentval.tv_micro = auto_interval;
 					(void)time_delay(&currentval, UNIT_MICROHZ);
-					if(wincount != (countwindows(lock)) || first_run == TRUE) {
+					if(firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
-						wbarcwb();
+						if (bar_on) {
+							wbarcwb();
+						}
 						if(first_run == TRUE) {
 							first_run = FALSE;
 						}
 					}
-					if(awin_comp != active_win) {
-						update_wbar();
-					}
+					firstwin_comp = screen->FirstWindow;
 				} else {
 					(void)WaitPort(mp);
 				}
@@ -353,8 +368,10 @@ short int commo(void)
 							*current_layout = id;
 						}
 						running = defkeys[id].func(&defkeys[id].arg);
-						wbarcwb();
-						update_wbar();
+						if (bar_on) {
+							wbarcwb();
+							update_wbar();
+						}
 					}
 				}
 			}
