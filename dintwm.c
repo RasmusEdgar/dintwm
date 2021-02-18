@@ -724,10 +724,30 @@ short movetows(const Arg * arg) {
 }
 
 short init_wbar(void) {
-	struct TagItem tagitem[7];
+	//struct TagItem tagitem[7];
+	struct NewWindow newwbw = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	newwbw.Type = (unsigned char)WBENCHSCREEN;
+	newwbw.Flags = WFLG_BORDERLESS|WFLG_NOCAREREFRESH; //-V2544 //-V2568
+	newwbw.Width = (short int)(swidth - (leftgap + rightgap));
+	newwbw.Title = NULL;
+	newwbw.Screen = NULL;
+	newwbw.Height = (short int)wbarheight;
+	newwbw.BitMap = NULL;
+	newwbw.TopEdge = (short int)(sheight - bottomgap);
+	newwbw.LeftEdge = 0;
+	newwbw.BlockPen = 0U;
+	newwbw.MinWidth = 0;
+	newwbw.MaxWidth = 0U;
+	newwbw.MinHeight = 0;
+	newwbw.MaxHeight = 0U;
+	newwbw.CheckMark = NULL;
+	newwbw.DetailPen = 0U;
+	newwbw.IDCMPFlags = 0U;
+	newwbw.FirstGadget = NULL;
 
 	lockbasescreen(&ilock, &screen);
-	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	/*tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
 	tagitem[0].ti_Data = (unsigned long)(swidth - (leftgap + rightgap));
 	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
 	tagitem[1].ti_Data = (unsigned long)wbarheight;
@@ -740,9 +760,10 @@ short init_wbar(void) {
 	tagitem[4].ti_Data = 1; //-V2568
 	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
 	tagitem[5].ti_Data = 0; //-V2568
-	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
+	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568*/
 
-	wbw = OpenWindowTagList(NULL, tagitem);
+	//wbw = OpenWindowTagList(NULL, tagitem);
+	wbw = OpenWindow(&newwbw);
 
 	if (!wbw) {
 		unlockbasescreen(&ilock, &screen);

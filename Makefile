@@ -7,7 +7,7 @@ SOURCES = dintwm.c commodity.c timer.c
 OBJECTS = $(SOURCES:.c=.o)
 CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 -O0 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps
 CC = m68k-amigaos-gcc
-CFLAGS =-std=c11 -O3 -noixemul -Wall -Wextra -s
+CFLAGS =-std=c11 -Ofast -noixemul -Wall -Wextra -s -fomit-frame-pointer -fbaserel
 MAINHEADER = dintwm.h
 CONFHEADER = cxm_config.h wbar_config.h
 EXTHEADERS = ketopt.h
