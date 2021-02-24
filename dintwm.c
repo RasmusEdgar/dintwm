@@ -20,8 +20,10 @@ static void moveallwin(int m);
 static void clearextdata(void);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
-static inline unsigned char * mapws(void);
+static inline void mapws(void);
 static inline unsigned char * maptm(void);
+static inline unsigned char * padwbartext(unsigned char * s);
+static short int wbartextwidth(int lei, unsigned char * it);
 
 int main(int argc, char **argv)
 {
@@ -36,8 +38,21 @@ int main(int argc, char **argv)
 	current_ws = 0U;
 	current_ws |= WS_0;
 	backdropped = FALSE;
-	wbarbgcolor[0] = 0U;
+	wbarbgcolor[0] = DEF_BAR_BG_COL;
+	wbarfpws[0] = DEF_BAR_FPWS_COL;
+	wbarbpws[0] = DEF_BAR_BPWS_COL;
+	wbarfpwscur[0] = DEF_BAR_FPCURW_COL;
+	wbarbpwscur[0] = DEF_BAR_BPCURW_COL;
+	wbarfptm[0] = DEF_BAR_FPTM_COL;
+	wbarbptm[0] = DEF_BAR_BPTM_COL;
+	wbarfpti[0] = DEF_BAR_FPTI_COL;
+	wbarbpti[0] = DEF_BAR_BPTI_COL;
+	wbarfpsepone[0] = DEF_BAR_FPSEP_ONE_COL;
+	wbarbpsepone[0] = DEF_BAR_BPSEP_ONE_COL;
+	wbarfpseptwo[0] = DEF_BAR_FPSEP_TWO_COL;
+	wbarbpseptwo[0] = DEF_BAR_BPSEP_TWO_COL;
 	bar_on = FALSE;
+	wbarheight = 0;
 
 	lockbasescreen(&ilock, &screen);
 	sheight = screen->Height;
@@ -185,8 +200,6 @@ int main(int argc, char **argv)
 	if (dint_exit_state != EXIT_FAILURE) {
 		switch (dint_opt_state) {
 		case COMMODITIZE:
-			wbarheight = WBAR_HEIGHT;
-			sheight = sheight - wbarheight;
 			dint_exit_state = commo();
 			break;
 		case FUNC_PRINTUSAGE:
@@ -291,8 +304,6 @@ short tile(const Arg * arg)
 
 	lockbasescreen(&ilock, &screen);
 
-	//sh = screen->Height - (bottomgap + topgap);
-	//sw = screen->Width - (rightgap + leftgap);
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
@@ -343,8 +354,6 @@ short hgrid(const Arg * arg)
 
 	lockbasescreen(&ilock, &screen);
 
-	//sh = screen->Height - (bottomgap + topgap);
-	//sw = screen->Width - (rightgap + leftgap);
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
@@ -396,8 +405,6 @@ short fibonacci(const Arg * arg)
 
 	lockbasescreen(&ilock, &screen);
 
-	//sh = screen->Height - (bottomgap + topgap);
-	//sw = screen->Width - (rightgap + leftgap);
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
@@ -723,62 +730,114 @@ short movetows(const Arg * arg) {
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
+static inline unsigned char * padwbartext(unsigned char * s)
+{
+	(void)snprintf((char *)s, (sizeof(s) + sizeof(wbarspace)), "%s%s", s, wbarspace);
+	return s;
+}
+
+
 short init_wbar(void) {
-	//struct TagItem tagitem[7];
-	struct NewWindow newwbw = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	struct TagItem tagitem[7];
 
-	newwbw.Type = (unsigned char)WBENCHSCREEN;
-	newwbw.Flags = WFLG_BORDERLESS|WFLG_NOCAREREFRESH; //-V2544 //-V2568
-	newwbw.Width = (short int)(swidth - (leftgap + rightgap));
-	newwbw.Title = NULL;
-	newwbw.Screen = NULL;
-	newwbw.Height = (short int)wbarheight;
-	newwbw.BitMap = NULL;
-	newwbw.TopEdge = (short int)(sheight - bottomgap);
-	newwbw.LeftEdge = 0;
-	newwbw.BlockPen = 0U;
-	newwbw.MinWidth = 0;
-	newwbw.MaxWidth = 0U;
-	newwbw.MinHeight = 0;
-	newwbw.MaxHeight = 0U;
-	newwbw.CheckMark = NULL;
-	newwbw.DetailPen = 0U;
-	newwbw.IDCMPFlags = 0U;
-	newwbw.FirstGadget = NULL;
-
-	lockbasescreen(&ilock, &screen);
-	/*tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
 	tagitem[0].ti_Data = (unsigned long)(swidth - (leftgap + rightgap));
 	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
 	tagitem[1].ti_Data = (unsigned long)wbarheight;
 	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
 	tagitem[2].ti_Data = (unsigned long)(sheight - bottomgap);
-	//tagitem[2].ti_Data = 0;
 	tagitem[3].ti_Tag = WA_Borderless; //-V2544 //-V2568
 	tagitem[3].ti_Data = 1; //-V2568
-	tagitem[4].ti_Tag = WA_NoCareRefresh; //-V2544 //-V2568
+	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
 	tagitem[4].ti_Data = 1; //-V2568
 	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
 	tagitem[5].ti_Data = 0; //-V2568
-	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568*/
+	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
 
-	//wbw = OpenWindowTagList(NULL, tagitem);
-	wbw = OpenWindow(&newwbw);
-
+	lockbasescreen(&ilock, &screen);
+	wbw = OpenWindowTagList(NULL, tagitem);
 	if (!wbw) {
 		unlockbasescreen(&ilock, &screen);
 		return FALSE;
 	}
+	unlockbasescreen(&ilock, &screen);
 
 	WindowToFront(wbw);
-	unlockbasescreen(&ilock, &screen);
+
+	wstext_five = wbartext;
+	wstext_five.IText = padwbartext(ws_five);
+
+	wstext_four = wbartext;
+	wstext_four.IText = padwbartext(ws_four);
+
+	wstext_three = wbartext;
+	wstext_three.IText = padwbartext(ws_three);
+
+	wstext_two = wbartext;
+	wstext_two.IText = padwbartext(ws_two);
+
+	wstext_one = wbartext;
+	wstext_one.IText = padwbartext(ws_one);
+
+	wstext_zero = wbartext;
+	wstext_zero.IText = padwbartext(ws_zero);
+
+	wbarsep_one = wbartext;
+	wbarsep_one.IText = padwbartext(wbar_sep_one);
+	wbarsep_one.FrontPen = *wbarfpsepone;
+	wbarsep_one.BackPen = *wbarbpsepone;
+
+	wbarsep_two = wbartext;
+	wbarsep_two.IText = padwbartext(wbar_sep_two);
+	wbarsep_two.FrontPen = *wbarfpseptwo;
+	wbarsep_two.BackPen = *wbarbpseptwo;
+
+	wbarmodetext = wbartext;
+	wbarmodetext.IText = padwbartext(mode_tile);
+	wbarmodetext.FrontPen = *wbarfptm;
+	wbarmodetext.BackPen = *wbarbptm;
+
+	wbarwtitle = wbartext;
+	wbarwtitle.FrontPen = *wbarfpti;
+	wbarwtitle.BackPen = *wbarbpti;
+
+	wstext_zero.NextText = &wstext_one;
+	wstext_one.NextText = &wstext_two;
+	wstext_two.NextText = &wstext_three;
+	wstext_three.NextText = &wstext_four;
+	wstext_four.NextText = &wstext_five;
+	wstext_five.NextText = &wbarsep_one;
+	wbarsep_one.NextText = &wbarmodetext;
+	wbarmodetext.NextText = &wbarsep_two;
+	wbarsep_two.NextText = &wbarwtitle;
+
+	wstext_one.LeftEdge = wbartextwidth(0, wstext_zero.IText);
+	wstext_two.LeftEdge = wbartextwidth(wstext_one.LeftEdge, wstext_one.IText);
+	wstext_three.LeftEdge = wbartextwidth(wstext_two.LeftEdge, wstext_two.IText);
+	wstext_four.LeftEdge = wbartextwidth(wstext_three.LeftEdge, wstext_three.IText);
+	wstext_five.LeftEdge = wbartextwidth(wstext_four.LeftEdge, wstext_four.IText);
+	wbarsep_one.LeftEdge = wbartextwidth(wstext_five.LeftEdge, wstext_five.IText);
+	wbarmodetext.LeftEdge = wbartextwidth(wbarsep_one.LeftEdge, wbarsep_one.IText);
+	wbarsep_two.LeftEdge = wbartextwidth(wbarmodetext.LeftEdge, wbarmodetext.IText);
+	wbarwtitle.LeftEdge = wbartextwidth(wbarsep_two.LeftEdge, wbarsep_two.IText);
 
 	return TRUE;
 }
 
-short update_wbar(void) {
-	barte = &teinit;
+static short int wbartextwidth(int lei, unsigned char * it)
+{
+	struct TextExtent *barte = &teinit;
+	short int le = (short int)lei;
 
+	if (TextExtent(wbw->RPort, it, strnlen((const char *)it, TT_MAX_LENGTH), barte)) {
+		if(barte == NULL) {
+			return FALSE;
+		}
+	}
+	return (short int)(le+(short int)barte->te_Width);
+}
+
+short update_wbar(void) {
 	barbdata[0] = 1;
 	barbdata[1] = 1;
 	barbdata[2] = (short)((swidth - (leftgap + rightgap)) - 1);
@@ -790,67 +849,90 @@ short update_wbar(void) {
 	barbdata[8] = 1;
 	barbdata[9] = 1;
 
-	wstext.IText = mapws();
-	wstext.NextText = &modetext;
-
-	modetext.IText = maptm();
-	modetext.NextText = &wtitle;
+	mapws();
+	wbarmodetext.IText = maptm();
 
 	(void)snprintf((char *)awintitle, TT_MAX_LENGTH, "%s", active_win->Title);
 
-	wtitle.IText = awintitle;
+	wbarwtitle.IText = awintitle;
 
 	barb.XY = barbdata;
 
-	if (TextExtent(wbw->RPort, wstext.IText, strnlen((const char *)wstext.IText, TT_MAX_LENGTH), barte)) {
-		if(barte == NULL) {
-			return FALSE;
-		}
-		modetext.LeftEdge = (short)((int)wstext.LeftEdge+(int)barte->te_Width);
-	}
-
-	if (TextExtent(wbw->RPort, modetext.IText, strnlen((const char *)modetext.IText, TT_MAX_LENGTH), barte)) {
-		if(barte == NULL) {
-			return FALSE;
-		}
-		wtitle.LeftEdge = (short)((int)modetext.LeftEdge+(int)barte->te_Width);
-	}
-
 	SetRast(wbw->RPort, *wbarbgcolor);
 	DrawBorder(wbw->RPort, &barb, 0, 0);
-	PrintIText(wbw->RPort, &wstext, 0, 0);
+	PrintIText(wbw->RPort, &wstext_zero, 4, 0);
 
 	return TRUE;
 }
 
 void wbarcwb(void) {
 	lockbasescreen(&ilock, &screen);
-	cwb(wbw, leftgap, sheight - bottomgap, swidth - (leftgap + rightgap), WBAR_HEIGHT);
+	cwb(wbw, leftgap, sheight - bottomgap, swidth - (leftgap + rightgap), wbarheight);
 	unlockbasescreen(&ilock, &screen);
 }
 
-static inline unsigned char * mapws(void)
+static inline void mapws(void)
 {
 	if (current_ws & WS_0) {
-		return ws_zero;
+		wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
+		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+
+		wstext_one.BackPen = wstext_two.BackPen = wstext_three.BackPen =
+		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+
+		wstext_zero.FrontPen = *wbarfpwscur;
+		wstext_zero.BackPen = *wbarbpwscur;
 	}
 	if (current_ws & WS_1) {
-		return ws_one;
+		wstext_zero.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
+		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+
+		wstext_zero.BackPen = wstext_two.BackPen = wstext_three.BackPen =
+		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+
+		wstext_one.FrontPen = *wbarfpwscur;
+		wstext_one.BackPen = *wbarbpwscur;
 	}
 	if (current_ws & WS_2) {
-		return ws_two;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_three.FrontPen =
+		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_three.BackPen =
+		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+
+		wstext_two.FrontPen = *wbarfpwscur;
+		wstext_two.BackPen = *wbarbpwscur;
 	}
 	if (current_ws & WS_3) {
-		return ws_three;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
+		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
+		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+
+		wstext_three.FrontPen = *wbarfpwscur;
+		wstext_three.BackPen = *wbarbpwscur;
 	}
 	if (current_ws & WS_4) {
-		return ws_four;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
+		wstext_three.FrontPen = wstext_five.FrontPen = *wbarfpws;
+
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
+		wstext_three.BackPen = wstext_five.BackPen = *wbarbpws;
+
+		wstext_four.FrontPen = *wbarfpwscur;
+		wstext_four.BackPen = *wbarbpwscur;
 	}
 	if (current_ws & WS_5) {
-		return ws_five;
-	}
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
+		wstext_three.FrontPen = wstext_four.FrontPen = *wbarfpws;
 
-	return wbar_err;
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
+		wstext_three.BackPen = wstext_four.BackPen = *wbarbpws;
+
+		wstext_five.FrontPen = *wbarfpwscur;
+		wstext_five.BackPen = *wbarbpwscur;
+	}
 }
 
 static inline unsigned char * maptm(void)

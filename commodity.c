@@ -69,7 +69,15 @@ Opts defopts[] = {
 	{ TYPE_TILE_FACT, TILE_FACT_ID, OPTTYPE },
 	{ TYPE_GAP_CHANGE_VALUE, GAP_CHANGE_VALUE_ID, OPTTYPE },
 	{ TYPE_BAR, BAR_ID, OPTTYPE },
-	{ TYPE_BAR_BG_COLOR, BAR_BG_COLOR_ID, OPTTYPE },
+	{ TYPE_BAR_BG_COL, BAR_BG_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPW_COL, BAR_FPW_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPW_COL, BAR_BPW_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPCURW_COL, BAR_FPCURW_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPCURW_COL, BAR_BPCURW_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPTM_COL, BAR_FPTM_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPTM_COL, BAR_BPTM_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPTI_COL, BAR_FPTI_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPTI_COL, BAR_BPTI_COL_ID, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE },
@@ -191,8 +199,32 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 				case BAR_ID:
 					bar_on = TRUE;
 					break;
-				case BAR_BG_COLOR_ID:
-					(void)snprintf((char *)wbarbgcolor, TT_MAX_LENGTH, "%s", tt_optvalue);
+				case BAR_BG_COL_ID:
+					(void)snprintf((char *)wbarbgcolor, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPW_COL_ID:
+					(void)snprintf((char *)wbarfpws, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPW_COL_ID:
+					(void)snprintf((char *)wbarbpws, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPCURW_COL_ID:
+					(void)snprintf((char *)wbarfpwscur, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPCURW_COL_ID:
+					(void)snprintf((char *)wbarbpwscur, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPTM_COL_ID:
+					(void)snprintf((char *)wbarfptm, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPTM_COL_ID:
+					(void)snprintf((char *)wbarbptm, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPTI_COL_ID:
+					(void)snprintf((char *)wbarfpti, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPTI_COL_ID:
+					(void)snprintf((char *)wbarbpti, BAR_COLOR_LENGTH, "%s", tt_optvalue);
 					break;
 				case AUTO_ID:
 					autotile = TRUE;
@@ -254,7 +286,7 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 
 short int commo(void)
 {
-	struct timeval currentval;
+	//struct timeval currentval;
 
 	struct MsgPort *mp = CreateMsgPort();
 	static struct DiskObject *diskobj;
@@ -299,6 +331,10 @@ short int commo(void)
 			static struct Window *firstwin_comp;
 
 			if(bar_on) {
+				if(wbarheight == 0) {
+					wbarheight = WBAR_HEIGHT;
+				}
+				sheight = sheight - wbarheight;
 				if(!wbw) {
 					running = init_wbar();
 					getactive();
@@ -307,6 +343,7 @@ short int commo(void)
 				}
 			}
 
+			//Main Loop
 			while (running)
 			{
 				if(autotile) {
@@ -317,9 +354,7 @@ short int commo(void)
 							update_wbar();
 						}
 					}
-					currentval.tv_secs = 0UL;
-					currentval.tv_micro = auto_interval;
-					(void)time_delay(&currentval, UNIT_MICROHZ);
+					Delay(1);
 					if(firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						if (bar_on) {

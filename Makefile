@@ -3,7 +3,7 @@ define newline
 
 endef
 
-SOURCES = dintwm.c commodity.c timer.c
+SOURCES = dintwm.c commodity.c
 OBJECTS = $(SOURCES:.c=.o)
 CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 -O0 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps
 CC = m68k-amigaos-gcc
@@ -49,7 +49,6 @@ endif
 
 dintwm.o : $(MAINHEADER) $(EXTHEADERS)
 commodity.o : $(MAINHEADER) $(CONFHEADER)
-timer.o : $(MAINHEADER)
 
 .PHONY : clean
 clean :

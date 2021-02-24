@@ -12,7 +12,6 @@
 #include <exec/lists.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
-#include <devices/timer.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 #define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
@@ -67,8 +66,6 @@
 #define INCALLGAPS_ID 405 // increase all gaps identifier
 #define DECALLGAPS_ID 406 // decrease all gaps identifier
 #define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
-#define BAR_ID 408 // Bar identifier
-#define BAR_BG_COLOR_ID 409 // Bar bg color identifier
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
 #define AUTO_INTERVAL_MICRO_DEF 100000 // default AUTO_TILE INTERVAL in microseconds
@@ -80,6 +77,29 @@
 #define WS_5 (1U << 5)
 #define WBAR (1U << 6)
 #define WBAR_HEIGHT 20
+#define BAR_ID 408 // Bar identifier
+#define BAR_BG_COL_ID 409 // Bar bg color identifier
+#define BAR_FPW_COL_ID 410 // Bar current ws frontpen color identifier
+#define BAR_BPW_COL_ID 411 // Bar current ws backpen color identifier
+#define BAR_FPCURW_COL_ID 412 // Bar current ws frontpen color identifier
+#define BAR_BPCURW_COL_ID 413 // Bar current ws backpen color identifier
+#define BAR_FPTM_COL_ID 414 // Bar tilemode frontpen color identifier
+#define BAR_BPTM_COL_ID 415 // Bar tilemode backpen color identifier
+#define BAR_FPTI_COL_ID 416 // Bar title frontpen color identifier
+#define BAR_BPTI_COL_ID 417 // Bar title backpen color identifier
+#define DEF_BAR_BG_COL 3U // Default bar bg color
+#define DEF_BAR_FPWS_COL 1U // Default bar workspace frontpen color
+#define DEF_BAR_BPWS_COL 3U // Default bar workspace backpen color
+#define DEF_BAR_FPCURW_COL 139U // Default bar active workspace frontpen color
+#define DEF_BAR_BPCURW_COL 3U // Default bar workspace backpen color
+#define DEF_BAR_FPTM_COL 1U // Default bar tilemode frontpen color
+#define DEF_BAR_BPTM_COL 3U // Default bar tilemode backpen color
+#define DEF_BAR_FPTI_COL 1U // Default bar title frontpen color
+#define DEF_BAR_BPTI_COL 3U // Default bar title backpen color
+#define DEF_BAR_FPSEP_ONE_COL 1U // Default bar title frontpen color
+#define DEF_BAR_BPSEP_ONE_COL 3U // Default bar title frontpen color
+#define DEF_BAR_FPSEP_TWO_COL 1U // Default bar title backpen color
+#define DEF_BAR_BPSEP_TWO_COL 3U // Default bar title backpen color
 
 enum dintwm_identifiers {
 	DEFAULT_TOPGAP = 0,
@@ -105,6 +125,7 @@ enum dintwm_identifiers {
 	FUNC_DWINDLE = 3, // dwindle function identifier
 	FUNC_PRINTUSAGE = 42, // printusage function identifier
 	TT_MAX_LENGTH = 128, // Tooltype Max Length
+	BAR_COLOR_LENGTH = 3, // Color Max Length
 	K_CGAP_ID = 301, // longopts ketopts id
 	AUTO_ID = 1000, // AUTO TILE ID
 	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE MICRO ID
@@ -153,22 +174,25 @@ short backdropped;
 struct Window *wbw;
 int sheight;
 int swidth;
-int wbarheight;
 struct Screen *screen;
 struct Window *active_win;
-unsigned char wbarbgcolor[TT_MAX_LENGTH];
+
+// Wbar specific vars
 short bar_on;
-
-// Experiment
-//struct List *publist;
-//struct PubScreenNode *psnode;
-
-// timer stuff
-void delete_timer(struct timerequest *);
-struct timerequest *create_timer(ULONG);
-void wait_for_timer(struct timerequest *, struct timeval *);
-LONG time_delay(struct timeval *, ULONG);
-
+int wbarheight;
+unsigned char wbarbgcolor[3];
+unsigned char wbarfpws[3];
+unsigned char wbarbpws[3];
+unsigned char wbarfpwscur[3];
+unsigned char wbarbpwscur[3];
+unsigned char wbarfptm[3];
+unsigned char wbarbptm[3];
+unsigned char wbarfpti[3];
+unsigned char wbarbpti[3];
+unsigned char wbarfpsepone[3];
+unsigned char wbarbpsepone[3];
+unsigned char wbarfpseptwo[3];
+unsigned char wbarbpseptwo[3];
 
 // commodity headers
 short int commo(void);
