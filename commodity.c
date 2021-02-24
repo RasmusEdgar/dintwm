@@ -5,7 +5,7 @@
 #include "./cxm_config.h"
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
-static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager for AmigaOS";
+static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
 _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
@@ -65,7 +65,7 @@ Opts defopts[] = {
 	{ TYPE_LEFTGAP, LEFTGAP_ID, OPTTYPE },
 	{ TYPE_RIGHTGAP, RIGHTGAP_ID, OPTTYPE },
 	{ TYPE_AUTO, AUTO_ID, OPTTYPE },
-	{ TYPE_AUTO_INTERVAL_MICRO, AUTO_INTERVAL_MICRO_ID, OPTTYPE },
+	{ TYPE_AUTO_INTERVAL_DELAY, AUTO_INTERVAL_DELAY_ID, OPTTYPE },
 	{ TYPE_TILE_FACT, TILE_FACT_ID, OPTTYPE },
 	{ TYPE_GAP_CHANGE_VALUE, GAP_CHANGE_VALUE_ID, OPTTYPE },
 	{ TYPE_BAR, BAR_ID, OPTTYPE },
@@ -229,7 +229,7 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 				case AUTO_ID:
 					autotile = TRUE;
 					break;
-				case AUTO_INTERVAL_MICRO_ID:
+				case AUTO_INTERVAL_DELAY_ID:
 					auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case TILE_FACT_ID:
@@ -293,7 +293,7 @@ short int commo(void)
 	static unsigned char iconlib[] = "icon.library";
 	static unsigned char diskobjname[] = "dintwm";
 
-	auto_interval = (unsigned long)AUTO_INTERVAL_MICRO_DEF;
+	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 
 	if(!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
@@ -354,7 +354,7 @@ short int commo(void)
 							update_wbar();
 						}
 					}
-					Delay(1);
+					Delay(auto_interval);
 					if(firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						if (bar_on) {

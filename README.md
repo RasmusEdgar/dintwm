@@ -95,8 +95,8 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | CONLINE\_0..9 | emtpy | sets custom conline for the matching CMD\_0..9 | CMD\_0..9 |
 | EXCL\_WTYPE\_0..9 | empty | excludes windows based on window->Title | deactivates INCL\_WTYPE\_0..9 |
 | INCL\_WTYPE\_0..9 | empty | includes windows based on window->Title | deactivates EXCL\_WTYPE\_0..9 |
-| AUTO | empty | enable auto tiling, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_MICRO |
-| AUTO\_INTERVAL\_MICRO | 100000 | Auto tile refresh rate, how often it checks for new windows. Set to 100k microseconds | AUTO |
+| AUTO | empty | enable auto tiling, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_DELAY |
+| AUTO\_INTERVAL\_DELAY | 1 | Auto tile refresh rate, how often it checks for new windows. Set to 50 ticks per second | AUTO |
 | TILE\_FACT | 550 | size factor of master window (val / 1000)  in tiling function | POPKEY_TILE |
 
 ## Features explained
@@ -112,6 +112,10 @@ Move active window to another virtual workspace using the POPKEY\_CWS\_0..5 hotk
 Since virtual workspaces depend on moving windows to be the back of the window stack, using it with a backdropped Workbench window will not work.
 
 To enable do not backdrop the workbench window.
+
+### Dintwm bar
+
+When 
 
 ## Running dintwm from CLI
 

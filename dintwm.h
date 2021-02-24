@@ -68,7 +68,7 @@
 #define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
-#define AUTO_INTERVAL_MICRO_DEF 100000 // default AUTO_TILE INTERVAL in microseconds
+#define AUTO_INTERVAL_DELAY_DEF 1 // default AUTO_TILE Delay INTERVAL in ticks
 #define WS_0 (1U << 0)
 #define WS_1 (1U << 1)
 #define WS_2 (1U << 2)
@@ -128,7 +128,7 @@ enum dintwm_identifiers {
 	BAR_COLOR_LENGTH = 3, // Color Max Length
 	K_CGAP_ID = 301, // longopts ketopts id
 	AUTO_ID = 1000, // AUTO TILE ID
-	AUTO_INTERVAL_MICRO_ID = 1001, // AUTO TILE MICRO ID
+	AUTO_INTERVAL_DELAY_ID = 1001, // AUTO TILE MICRO ID
 	TILE_FACT_DEF = 550, // Default mfact value
 	TILE_FACT_ID = 1200 // mfact opt id
 };
