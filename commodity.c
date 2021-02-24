@@ -347,6 +347,7 @@ short int commo(void)
 			while (running)
 			{
 				if(autotile) {
+					// If previous active window is no longer active, refresh bar
 					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) != (unsigned long)WFLG_WINDOWACTIVE) {
 						getactive();
 						awin_comp = active_win;
@@ -355,6 +356,7 @@ short int commo(void)
 						}
 					}
 					Delay(auto_interval);
+					// If first window in screen window list changed, retile and resize bar
 					if(firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						if (bar_on) {
