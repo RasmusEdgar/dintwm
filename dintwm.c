@@ -732,7 +732,8 @@ short movetows(const Arg * arg) {
 
 static inline unsigned char * padwbartext(unsigned char * s)
 {
-	(void)snprintf((char *)s, (sizeof(s) + sizeof(wbarspace)), "%s%s", s, wbarspace);
+	unsigned char * tmp = s;
+	(void)snprintf((char *)s, (sizeof(s) + sizeof(wbarspace)), "%s%s", tmp, wbarspace);
 	return s;
 }
 

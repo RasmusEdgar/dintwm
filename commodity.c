@@ -356,7 +356,7 @@ short int commo(void)
 						}
 					}
 					Delay(auto_interval);
-					// If first window in screen window list changed, retile and resize bar
+					// If first window in screen window list changed, when a new window opens, retile and resize bar
 					if(firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						if (bar_on) {
