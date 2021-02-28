@@ -160,6 +160,7 @@ short movetows(const Arg *arg);
 short init_wbar(void);
 short update_wbar(void);
 void wbarcwb(void);
+short info_window(unsigned char * info_text);
 
 int topgap;
 int bottomgap;

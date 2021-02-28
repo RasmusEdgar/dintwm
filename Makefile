@@ -19,7 +19,7 @@ CPPCHECKOPTS = --enable=all
 FLAWCMD = flawfinder
 FLAWOPTS = -F
 SPLINTCMD = splint
-SPLINTARGS = -I $(HOME)/opt/amiga/m68k-amigaos/ndk-include/
+SPLINTARGS = -I $(HOME)/bin/amiga/m68k-amigaos/ndk-include/
 TARGET = dintwm
 
 ifdef strict

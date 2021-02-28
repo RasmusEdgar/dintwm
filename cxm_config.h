@@ -140,3 +140,6 @@ char KEY_CWS_5[] = "rawkey control shift numericpad 5";
 char KEY_CXM_EXIT[] = "rawkey control lcommand q";
 
 short autotile = FALSE;
+
+unsigned char bdwarn[] = "If you want virtual WSs, then don't backdrop.";
+unsigned char uqwarn[] = "Commodity is already running. Quitting.";

@@ -953,3 +953,70 @@ static inline unsigned char * maptm(void)
 
 	return wbar_err;
 }
+
+short info_window(unsigned char * info_text)
+{
+	struct TagItem tagitem[9];
+	struct Window *iwin;
+	short closewin = FALSE;
+	unsigned long l, t, w, h;
+	struct IntuiText iitext =
+	{
+		.TopEdge = 0,
+		.LeftEdge = 0,
+		.ITextFont = NULL,
+		.DrawMode = JAM2, //-V2568
+		.FrontPen = 1, //-V2568
+		.BackPen = 137, //-V2568
+		.IText = info_text,
+		.NextText = NULL
+	};
+
+	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	tagitem[0].ti_Data = 320;
+	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
+	tagitem[1].ti_Data = 50;
+	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
+	tagitem[2].ti_Data = (unsigned long)(sheight / 2);
+	tagitem[3].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
+	tagitem[3].ti_Data = 1; //-V2568
+	tagitem[4].ti_Tag = WA_IDCMP; //-V2544 //-V2568
+	tagitem[4].ti_Data = IDCMP_CLOSEWINDOW; //-V2568
+	tagitem[5].ti_Tag = WA_Flags; //-V2544 //-V2568
+	tagitem[5].ti_Data = WFLG_SIZEGADGET|WFLG_DRAGBAR|WFLG_DEPTHGADGET|WFLG_CLOSEGADGET|WFLG_ACTIVATE; //-V2568
+	tagitem[6].ti_Tag = WA_Title; //-V2544 //-V2568
+	tagitem[6].ti_Data = (unsigned long)"Dintwm Info"; //-V2568
+	tagitem[7].ti_Tag = WA_Left; //-V2544 //-V2568
+	tagitem[7].ti_Data = (unsigned long)((swidth / 2) - 150); //-V2568
+	tagitem[8].ti_Tag = TAG_DONE; //-V2544 //-V2568
+
+	lockbasescreen(&ilock, &screen);
+	iwin = OpenWindowTagList(NULL, tagitem);
+	if (!iwin) {
+		unlockbasescreen(&ilock, &screen);
+		return FALSE;
+	}
+	unlockbasescreen(&ilock, &screen);
+
+
+	l = (unsigned long)iwin->BorderLeft;
+	t = (unsigned long)iwin->BorderTop;
+	w = (unsigned long)(iwin->Width - iwin->BorderLeft - iwin->BorderRight);
+	h = (unsigned long)(iwin->Height - iwin->BorderTop - iwin->BorderBottom);
+
+	SetAPen(iwin->RPort, 137);
+	RectFill(iwin->RPort, l, t, l + w - 1, t + h - 1);
+	PrintIText(iwin->RPort, &iitext, 20, 25);
+
+	while (closewin == FALSE) {
+		struct IntuiMessage *msg;
+		(void)Wait(1L << iwin->UserPort->mp_SigBit);
+		msg = (struct IntuiMessage *)GetMsg(iwin->UserPort);
+		ReplyMsg(msg);
+		if (msg->Class == IDCMP_CLOSEWINDOW) {
+			CloseWindow(iwin);
+			closewin = TRUE;
+		}
+	}
+	return TRUE;
+}

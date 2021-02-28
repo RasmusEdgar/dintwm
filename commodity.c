@@ -342,6 +342,12 @@ short int commo(void)
 					update_wbar();
 				}
 			}
+			if(autotile) {
+				(void)countwindows(1);
+				if(backdropped) {
+					info_window(bdwarn);
+				 }
+			}
 
 			//Main Loop
 			while (running)
@@ -383,7 +389,7 @@ short int commo(void)
 						switch (id)
 						{
 							case CXCMD_UNIQUE:
-								printf("Commodity is already running. Quitting.\n");
+								info_window(uqwarn);
 								running = FALSE;
 								break;
 							case CXCMD_DISABLE:
