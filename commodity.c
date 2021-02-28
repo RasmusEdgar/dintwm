@@ -250,7 +250,6 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 		qsort(incls->strings, WTYPE_MAX, sizeof(*incls->strings), cstring_cmp);
 	}
 
-
 	keys = malloc(sizeof(*keys) * keyarrsize);
 
 	if(keys != NULL) {
@@ -297,29 +296,30 @@ short int commo(void)
 
 	if(!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
-		return 1;
 	}
 
 	if((diskobj = GetDiskObject(diskobjname)) == NULL) {
 		DeleteMsgPort(mp);
-		return 1;
 	}
 
 	if (mp)
 	{
+		short running = TRUE;
 		CxObj *broker;
 
 		MyBroker.nb_Port = mp;
 		broker = CxBroker(&MyBroker, NULL);
 
+		if (broker == NULL) {
+			running = FALSE;
+		}
 
-		if ((attachtooltypes(broker, mp, diskobj)) && (broker != NULL))
+		if (running && (attachtooltypes(broker, mp, diskobj)))
 		{
 			CxMsg *msg;
 			CloseLibrary(iconbase);
 			FreeDiskObject(diskobj);
 
-			short running = TRUE;
 
 			if(ActivateCxObj(broker, 1) != 0) {
 				DeleteMsgPort(mp);
@@ -335,13 +335,18 @@ short int commo(void)
 					wbarheight = WBAR_HEIGHT;
 				}
 				sheight = sheight - wbarheight;
+
 				if(!wbw) {
 					running = init_wbar();
+				}
+
+				if(running && wbw) {
 					getactive();
 					awin_comp = active_win;
 					update_wbar();
 				}
 			}
+
 			if(autotile) {
 				(void)countwindows(1);
 				if(backdropped) {

@@ -752,11 +752,12 @@ short init_wbar(void) {
 	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
 	tagitem[4].ti_Data = 1; //-V2568
 	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
-	tagitem[5].ti_Data = 0; //-V2568
+	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW; //-V2568
 	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
 
 	lockbasescreen(&ilock, &screen);
 	wbw = OpenWindowTagList(NULL, tagitem);
+
 	if (!wbw) {
 		unlockbasescreen(&ilock, &screen);
 		return FALSE;
