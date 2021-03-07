@@ -752,7 +752,7 @@ short init_wbar(void) {
 	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
 	tagitem[4].ti_Data = 1; //-V2568
 	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
-	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW; //-V2568
+	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW|IDCMP_CHANGEWINDOW; //-V2568
 	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
 
 	lockbasescreen(&ilock, &screen);
@@ -868,9 +868,16 @@ short update_wbar(void) {
 }
 
 void wbarcwb(void) {
+	struct IntuiMessage *msg;
 	lockbasescreen(&ilock, &screen);
 	cwb(wbw, leftgap, sheight - bottomgap, swidth - (leftgap + rightgap), wbarheight);
 	unlockbasescreen(&ilock, &screen);
+	(void)WaitPort(wbw->UserPort);
+	while ((msg = (struct IntuiMessage *)GetMsg(wbw->UserPort))) {
+		if (msg->Class == IDCMP_SIZEVERIFY) {
+			ReplyMsg((struct Message *)msg);
+		}
+	}
 }
 
 static inline void mapws(void)
