@@ -77,6 +77,8 @@
 #define WS_5 (1U << 5)
 #define WBAR (1U << 6)
 #define WBAR_HEIGHT 20
+#define BAR_HIDE_ON (1U << 0)
+#define BAR_HIDE_TOGGLE (1U << 1)
 #define BAR_ID 408 // Bar identifier
 #define BAR_BG_COL_ID 409 // Bar bg color identifier
 #define BAR_FPW_COL_ID 410 // Bar current ws frontpen color identifier
@@ -180,6 +182,7 @@ struct Window *active_win;
 
 // Wbar specific vars
 short bar_on;
+unsigned int hidewbar;
 int wbarheight;
 unsigned char wbarbgcolor[3];
 unsigned char wbarfpws[3];

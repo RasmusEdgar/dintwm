@@ -314,7 +314,7 @@ short int commo(void)
 			running = FALSE;
 		}
 
-		if (running && (attachtooltypes(broker, mp, diskobj)))
+		if (running == TRUE && (attachtooltypes(broker, mp, diskobj)))
 		{
 			CxMsg *msg;
 			CloseLibrary(iconbase);
@@ -340,7 +340,7 @@ short int commo(void)
 					running = init_wbar();
 				}
 
-				if(running && wbw) {
+				if(running == TRUE && wbw) {
 					getactive();
 					awin_comp = active_win;
 					update_wbar();
@@ -416,7 +416,7 @@ short int commo(void)
 							*current_layout = id;
 						}
 						running = defkeys[id].func(&defkeys[id].arg);
-						if (bar_on) {
+						if ((hidewbar & BAR_HIDE_TOGGLE) == 0U && bar_on == TRUE) {
 							wbarcwb();
 							update_wbar();
 						}
