@@ -187,3 +187,5 @@ Options are:
 Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included. 
 
 Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/X11 license.
+
+test
