@@ -36,7 +36,6 @@ int main(int argc, char **argv)
 
 	fact = TILE_FACT_DEF;
 	hidewbar = 0U;
-	hidewbar |= BAR_HIDE_ON;
 	current_ws = 0U;
 	current_ws |= WS_0;
 	backdropped = FALSE;
@@ -698,7 +697,7 @@ static void moveallwin(int m) {
 		}
 		countw++;
 	}
-	if (m == FRONT && (hidewbar & BAR_HIDE_ON) == 1U) {
+	if (m == FRONT && hidewbar != 0U) {
 		if (countw == 0) {
 			WindowToBack(wbw);
 			hidewbar |= BAR_HIDE_TOGGLE;
@@ -847,7 +846,7 @@ static short int wbartextwidth(int lei, unsigned char * it)
 	short int le = (short int)lei;
 
 	if (TextExtent(wbw->RPort, it, strnlen((const char *)it, TT_MAX_LENGTH), barte)) {
-		if(barte == NULL) {
+		if (barte == NULL) {
 			return FALSE;
 		}
 	}
