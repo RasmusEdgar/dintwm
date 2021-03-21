@@ -3,21 +3,14 @@
 Tiling window "manager" for AmigaOS 3.1.x.
 
 **NOTE**
-Dintwm is under rather heavy development, it is very much beta, is a hobby project and breakage may occur.
+Dintwm is under rather heavy development, it is a hobby project and breakage may occur.
 
 ## Building from source
 
 Install crosscompiler:  
 https://github.com/bebbo/amiga-gcc
 
-### Compilation with GCC on AmigaOS (requires ADE)
-Not working atm. Use crosscompiler from bebbo.
-
 ### Cross-compilation on Linux for AmigaOS (requires bebbo's m68k-amigaos-gcc fork)
-```
-m68k-amigaos-gcc -o dintwm timer.c dintwm.c commodity.c -Wall -Wextra -Wtype-limits -noixemul
-```
-or
 
 ```
 make all
@@ -133,7 +126,7 @@ To enable do not backdrop the workbench window.
 
 ### Dintwm bar
 
-The bar is at the moment only available in the bottom of screen. It show tilemode, active window title and indicates current active workspace. 
+The bar is at the moment only available in the bottom of screen. It shows tilemode, active window title and indicates current active workspace. 
 
 ## Running dintwm from CLI
 
