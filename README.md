@@ -193,7 +193,7 @@ Options are:
 - ~~Enable auto tiling when new windows appear.~~
 - ~~Add leftgap, rightgap and bottomgap~~
 - ~~Virtual workspaces~~
-- Add dintwm bar
+- ~~Add dintwm bar~~
 - Create dmenu like feature if no suitable menu is found on aminet
 - ~~Stop commodity with hotkey~~
 - ~~Use github actions to build and package dintwm release~~
@@ -203,5 +203,3 @@ Options are:
 Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included. 
 
 Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/X11 license.
-
-test
