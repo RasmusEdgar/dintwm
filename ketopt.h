@@ -1,7 +1,6 @@
 
 /* The MIT License
-   Copyright (c) 2008 Broad Institute / Massachusetts Institute of Technology
-                 2011 Attractive Chaos <attractor@live.co.uk>
+   Copyright (c) 2011 Attractive Chaos <attractor@live.co.uk>
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
