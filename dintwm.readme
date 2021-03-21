@@ -37,7 +37,9 @@ Drag dintwm to System:WBStartup.
 Run from cli (or bind with Fkey)
 --------------------------------
 
-dintwm -h
+Place in your path or cd to dir. 
+
+Keep dintwm executable and info together.
 
 Examples:
 
