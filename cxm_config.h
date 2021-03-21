@@ -48,6 +48,7 @@ char TYPE_AUTO_INTERVAL_DELAY[] = "AUTO_INTERVAL_DELAY";
 char TYPE_TILE_FACT[] = "TILE_FACT";
 char TYPE_GAP_CHANGE_VALUE[] = "GAP_CHANGE_VALUE";
 char TYPE_BAR[] = "BAR";
+char TYPE_BAR_HIDE_EMPTY[] = "BAR_HIDE_EMPTY";
 char TYPE_BAR_BG_COL[] = "BAR_BG_COL";
 char TYPE_BAR_FPW_COL[] = "BAR_FPW_COL";
 char TYPE_BAR_BPW_COL[] = "BAR_BPW_COL";
@@ -57,6 +58,10 @@ char TYPE_BAR_FPTM_COL[] = "BAR_FPTM_COL";
 char TYPE_BAR_BPTM_COL[] = "BAR_BPTM_COL";
 char TYPE_BAR_FPTI_COL[] = "BAR_FPTI_COL";
 char TYPE_BAR_BPTI_COL[] = "BAR_BPTI_COL";
+char TYPE_BAR_FPSEP_ONE_COL[] = "BAR_FPSEP_ONE_COL";
+char TYPE_BAR_BPSEP_ONE_COL[] = "BAR_BPSEP_ONE_COL";
+char TYPE_BAR_FPSEP_TWO_COL[] = "BAR_FPSEP_TWO_COL";
+char TYPE_BAR_BPSEP_TWO_COL[] = "BAR_BPSEP_TWO_COL";
 char TYPE_EXCL_WTYPE_0[] = "EXCL_WTYPE_0";
 char TYPE_EXCL_WTYPE_1[] = "EXCL_WTYPE_1";
 char TYPE_EXCL_WTYPE_2[] = "EXCL_WTYPE_2";
@@ -140,3 +145,6 @@ char KEY_CWS_5[] = "rawkey control shift numericpad 5";
 char KEY_CXM_EXIT[] = "rawkey control lcommand q";
 
 short autotile = FALSE;
+
+unsigned char bdwarn[] = "If you want virtual WSs, then don't backdrop.";
+unsigned char uqwarn[] = "Commodity is already running. Quitting.";

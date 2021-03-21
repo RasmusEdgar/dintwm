@@ -69,6 +69,7 @@ Opts defopts[] = {
 	{ TYPE_TILE_FACT, TILE_FACT_ID, OPTTYPE },
 	{ TYPE_GAP_CHANGE_VALUE, GAP_CHANGE_VALUE_ID, OPTTYPE },
 	{ TYPE_BAR, BAR_ID, OPTTYPE },
+	{ TYPE_BAR_HIDE_EMPTY, BAR_HIDE_EMPTY_ID, OPTTYPE },
 	{ TYPE_BAR_BG_COL, BAR_BG_COL_ID, OPTTYPE },
 	{ TYPE_BAR_FPW_COL, BAR_FPW_COL_ID, OPTTYPE },
 	{ TYPE_BAR_BPW_COL, BAR_BPW_COL_ID, OPTTYPE },
@@ -78,6 +79,10 @@ Opts defopts[] = {
 	{ TYPE_BAR_BPTM_COL, BAR_BPTM_COL_ID, OPTTYPE },
 	{ TYPE_BAR_FPTI_COL, BAR_FPTI_COL_ID, OPTTYPE },
 	{ TYPE_BAR_BPTI_COL, BAR_BPTI_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPSEP_ONE_COL, BAR_FPSEP_ONE_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPSEP_ONE_COL, BAR_BPSEP_ONE_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPSEP_TWO_COL, BAR_FPSEP_TWO_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPSEP_TWO_COL, BAR_BPSEP_TWO_COL_ID, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE },
@@ -154,26 +159,26 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 	for (size_t i = 0; i < optarrsize ; ++i) {
        		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
 
-		if((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
-			if(defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
+		if ((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
+			if (defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
-				if(exclude_wtype == 0) {
+				if (exclude_wtype == 0) {
 					exclude_wtype = 1;
 				}
 			}
 
-			if(defopts[i].cxint >= INCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
+			if (defopts[i].cxint >= INCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0);
-				if(include_wtype == 0) {
+				if (include_wtype == 0) {
 					include_wtype = 1;
 				}
 			}
 
-			if(defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
+			if (defopts[i].cxint >= CONLINE_ID_0 && defopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
 				rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0);
 			}
 
-			if(defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
+			if (defopts[i].cxint >= CMD_ID_0 && defopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
 				rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0);
 			}
 
@@ -226,6 +231,21 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 				case BAR_BPTI_COL_ID:
 					(void)snprintf((char *)wbarbpti, BAR_COLOR_LENGTH, "%s", tt_optvalue);
 					break;
+				case BAR_FPSEP_ONE_COL_ID:
+					(void)snprintf((char *)wbarfpsepone, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPSEP_ONE_COL_ID:
+					(void)snprintf((char *)wbarbpsepone, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPSEP_TWO_COL_ID:
+					(void)snprintf((char *)wbarfpseptwo, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPSEP_TWO_COL_ID:
+					(void)snprintf((char *)wbarbpseptwo, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_HIDE_EMPTY_ID:
+					hidewbar |= BAR_HIDE_ON;
+					break;
 				case AUTO_ID:
 					autotile = TRUE;
 					break;
@@ -242,28 +262,27 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 		}
 	}
 
-	if(exclude_wtype) {
+	if (exclude_wtype) {
 		qsort(excls->strings, WTYPE_MAX, sizeof(*excls->strings), cstring_cmp);
 	}
 
-	if(include_wtype) {
+	if (include_wtype) {
 		qsort(incls->strings, WTYPE_MAX, sizeof(*incls->strings), cstring_cmp);
 	}
 
-
 	keys = malloc(sizeof(*keys) * keyarrsize);
 
-	if(keys != NULL) {
+	if (keys != NULL) {
 		for (size_t i = 0; i < keyarrsize ; ++i) {
 			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
 
-			if(keys[i].rawcombo == NULL) {
+			if (keys[i].rawcombo == NULL) {
 				keys[i].rawcombo = defkeys[i].defaultval;
 			}
 
-			if(keys[i].rawcombo != NULL) {
+			if (keys[i].rawcombo != NULL) {
 				CxObj *filter;
-				if((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
+				if ((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
 				{
 					AttachCxObj(broker, filter);
 
@@ -295,33 +314,34 @@ short int commo(void)
 
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 
-	if(!(iconbase = OpenLibrary(iconlib, 37))) {
+	if (!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
-		return 1;
 	}
 
-	if((diskobj = GetDiskObject(diskobjname)) == NULL) {
+	if ((diskobj = GetDiskObject(diskobjname)) == NULL) {
 		DeleteMsgPort(mp);
-		return 1;
 	}
 
 	if (mp)
 	{
+		short running = TRUE;
 		CxObj *broker;
 
 		MyBroker.nb_Port = mp;
 		broker = CxBroker(&MyBroker, NULL);
 
+		if (broker == NULL) {
+			running = FALSE;
+		}
 
-		if ((attachtooltypes(broker, mp, diskobj)) && (broker != NULL))
+		if (running == TRUE && (attachtooltypes(broker, mp, diskobj)))
 		{
 			CxMsg *msg;
 			CloseLibrary(iconbase);
 			FreeDiskObject(diskobj);
 
-			short running = TRUE;
 
-			if(ActivateCxObj(broker, 1) != 0) {
+			if (ActivateCxObj(broker, 1) != 0) {
 				DeleteMsgPort(mp);
 				return 1;
 			}
@@ -330,23 +350,35 @@ short int commo(void)
 			static struct Window *awin_comp;
 			static struct Window *firstwin_comp;
 
-			if(bar_on) {
-				if(wbarheight == 0) {
+			if (bar_on) {
+				if (wbarheight == 0) {
 					wbarheight = WBAR_HEIGHT;
 				}
 				sheight = sheight - wbarheight;
-				if(!wbw) {
+
+				if (!wbw) {
 					running = init_wbar();
+				}
+
+				if (running == TRUE && wbw) {
 					getactive();
 					awin_comp = active_win;
 					update_wbar();
 				}
 			}
 
+			if (autotile) {
+				(void)countwindows(1);
+				if (backdropped) {
+					info_window(bdwarn);
+				 }
+			}
+
 			//Main Loop
 			while (running)
 			{
-				if(autotile) {
+				if (autotile) {
+					short act = FALSE;
 					// If previous active window is no longer active, refresh bar
 					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) != (unsigned long)WFLG_WINDOWACTIVE) {
 						getactive();
@@ -354,19 +386,23 @@ short int commo(void)
 						if (bar_on) {
 							update_wbar();
 						}
+						act = TRUE;
 					}
-					Delay(auto_interval);
 					// If first window in screen window list changed, when a new window opens, retile and resize bar
-					if(firstwin_comp != screen->FirstWindow || first_run == TRUE) {
-						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+					if (firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 						if (bar_on) {
 							wbarcwb();
 						}
-						if(first_run == TRUE) {
+						if (first_run == TRUE) {
 							first_run = FALSE;
 						}
+						act = TRUE;
 					}
-					firstwin_comp = screen->FirstWindow;
+					if (act) {
+						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+						firstwin_comp = screen->FirstWindow;
+					}
+					Delay(auto_interval);
 				} else {
 					(void)WaitPort(mp);
 				}
@@ -383,7 +419,7 @@ short int commo(void)
 						switch (id)
 						{
 							case CXCMD_UNIQUE:
-								printf("Commodity is already running. Quitting.\n");
+								info_window(uqwarn);
 								running = FALSE;
 								break;
 							case CXCMD_DISABLE:
@@ -401,11 +437,11 @@ short int commo(void)
 								break;
 						}
 					} else if (type == (unsigned long)CXM_IEVENT) { //-V2544
-						if(id <= (TILE_FUNC_LIMIT)) {
+						if (id <= (TILE_FUNC_LIMIT)) {
 							*current_layout = id;
 						}
 						running = defkeys[id].func(&defkeys[id].arg);
-						if (bar_on) {
+						if (bar_on == TRUE && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
 							wbarcwb();
 							update_wbar();
 						}
@@ -433,7 +469,7 @@ static short alloc_opts(char *t, Ostore *s, size_t i, int subtract)
 
 	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH)) * sizeof(unsigned char));
 
-	if(s->strings[cxint]) {
+	if (s->strings[cxint]) {
 		(void)snprintf((char *)s->strings[cxint], TT_MAX_LENGTH, "%s", t);
 		return(TRUE);
 	} else {
@@ -446,19 +482,19 @@ static void free_opts(void)
 	int i;
 
 	for (i = 0; i < CMD_MAX; ++i) {
-		if(cons->strings[i]) {
+		if (cons->strings[i]) {
 			free(cons->strings[i]);
 		}
-		if(cmds->strings[i]) {
+		if (cmds->strings[i]) {
 			free(cmds->strings[i]);
 		}
 	}
 
 	for (i = 0; i < WTYPE_MAX; ++i) {
-		if(excls->strings[i]) {
+		if (excls->strings[i]) {
 			free(excls->strings[i]);
 		}
-		if(incls->strings[i]) {
+		if (incls->strings[i]) {
 			free(incls->strings[i]);
 		}
 	}

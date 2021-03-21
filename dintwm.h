@@ -77,6 +77,8 @@
 #define WS_5 (1U << 5)
 #define WBAR (1U << 6)
 #define WBAR_HEIGHT 20
+#define BAR_HIDE_ON (1U << 0)
+#define BAR_HIDE_TOGGLE (1U << 1)
 #define BAR_ID 408 // Bar identifier
 #define BAR_BG_COL_ID 409 // Bar bg color identifier
 #define BAR_FPW_COL_ID 410 // Bar current ws frontpen color identifier
@@ -87,6 +89,11 @@
 #define BAR_BPTM_COL_ID 415 // Bar tilemode backpen color identifier
 #define BAR_FPTI_COL_ID 416 // Bar title frontpen color identifier
 #define BAR_BPTI_COL_ID 417 // Bar title backpen color identifier
+#define BAR_FPSEP_ONE_COL_ID 418 // Bar seperator one frontpen color identifier
+#define BAR_BPSEP_ONE_COL_ID 419 // Bar seperator one backpen color identifier
+#define BAR_FPSEP_TWO_COL_ID 420 // Bar seperator two frontpen color identifier
+#define BAR_BPSEP_TWO_COL_ID 421 // Bar seperator two backpen color identifier
+#define BAR_HIDE_EMPTY_ID 422 // Hide bar on empty workspaces
 #define DEF_BAR_BG_COL 3U // Default bar bg color
 #define DEF_BAR_FPWS_COL 1U // Default bar workspace frontpen color
 #define DEF_BAR_BPWS_COL 3U // Default bar workspace backpen color
@@ -160,6 +167,7 @@ short movetows(const Arg *arg);
 short init_wbar(void);
 short update_wbar(void);
 void wbarcwb(void);
+short info_window(unsigned char * info_text);
 
 int topgap;
 int bottomgap;
@@ -179,6 +187,7 @@ struct Window *active_win;
 
 // Wbar specific vars
 short bar_on;
+unsigned int hidewbar;
 int wbarheight;
 unsigned char wbarbgcolor[3];
 unsigned char wbarfpws[3];

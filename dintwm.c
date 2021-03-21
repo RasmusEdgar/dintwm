@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 	static int not_known;
 
 	fact = TILE_FACT_DEF;
+	hidewbar = 0U;
 	current_ws = 0U;
 	current_ws |= WS_0;
 	backdropped = FALSE;
@@ -681,6 +682,7 @@ size_t strnlen(const char *s, size_t maxlen)
 }
 
 static void moveallwin(int m) {
+	int countw = 0;
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window;
 		window = window->NextWindow) {
@@ -689,8 +691,20 @@ static void moveallwin(int m) {
 		}
 		if (m == FRONT) {
 			WindowToFront(window);
-		} else {
+		}
+		if (m == BACK) {
 			WindowToBack(window);
+		}
+		countw++;
+	}
+	if (m == FRONT && hidewbar != 0U) {
+		if (countw == 0) {
+			WindowToBack(wbw);
+			hidewbar |= BAR_HIDE_TOGGLE;
+		}
+		if (countw > 0) {
+			WindowToFront(wbw);
+			hidewbar &= ~(BAR_HIDE_TOGGLE);
 		}
 	}
 	unlockbasescreen(&ilock, &screen);
@@ -752,11 +766,12 @@ short init_wbar(void) {
 	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
 	tagitem[4].ti_Data = 1; //-V2568
 	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
-	tagitem[5].ti_Data = 0; //-V2568
+	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW|IDCMP_CHANGEWINDOW; //-V2544 //-V2568
 	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
 
 	lockbasescreen(&ilock, &screen);
 	wbw = OpenWindowTagList(NULL, tagitem);
+
 	if (!wbw) {
 		unlockbasescreen(&ilock, &screen);
 		return FALSE;
@@ -831,7 +846,7 @@ static short int wbartextwidth(int lei, unsigned char * it)
 	short int le = (short int)lei;
 
 	if (TextExtent(wbw->RPort, it, strnlen((const char *)it, TT_MAX_LENGTH), barte)) {
-		if(barte == NULL) {
+		if (barte == NULL) {
 			return FALSE;
 		}
 	}
@@ -867,9 +882,16 @@ short update_wbar(void) {
 }
 
 void wbarcwb(void) {
+	struct IntuiMessage *msg;
 	lockbasescreen(&ilock, &screen);
 	cwb(wbw, leftgap, sheight - bottomgap, swidth - (leftgap + rightgap), wbarheight);
 	unlockbasescreen(&ilock, &screen);
+	(void)WaitPort(wbw->UserPort);
+	while ((msg = (struct IntuiMessage *)GetMsg(wbw->UserPort))) {
+		if (msg->Class == (unsigned long)IDCMP_SIZEVERIFY) {
+			ReplyMsg((struct Message *)msg);  //-V2545
+		}
+	}
 }
 
 static inline void mapws(void)
@@ -952,4 +974,71 @@ static inline unsigned char * maptm(void)
 	}
 
 	return wbar_err;
+}
+
+short info_window(unsigned char * info_text)
+{
+	struct TagItem tagitem[9];
+	struct Window *iwin;
+	short closewin = FALSE;
+	unsigned long l, t, w, h;
+	struct IntuiText iitext =
+	{
+		.TopEdge = 0,
+		.LeftEdge = 0,
+		.ITextFont = NULL,
+		.DrawMode = JAM2, //-V2568
+		.FrontPen = 1, //-V2568
+		.BackPen = 137, //-V2568
+		.IText = info_text,
+		.NextText = NULL
+	};
+
+	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	tagitem[0].ti_Data = 320; //-V2544 //-V2568
+	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
+	tagitem[1].ti_Data = 50; //-V2544 //-V2568
+	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
+	tagitem[2].ti_Data = (unsigned long)(sheight / 2);
+	tagitem[3].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
+	tagitem[3].ti_Data = 1; //-V2568
+	tagitem[4].ti_Tag = WA_IDCMP; //-V2544 //-V2568
+	tagitem[4].ti_Data = IDCMP_CLOSEWINDOW; //-V2568
+	tagitem[5].ti_Tag = WA_Flags; //-V2544 //-V2568
+	tagitem[5].ti_Data = WFLG_SIZEGADGET|WFLG_DRAGBAR|WFLG_DEPTHGADGET|WFLG_CLOSEGADGET|WFLG_ACTIVATE; //-V2544 //-V2568
+	tagitem[6].ti_Tag = WA_Title; //-V2544 //-V2568
+	tagitem[6].ti_Data = (unsigned long)"Dintwm Info"; //-V2568
+	tagitem[7].ti_Tag = WA_Left; //-V2544 //-V2568
+	tagitem[7].ti_Data = (unsigned long)((swidth / 2) - 150); //-V2568
+	tagitem[8].ti_Tag = TAG_DONE; //-V2544 //-V2568
+
+	lockbasescreen(&ilock, &screen);
+	iwin = OpenWindowTagList(NULL, tagitem);
+	if (!iwin) {
+		unlockbasescreen(&ilock, &screen);
+		return FALSE;
+	}
+	unlockbasescreen(&ilock, &screen);
+
+
+	l = (unsigned long)iwin->BorderLeft;
+	t = (unsigned long)iwin->BorderTop;
+	w = (unsigned long)iwin->Width - (unsigned long)iwin->BorderLeft - (unsigned long)iwin->BorderRight;
+	h = (unsigned long)iwin->Height - (unsigned long)iwin->BorderTop - (unsigned long)iwin->BorderBottom;
+
+	SetAPen(iwin->RPort, 137);
+	RectFill(iwin->RPort, l, t, l + w - 1UL, t + h - 1UL);
+	PrintIText(iwin->RPort, &iitext, 20, 25);
+
+	while (closewin == FALSE) {
+		struct IntuiMessage *msg;
+		(void)Wait(1UL << iwin->UserPort->mp_SigBit);
+		msg = (struct IntuiMessage *)GetMsg(iwin->UserPort);
+		ReplyMsg(msg); //-V2545
+		if (msg->Class == (unsigned long)IDCMP_CLOSEWINDOW) {
+			CloseWindow(iwin);
+			closewin = TRUE;
+		}
+	}
+	return TRUE;
 }
