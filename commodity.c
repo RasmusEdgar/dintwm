@@ -79,6 +79,10 @@ Opts defopts[] = {
 	{ TYPE_BAR_BPTM_COL, BAR_BPTM_COL_ID, OPTTYPE },
 	{ TYPE_BAR_FPTI_COL, BAR_FPTI_COL_ID, OPTTYPE },
 	{ TYPE_BAR_BPTI_COL, BAR_BPTI_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPSEP_ONE_COL, BAR_FPSEP_ONE_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPSEP_ONE_COL, BAR_BPSEP_ONE_COL_ID, OPTTYPE },
+	{ TYPE_BAR_FPSEP_TWO_COL, BAR_FPSEP_TWO_COL_ID, OPTTYPE },
+	{ TYPE_BAR_BPSEP_TWO_COL, BAR_BPSEP_TWO_COL_ID, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE },
@@ -226,6 +230,18 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					break;
 				case BAR_BPTI_COL_ID:
 					(void)snprintf((char *)wbarbpti, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPSEP_ONE_COL_ID:
+					(void)snprintf((char *)wbarfpsepone, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPSEP_ONE_COL_ID:
+					(void)snprintf((char *)wbarbpsepone, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_FPSEP_TWO_COL_ID:
+					(void)snprintf((char *)wbarfpseptwo, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_BPSEP_TWO_COL_ID:
+					(void)snprintf((char *)wbarbpseptwo, BAR_COLOR_LENGTH, "%s", tt_optvalue);
 					break;
 				case BAR_HIDE_EMPTY_ID:
 					hidewbar |= BAR_HIDE_ON;

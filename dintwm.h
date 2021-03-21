@@ -89,7 +89,11 @@
 #define BAR_BPTM_COL_ID 415 // Bar tilemode backpen color identifier
 #define BAR_FPTI_COL_ID 416 // Bar title frontpen color identifier
 #define BAR_BPTI_COL_ID 417 // Bar title backpen color identifier
-#define BAR_HIDE_EMPTY_ID 418 // Hide bar on empty workspaces
+#define BAR_FPSEP_ONE_COL_ID 418 // Bar seperator one frontpen color identifier
+#define BAR_BPSEP_ONE_COL_ID 419 // Bar seperator one backpen color identifier
+#define BAR_FPSEP_TWO_COL_ID 420 // Bar seperator two frontpen color identifier
+#define BAR_BPSEP_TWO_COL_ID 421 // Bar seperator two backpen color identifier
+#define BAR_HIDE_EMPTY_ID 422 // Hide bar on empty workspaces
 #define DEF_BAR_BG_COL 3U // Default bar bg color
 #define DEF_BAR_FPWS_COL 1U // Default bar workspace frontpen color
 #define DEF_BAR_BPWS_COL 3U // Default bar workspace backpen color

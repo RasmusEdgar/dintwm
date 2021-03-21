@@ -99,11 +99,20 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | AUTO\_INTERVAL\_DELAY | 1 | Auto tile refresh rate, how often it checks for new windows. Set to 50 ticks per second | AUTO |
 | TILE\_FACT | 550 | size factor of master window (val / 1000)  in tiling function | POPKEY_TILE |
 | BAR | empty | Bar on or off | BAR_* |
-| BAR\_HIDE\_EMPTY | empty | Hide bar if workspace is empty | BAR |
 | BAR\_BG\_COL | 3 (color 3 on palette) |  Dintwm bar bg color | BAR |
 | BAR\_FPW\_COL | 1 | Dintwm bar frontpen color | BAR |
 | BAR\_BPW\_COL | 3 | Dintwm bar backpen color | BAR |
-| BAR\FPCURW\_COL | 
+| BAR\_FPCURW\_COL | 139 | Dintwm bar active workspace color frontpen | BAR |
+| BAR\_BPCURW\_COL | 3 | Dintwm bar active workspace color backpen | BAR | 
+| BAR\_FPTM\_COL | 1 | Dintwm bar tilemode frontpen color | BAR |
+| BAR\_BPTM\_COL | 3 | Dintwm bar tilemode backpen color | BAR |
+| BAR\_FPTI\_COL | 1 | Dintwm bar active window title frontpen color | BAR |
+| BAR\_BPTI\_COL | 3 | Dintwm bar active window title backpen color | BAR |
+| BAR\_FPSEP\_ONE\_COL | 1 | Dintwm bar seperator one frontpen color | BAR |
+| BAR\_BPSEP\_ONE\_COL | 3 | Dintwm bar seperator one backpen color | BAR |
+| BAR\_FPSEP\_TWO\_COL | 1 | Dintwm bar seperator two frontpen color | BAR |
+| BAR\_BPSEP\_TWO\_COL | 3 | Dintwm bar seperator two backpen color | BAR |
+| BAR\_HIDE\_EMPTY | empty | Hide bar if workspace is empty | BAR |
 
 ## Features explained
 
