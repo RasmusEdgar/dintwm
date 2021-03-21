@@ -28,15 +28,16 @@ Features
 * All bar colors configurable
 * Dynamic resizing of tiling area
 
-
 TODO
 ----
 
-* Dedicated dintwm screen
+* Implement dedicated dintwm screen
 * Builtin dmenu like launcher
 
-Source
+Documentation and Source
 ------
+
+Read the full documentation and get the source from here:
 
 https://github.com/RasmusEdgar/dintwm
 
