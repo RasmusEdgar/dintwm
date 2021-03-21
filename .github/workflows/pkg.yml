@@ -41,7 +41,7 @@ jobs:
       - name: Package
         run: |
           mkdir -p package/dintwm
-          cp {dintwm,dintwm.info} package/dintwm/
+          cp {dintwm,dintwm.info,dintwm.readme} package/dintwm/
           cd package
           lha co5 dintwm.lha dintwm/ 
       - name: Create Release

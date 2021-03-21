@@ -1,0 +1,45 @@
+Short:        Dynamic Intuition Window Manager
+Uploader:     regj at arch-ed.dk (Rasmus Edgar)
+Author:       regj at arch-ed.dk (Rasmus Edgar)
+Type:         util/wb
+Version:      0.1
+Architecture: m68k-amigaos >= 3.1
+Distribution: Aminet
+Replaces:     util/wb/dintwm.lha
+
+What is it?
+-----------
+
+DintWM is a tiling window manager for AmigaOS 3.1.x.
+
+Features
+--------
+
+* Can be run as a commodity
+* Can used with FKey bindings (only tiles windows)
+* Four different tiling modes
+* Exclude certain windows (max 10)
+* Include only certain windows (max 10)
+* Spawn custom commands (max 10)
+* Has virtual workspaces
+* Has a configurable status bar
+* Move windows between virtual workspaces
+* All keybindings are configurable
+* All bar colors configurable
+* Dynamic resizing of tiling area
+
+
+TODO
+----
+
+* Dedicated dintwm screen
+* Builtin dmenu like launcher
+
+Source
+------
+
+https://github.com/RasmusEdgar/dintwm
+
+Report bugs/issues at the URL.
+
+I am open for feature requests.
