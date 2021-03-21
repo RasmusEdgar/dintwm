@@ -133,7 +133,7 @@ To enable do not backdrop the workbench window.
 
 ### Dintwm bar
 
-When 
+The bar is at the moment only available in the bottom of screen. It show tilemode, active window title and indicates current active workspace. 
 
 ## Running dintwm from CLI
 
