@@ -39,6 +39,9 @@ Change between virtual workspaces and resize tiling area dynamically:
 
 ![Virtual WSs and dynamic gaps](https://github.com/RasmusEdgar/dintwm/blob/master/demo/virtual_ws_gaps.gif)
 
+Dintwm also has a bar:
+![Bar demo](https://github.com/RasmusEdgar/dintwm/blob/master/demo/bar.gif)
+
 ## Running dintwm as a commodity
 
 Dintwm will ignore the workbench window and backdropped windows.
