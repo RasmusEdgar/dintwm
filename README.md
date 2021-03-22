@@ -187,9 +187,11 @@ Options are:
 - ~~Add leftgap, rightgap and bottomgap~~
 - ~~Virtual workspaces~~
 - ~~Add dintwm bar~~
-- Create dmenu like feature if no suitable menu is found on aminet
 - ~~Stop commodity with hotkey~~
 - ~~Use github actions to build and package dintwm release~~
+- Implement dedicated dintwm screen
+- Builtin dmenu like launcher
+- Ensure AROS compatibility
 
 ## Note on licensing
 

@@ -45,27 +45,62 @@ Keep dintwm executable and info together.
 Examples:
 
 With a gap for the workbench titlebar.
+
 dintwm -g -u
 
 With custom gaps all around:
+
 dintwm -U 45 -B 45 -L 45 -R 45 -t
 
 Set tiling to occur where ever you decide on the screen.
+
 dintwm -U 320 -L 320 -t
+
+Test commodity functionality with:
+
+dintwm
+
+or
+
+dintwm -C
+
+List available options with:
+
+dintwm -h
 
 TODO
 ----
 
 * Implement dedicated dintwm screen
 * Builtin dmenu like launcher
+* Ensure AROS compatibility
 
 Documentation and Source
 ------
 
-Read the full documentation and get the source from here:
+Read the full documentation (especially tooltype option table) and get the source from here:
 
 https://github.com/RasmusEdgar/dintwm
 
 Report bugs/issues at the above URL.
 
 I am open for feature requests.
+
+License
+-------
+
+ISC License
+
+Copyright (c) 2019-2021, Rasmus Edgar Fink Jørgensen
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
