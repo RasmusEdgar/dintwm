@@ -7,7 +7,7 @@ Architecture: m68k-amigaos >= 3.1
 Distribution: Aminet
 Replaces:     util/wb/dintwm.lha
 
-What is it?
+What is DintWM?
 -----------
 
 DintWM is a tiling window manager for AmigaOS 3.1.x.
@@ -27,6 +27,7 @@ Features
 * All keybindings are configurable
 * All bar colors configurable
 * Dynamic resizing of tiling area
+* Configurable size of tiling area
 
 Installation as commodity
 -------------------------
