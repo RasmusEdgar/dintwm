@@ -260,7 +260,6 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					break;
 				case INFO_OFF:
 					info_on = FALSE;
-					printf("lolo\n");
 					break;
 				default:
 					// Do nothing
