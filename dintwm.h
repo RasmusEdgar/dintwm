@@ -56,6 +56,7 @@
 #define	CMD_ID_7 907 // cmd spawn identifier
 #define	CMD_ID_8 908 // cmd spawn identifier
 #define	CMD_ID_9 909 // cmd spawn identifier
+#define INFO_OFF 1002 // info off identifier
 #define WTYPE_MAX 9 // Number excluded/included window titles
 #define CMD_MAX 9 // Number of custom cmds
 #define	TOPGAP_ID 400 // topgap type identifier

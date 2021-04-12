@@ -15,6 +15,7 @@ static void free_opts(void);
 static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
+short info_on = TRUE;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE, tile, {0} },
@@ -124,6 +125,7 @@ Opts defopts[] = {
 	{ TYPE_CMD_7, CMD_ID_7, OPTTYPE },
 	{ TYPE_CMD_8, CMD_ID_8, OPTTYPE },
 	{ TYPE_CMD_9, CMD_ID_9, OPTTYPE },
+	{ TYPE_INFO_OFF, INFO_OFF, OPTTYPE },
 };
 
 Ostore cmds[] = {0};
@@ -256,6 +258,10 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 				case TILE_FACT_ID:
 					fact = (int)strtol((const char*)tt_optvalue, (char **)NULL, 10);
 					break;
+				case INFO_OFF:
+					info_on = FALSE;
+					printf("lolo\n");
+					break;
 				default:
 					// Do nothing
 					break;
@@ -367,10 +373,12 @@ short int commo(void)
 			}
 
 			if (autotile) {
-				(void)countwindows(1);
-				if (backdropped) {
-					info_window(bdwarn);
-				 }
+				if (info_on) {
+					(void)countwindows(1);
+					if (backdropped == TRUE) {
+						info_window(bdwarn);
+				 	}
+				}
 			}
 
 			//Main Loop
@@ -422,7 +430,9 @@ short int commo(void)
 						switch (id)
 						{
 							case CXCMD_UNIQUE:
-								info_window(uqwarn);
+								if(info_on) {
+									info_window(uqwarn);
+								}
 								running = FALSE;
 								break;
 							case CXCMD_DISABLE:
