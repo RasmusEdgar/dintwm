@@ -34,7 +34,7 @@ Keys defkeys[] = {
 	{ TYPE_DECRIGHTGAP, KEY_DECRIGHTGAP, KEYTYPE, changegaps, {.i = -RIGHTGAP_ID} },
 	{ TYPE_INCALLGAPS, KEY_INCALLGAPS, KEYTYPE, changegaps, {.i = INCALLGAPS_ID} },
 	{ TYPE_DECALLGAPS, KEY_DECALLGAPS, KEYTYPE, changegaps, {.i = DECALLGAPS_ID} },
-	{ TYPE_TILEOFF, KEY_TILEOFF, KEYTYPE, tileoff, {0} },
+	{ TYPE_TILE_OFF, KEY_TILE_OFF, KEYTYPE, tileoff, {0} },
 	{ TYPE_KEY_CMD_0, KEY_CMD_0, KEYTYPE, docmd, { .i = CMD_ID_0 } },
 	{ TYPE_KEY_CMD_1, KEY_CMD_1, KEYTYPE, docmd, { .i = CMD_ID_1 } },
 	{ TYPE_KEY_CMD_2, KEY_CMD_2, KEYTYPE, docmd, { .i = CMD_ID_2 } },
