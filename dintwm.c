@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 	current_ws = 0U;
 	current_ws |= WS_0;
 	backdropped = FALSE;
+	tile_off = FALSE;
 	wbarbgcolor[0] = DEF_BAR_BG_COL;
 	wbarfpws[0] = DEF_BAR_FPWS_COL;
 	wbarbpws[0] = DEF_BAR_BPWS_COL;
@@ -728,6 +729,10 @@ short changews(const Arg * arg) {
 }
 
 short movetows(const Arg * arg) {
+	if (backdropped) {
+		(void)arg;
+		return TRUE;
+	}
 	unsigned int setws = 0U;
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window;
@@ -979,9 +984,10 @@ static inline unsigned char * maptm(void)
 short info_window(unsigned char * info_text)
 {
 	struct TagItem tagitem[9];
-	struct Window *iwin;
+	struct Window *iwin, *twin;
 	short closewin = FALSE;
-	unsigned long l, t, w, h;
+	short info_text_length;
+	unsigned long l, t, w, h, tleft;
 	struct IntuiText iitext =
 	{
 		.TopEdge = 0,
@@ -989,18 +995,18 @@ short info_window(unsigned char * info_text)
 		.ITextFont = NULL,
 		.DrawMode = JAM2, //-V2568
 		.FrontPen = 1, //-V2568
-		.BackPen = 137, //-V2568
+		.BackPen = 2, //-V2568
 		.IText = info_text,
 		.NextText = NULL
 	};
 
 	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
-	tagitem[0].ti_Data = 320; //-V2544 //-V2568
+	tagitem[0].ti_Data = 100; //-V2544 //-V2568
 	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
 	tagitem[1].ti_Data = 50; //-V2544 //-V2568
 	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
 	tagitem[2].ti_Data = (unsigned long)(sheight / 2);
-	tagitem[3].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
+	tagitem[3].ti_Tag = WA_SimpleRefresh; //-V2544 //-V2568
 	tagitem[3].ti_Data = 1; //-V2568
 	tagitem[4].ti_Tag = WA_IDCMP; //-V2544 //-V2568
 	tagitem[4].ti_Data = IDCMP_CLOSEWINDOW; //-V2568
@@ -1013,22 +1019,36 @@ short info_window(unsigned char * info_text)
 	tagitem[8].ti_Tag = TAG_DONE; //-V2544 //-V2568
 
 	lockbasescreen(&ilock, &screen);
+
+	twin = OpenWindowTagList(NULL, tagitem);
+	if (!twin) {
+		unlockbasescreen(&ilock, &screen);
+		return FALSE;
+	}
+	info_text_length = TextLength(twin->RPort, info_text, strnlen((const char *)info_text, TT_MAX_LENGTH));
+	tleft = (unsigned long)info_text_length + (unsigned long)twin->BorderLeft + (unsigned long)twin->BorderRight;
+	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	tagitem[0].ti_Data = tleft; //-V2544 //-V2568
+	tagitem[7].ti_Tag = WA_Left; //-V2544 //-V2568
+	tagitem[7].ti_Data = (unsigned long)(swidth / 2) - (unsigned long)(tleft / 2); //-V2568
+	CloseWindow(twin);
+
 	iwin = OpenWindowTagList(NULL, tagitem);
 	if (!iwin) {
 		unlockbasescreen(&ilock, &screen);
 		return FALSE;
 	}
-	unlockbasescreen(&ilock, &screen);
 
+	unlockbasescreen(&ilock, &screen);
 
 	l = (unsigned long)iwin->BorderLeft;
 	t = (unsigned long)iwin->BorderTop;
 	w = (unsigned long)iwin->Width - (unsigned long)iwin->BorderLeft - (unsigned long)iwin->BorderRight;
 	h = (unsigned long)iwin->Height - (unsigned long)iwin->BorderTop - (unsigned long)iwin->BorderBottom;
 
-	SetAPen(iwin->RPort, 137);
+	SetAPen(iwin->RPort, 2);
 	RectFill(iwin->RPort, l, t, l + w - 1UL, t + h - 1UL);
-	PrintIText(iwin->RPort, &iitext, 20, 25);
+	PrintIText(iwin->RPort, &iitext, 4, 25);
 
 	while (closewin == FALSE) {
 		struct IntuiMessage *msg;
@@ -1040,5 +1060,12 @@ short info_window(unsigned char * info_text)
 			closewin = TRUE;
 		}
 	}
+	return TRUE;
+}
+
+short tileoff(const Arg *arg)
+{
+	(void)arg;
+	tile_off = tile_off == FALSE ? TRUE : FALSE;
 	return TRUE;
 }

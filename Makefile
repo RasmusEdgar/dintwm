@@ -13,13 +13,13 @@ CONFHEADER = cxm_config.h wbar_config.h
 EXTHEADERS = ketopt.h
 HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
 CPPLINTCMD = cpplint
-CPPLINTOPTS = --linelength 120 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard
+CPPLINTOPTS = --linelength 150 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard
 CPPCHECKCMD = cppcheck
 CPPCHECKOPTS = --enable=all
 FLAWCMD = flawfinder
 FLAWOPTS = -F
 SPLINTCMD = splint
-SPLINTARGS = -I $(HOME)/bin/amiga/m68k-amigaos/ndk-include/
+SPLINTARGS = -I $(HOME)/opt/amiga/m68k-amigaos/ndk-include/
 TARGET = dintwm
 
 ifdef strict

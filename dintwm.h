@@ -168,6 +168,7 @@ short init_wbar(void);
 short update_wbar(void);
 void wbarcwb(void);
 short info_window(unsigned char * info_text);
+short tileoff(const Arg *arg);
 
 int topgap;
 int bottomgap;
@@ -179,6 +180,7 @@ int include_wtype;
 long unsigned int auto_interval;
 unsigned int current_ws;
 short backdropped;
+short tile_off;
 struct Window *wbw;
 int sheight;
 int swidth;

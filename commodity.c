@@ -33,6 +33,7 @@ Keys defkeys[] = {
 	{ TYPE_DECRIGHTGAP, KEY_DECRIGHTGAP, KEYTYPE, changegaps, {.i = -RIGHTGAP_ID} },
 	{ TYPE_INCALLGAPS, KEY_INCALLGAPS, KEYTYPE, changegaps, {.i = INCALLGAPS_ID} },
 	{ TYPE_DECALLGAPS, KEY_DECALLGAPS, KEYTYPE, changegaps, {.i = DECALLGAPS_ID} },
+	{ TYPE_TILEOFF, KEY_TILEOFF, KEYTYPE, tileoff, {0} },
 	{ TYPE_KEY_CMD_0, KEY_CMD_0, KEYTYPE, docmd, { .i = CMD_ID_0 } },
 	{ TYPE_KEY_CMD_1, KEY_CMD_1, KEYTYPE, docmd, { .i = CMD_ID_1 } },
 	{ TYPE_KEY_CMD_2, KEY_CMD_2, KEYTYPE, docmd, { .i = CMD_ID_2 } },
@@ -305,8 +306,6 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 
 short int commo(void)
 {
-	//struct timeval currentval;
-
 	struct MsgPort *mp = CreateMsgPort();
 	static struct DiskObject *diskobj;
 	static unsigned char iconlib[] = "icon.library";
@@ -377,7 +376,11 @@ short int commo(void)
 			//Main Loop
 			while (running)
 			{
-				if (autotile) {
+				if(tile_off) {
+					Delay(auto_interval);
+				}
+
+				if (tile_off == FALSE && autotile == TRUE) {
 					short act = FALSE;
 					// If previous active window is no longer active, refresh bar
 					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) != (unsigned long)WFLG_WINDOWACTIVE) {

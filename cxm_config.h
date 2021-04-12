@@ -15,6 +15,7 @@ char TYPE_DECLEFTGAP[] = "POPKEY_DECLEFTGAP";
 char TYPE_DECRIGHTGAP[] = "POPKEY_DECRIGHTGAP";
 char TYPE_INCALLGAPS[] = "POPKEY_INCALLGAPS";
 char TYPE_DECALLGAPS[] = "POPKEY_DECALLGAPS";
+char TYPE_TILEOFF[] = "POPKEY_TILEOFF";
 char TYPE_KEY_CMD_0[] = "POPKEY_CMD_0";
 char TYPE_KEY_CMD_1[] = "POPKEY_CMD_1";
 char TYPE_KEY_CMD_2[] = "POPKEY_CMD_2";
@@ -120,6 +121,7 @@ char KEY_DECRIGHTGAP[] = "rawkey control shift cursor_right";
 char KEY_INCALLGAPS[] = "rawkey control lcommand numericpad +";
 // double dash escapes special rawkey dash
 char KEY_DECALLGAPS[] = "rawkey control lcommand numericpad --";
+char KEY_TILEOFF[] = "rawkey control lcommand o";
 char KEY_CMD_0[] = "rawkey control lcommand 0";
 char KEY_CMD_1[] = "rawkey control lcommand 1";
 char KEY_CMD_2[] = "rawkey control lcommand 2";
@@ -146,5 +148,5 @@ char KEY_CXM_EXIT[] = "rawkey control lcommand q";
 
 short autotile = FALSE;
 
-unsigned char bdwarn[] = "If you want virtual WSs, then don't backdrop.";
+unsigned char bdwarn[] = "If you want virtual WSs, then don't backdrop WB.";
 unsigned char uqwarn[] = "Commodity is already running. Quitting.";
