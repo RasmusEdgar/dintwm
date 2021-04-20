@@ -743,6 +743,7 @@ short movetows(const Arg * arg) {
 		if (window->Flags & (unsigned long)WINDOWACTIVE) {
 			setws |= arg->u;
 			window->ExtData = (unsigned char *)setws;
+			WindowToBack(window);
 		}
 	}
 	unlockbasescreen(&ilock, &screen);
@@ -1020,6 +1021,7 @@ short info_window(unsigned char * info_text)
 
 	lockbasescreen(&ilock, &screen);
 
+	// Hack to precalculate needed window width
 	twin = OpenWindowTagList(NULL, tagitem);
 	if (!twin) {
 		unlockbasescreen(&ilock, &screen);
@@ -1032,6 +1034,7 @@ short info_window(unsigned char * info_text)
 	tagitem[7].ti_Tag = WA_Left; //-V2544 //-V2568
 	tagitem[7].ti_Data = (unsigned long)(swidth / 2) - (unsigned long)(tleft / 2); //-V2568
 	CloseWindow(twin);
+	// End hack
 
 	iwin = OpenWindowTagList(NULL, tagitem);
 	if (!iwin) {
