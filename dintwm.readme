@@ -1,6 +1,6 @@
 Short:        Dynamic Intuition Window Manager
-Uploader:     regj at arch-ed.dk (Rasmus Edgar)
-Author:       regj at arch-ed.dk (Rasmus Edgar)
+Uploader:     EMAIL (Rasmus Edgar)
+Author:       EMAIL (Rasmus Edgar)
 Type:         util/wb
 Version:      0.1
 Architecture: m68k-amigaos >= 3.1
@@ -34,6 +34,7 @@ Installation as commodity
 
 Drag dintwm to System:WBStartup.
 
+Note: Dintwm is most featureful as a commodity.
 
 Run from cli (or bind with Fkey)
 --------------------------------
@@ -85,6 +86,16 @@ https://github.com/RasmusEdgar/dintwm
 Report bugs/issues at the above URL.
 
 I am open for feature requests.
+
+Changelog
+---------
+
+* v0.2
+  - Add key combo to disable tiling globally i.e. TILE_OFF
+  - Ignore all WS shifting business when WB win is backdropped
+  - Fix bug with text not fitting in info windows
+  - Add INFO_OFF TT to disable info boxes
+* v0.1 initial release
 
 License
 -------

@@ -14,8 +14,33 @@
 #include <stdio.h>
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
-#define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
-#define DEFCMD "NewShell"
+
+#define KEYTYPE_ID 1 // Keytype id
+#define OPTTYPE_ID 2 // Opttype id
+#define K_CGAP_ID 301 // longopts ketopts id
+#define	TOPGAP_ID 400 // topgap type identifier
+#define	DEFAULT_TOPGAP_ID 401 // default topgap identifier
+#define BOTTOMGAP_ID 402 // bottomgap type identifier
+#define	LEFTGAP_ID 403 // leftgap type iNewshell command dentifier
+#define	RIGHTGAP_ID 404 // rightgap type identifier
+#define INCALLGAPS_ID 405 // increase all gaps identifier
+#define DECALLGAPS_ID 406 // decrease all gaps identifier
+#define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
+#define BAR_ID 408 // Bar identifier
+#define BAR_BG_COL_ID 409 // Bar bg color identifier
+#define BAR_FPW_COL_ID 410 // Bar current ws frontpen color identifier
+#define BAR_BPW_COL_ID 411 // Bar current ws backpen color identifier
+#define BAR_FPCURW_COL_ID 412 // Bar current ws frontpen color identifier
+#define BAR_BPCURW_COL_ID 413 // Bar current ws backpen color identifier
+#define BAR_FPTM_COL_ID 414 // Bar tilemode frontpen color identifier
+#define BAR_BPTM_COL_ID 415 // Bar tilemode backpen color identifier
+#define BAR_FPTI_COL_ID 416 // Bar title frontpen color identifier
+#define BAR_BPTI_COL_ID 417 // Bar title backpen color identifier
+#define BAR_FPSEP_ONE_COL_ID 418 // Bar seperator one frontpen color identifier
+#define BAR_BPSEP_ONE_COL_ID 419 // Bar seperator one backpen color identifier
+#define BAR_FPSEP_TWO_COL_ID 420 // Bar seperator two frontpen color identifier
+#define BAR_BPSEP_TWO_COL_ID 421 // Bar seperator two backpen color identifier
+#define BAR_HIDE_EMPTY_ID 422 // Hide bar on empty workspaces
 #define	EXCL_WTYPE_ID_0 600 // exclude window type identifier
 #define	EXCL_WTYPE_ID_1 601 // exclude window type identifier
 #define	EXCL_WTYPE_ID_2 602 // exclude window type identifier
@@ -56,20 +81,39 @@
 #define	CMD_ID_7 907 // cmd spawn identifier
 #define	CMD_ID_8 908 // cmd spawn identifier
 #define	CMD_ID_9 909 // cmd spawn identifier
-#define INFO_OFF 1002 // info off identifier
+#define AUTO_ID 1000 // AUTO TILE ID
+#define AUTO_INTERVAL_DELAY_ID 1001 // AUTO TILE MICRO ID
+#define INFO_OFF_ID 1002 // info off identifier
+#define TILE_FACT_ID 1200 // mfact opt id
+
+#define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
+#define DEFCMD "NewShell"
+#define COMMODITIZE -1 // Commoditize on/off
+#define LAYOUT_START -1 // switcher function - determines if current_layot should be set
+#define DOUBLE_OPTION_ERR -2 // Can not call two tile functions from cli
+#define	GAP_ERR -3 // Gaps are too small or too big
+#define	UNKNOWN -4 // Unknown option
+#define	MISSING -5 // Missing argument
+#define NOTSET -6 // Notset var
+#define DEFAULT_TOPGAP 0 // Default topgap on/off
+#define NOSKIP 0 // Noskip window on/off
+#define FRONT 0 // Front on/off
+#define	SKIP 1 // Skip window on/off
+#define BACK 1 // Back on/off
+#define AUTO_INTERVAL_DELAY_DEF 1 // default AUTO_TILE Delay INTERVAL in ticks
+#define	FUNC_TILE 0 // tile function identifier
+#define	FUNC_HGRID 1 // hgrid function identifier
+#define	FUNC_SPIRAL 2 // spiral function identifier
+#define	FUNC_DWINDLE 3 // dwindle function identifier
+#define	TILE_FUNC_LIMIT 3 // switcher function - maximum limit of tiling layouts to switch through
+#define	BAR_COLOR_LENGTH 3 // Color Max Length
 #define WTYPE_MAX 9 // Number excluded/included window titles
 #define CMD_MAX 9 // Number of custom cmds
-#define	TOPGAP_ID 400 // topgap type identifier
-#define	DEFAULT_TOPGAP_ID 401 // default topgap identifier
-#define BOTTOMGAP_ID 402 // bottomgap type identifier
-#define	LEFTGAP_ID 403 // leftgap type iNewshell command dentifier
-#define	RIGHTGAP_ID 404 // rightgap type identifier
-#define INCALLGAPS_ID 405 // increase all gaps identifier
-#define DECALLGAPS_ID 406 // decrease all gaps identifier
-#define GAP_CHANGE_VALUE_ID 407 // decrease all gaps identifier
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
+#define	FUNC_PRINTUSAGE 42 // printusage function identifier
+#define TT_MAX_LENGTH 128 // Tooltype Max Length
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
-#define AUTO_INTERVAL_DELAY_DEF 1 // default AUTO_TILE Delay INTERVAL in ticks
+#define TILE_FACT_DEF 550 // Default mfact value
 #define WS_0 (1U << 0)
 #define WS_1 (1U << 1)
 #define WS_2 (1U << 2)
@@ -80,25 +124,9 @@
 #define WBAR_HEIGHT 20
 #define BAR_HIDE_ON (1U << 0)
 #define BAR_HIDE_TOGGLE (1U << 1)
-#define BAR_ID 408 // Bar identifier
-#define BAR_BG_COL_ID 409 // Bar bg color identifier
-#define BAR_FPW_COL_ID 410 // Bar current ws frontpen color identifier
-#define BAR_BPW_COL_ID 411 // Bar current ws backpen color identifier
-#define BAR_FPCURW_COL_ID 412 // Bar current ws frontpen color identifier
-#define BAR_BPCURW_COL_ID 413 // Bar current ws backpen color identifier
-#define BAR_FPTM_COL_ID 414 // Bar tilemode frontpen color identifier
-#define BAR_BPTM_COL_ID 415 // Bar tilemode backpen color identifier
-#define BAR_FPTI_COL_ID 416 // Bar title frontpen color identifier
-#define BAR_BPTI_COL_ID 417 // Bar title backpen color identifier
-#define BAR_FPSEP_ONE_COL_ID 418 // Bar seperator one frontpen color identifier
-#define BAR_BPSEP_ONE_COL_ID 419 // Bar seperator one backpen color identifier
-#define BAR_FPSEP_TWO_COL_ID 420 // Bar seperator two frontpen color identifier
-#define BAR_BPSEP_TWO_COL_ID 421 // Bar seperator two backpen color identifier
-#define BAR_HIDE_EMPTY_ID 422 // Hide bar on empty workspaces
-#define DEF_BAR_BG_COL 3U // Default bar bg color
 #define DEF_BAR_FPWS_COL 1U // Default bar workspace frontpen color
 #define DEF_BAR_BPWS_COL 3U // Default bar workspace backpen color
-#define DEF_BAR_FPCURW_COL 139U // Default bar active workspace frontpen color
+#define DEF_BAR_FPCURW_COL 6U // Default bar active workspace frontpen color
 #define DEF_BAR_BPCURW_COL 3U // Default bar workspace backpen color
 #define DEF_BAR_FPTM_COL 1U // Default bar tilemode frontpen color
 #define DEF_BAR_BPTM_COL 3U // Default bar tilemode backpen color
@@ -108,38 +136,7 @@
 #define DEF_BAR_BPSEP_ONE_COL 3U // Default bar title frontpen color
 #define DEF_BAR_FPSEP_TWO_COL 1U // Default bar title backpen color
 #define DEF_BAR_BPSEP_TWO_COL 3U // Default bar title backpen color
-
-enum dintwm_identifiers {
-	DEFAULT_TOPGAP = 0,
-	NOSKIP = 0,
-	FRONT = 0,
-	BACK = 1,
-	KEYTYPE = 1,
-	STORE = 1,
-	SKIP = 1,
-	OPTTYPE = 2,
-	FREE = 3,
-	COMMODITIZE = -1,
-	DOUBLE_OPTION_ERR = -2, // Can not call two tile functions from cli
-	GAP_ERR = -3, // Gaps are too small or too big
-	UNKNOWN = -4, // Unknown option
-	MISSING = -5, // Missing argument
-	NOTSET = -6, // Notset var
-	LAYOUT_START = -1, // switcher function - determines if current_layot should be set
-	TILE_FUNC_LIMIT = 3, // switcher function - maximum limit of tiling layouts to switch through
-	FUNC_TILE = 0, // tile function identifier
-	FUNC_HGRID = 1, // hgrid function identifier
-	FUNC_SPIRAL = 2, // spiral function identifier
-	FUNC_DWINDLE = 3, // dwindle function identifier
-	FUNC_PRINTUSAGE = 42, // printusage function identifier
-	TT_MAX_LENGTH = 128, // Tooltype Max Length
-	BAR_COLOR_LENGTH = 3, // Color Max Length
-	K_CGAP_ID = 301, // longopts ketopts id
-	AUTO_ID = 1000, // AUTO TILE ID
-	AUTO_INTERVAL_DELAY_ID = 1001, // AUTO TILE MICRO ID
-	TILE_FACT_DEF = 550, // Default mfact value
-	TILE_FACT_ID = 1200 // mfact opt id
-};
+#define DEF_BAR_BG_COL 3U // Default bar bg color
 
 typedef union {
 	int i;
