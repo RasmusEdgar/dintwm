@@ -110,7 +110,8 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | BAR\_FPSEP\_TWO\_COL | 1 | Dintwm bar seperator two frontpen color | BAR |
 | BAR\_BPSEP\_TWO\_COL | 3 | Dintwm bar seperator two backpen color | BAR |
 | BAR\_HIDE\_EMPTY | empty | Hide bar if workspace is empty | BAR |
-| INFO\_OFF | empty | Supress info windows | NA |
+| INFO\_OFF | empty | Supress info windows - not recommended | NA |
+| VWS\_ON | FALSE | Enable virtual workspaces | NA |
 
 ## Features explained
 
@@ -124,11 +125,21 @@ Move active window to another virtual workspace using the POPKEY\_CWS\_0..5 hotk
 
 Since virtual workspaces depend on moving windows to be the back of the window stack, using it with a backdropped Workbench window will not work.
 
-To enable do not backdrop the workbench window.
+**To enable _do not_ backdrop the workbench window and set tooltype VWS\_ON=TRUE**
 
 ### Dintwm bar
 
 The bar is at the moment only available in the bottom of screen. It shows tilemode, active window title and indicates current active workspace. 
+
+### Default ToolTypes
+
+The following tooltypes are enabled in info file by default:
+
+* AUTO tiling is enabled
+* VWS\_ON i.e. virtual workspaces are enabled
+* BAR is enabled
+* DONOTWAIT is enabled to remove nag dialog box on some systems
+* CMD\_0 is set to Newshell by default <ctrl lcommand 0>
 
 ## Running dintwm from CLI
 
@@ -136,7 +147,7 @@ Again Dintwm will ignore the workbench window, backdropped windows and gimmezero
 
 Auto tile for obvious reasons does not work in this mode.
 
-Virtual workspaces do not work.
+Virtual workspaces do not work either.
 
 Open some windows.
 

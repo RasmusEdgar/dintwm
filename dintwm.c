@@ -54,6 +54,7 @@ int main(int argc, char **argv)
 	wbarfpseptwo[0] = DEF_BAR_FPSEP_TWO_COL;
 	wbarbpseptwo[0] = DEF_BAR_BPSEP_TWO_COL;
 	bar_on = FALSE;
+	vws_on = FALSE;
 	wbarheight = 0;
 
 	lockbasescreen(&ilock, &screen);
@@ -713,6 +714,10 @@ static void moveallwin(int m) {
 
 
 short changews(const Arg * arg) {
+	if (vws_on == FALSE) {
+		return TRUE;
+	}
+
 	if (current_ws & arg->u) {
 		return TRUE;
 	}
@@ -729,10 +734,15 @@ short changews(const Arg * arg) {
 }
 
 short movetows(const Arg * arg) {
+	if (vws_on == FALSE) {
+		return TRUE;
+	}
+
 	if (backdropped) {
 		(void)arg;
 		return TRUE;
 	}
+
 	unsigned int setws = 0U;
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window;
@@ -786,23 +796,28 @@ short init_wbar(void) {
 
 	WindowToFront(wbw);
 
-	wstext_five = wbartext;
-	wstext_five.IText = padwbartext(ws_five);
+	if (vws_on) {
+		wstext_five = wbartext;
+		wstext_five.IText = padwbartext(ws_five);
 
-	wstext_four = wbartext;
-	wstext_four.IText = padwbartext(ws_four);
+		wstext_four = wbartext;
+		wstext_four.IText = padwbartext(ws_four);
 
-	wstext_three = wbartext;
-	wstext_three.IText = padwbartext(ws_three);
+		wstext_three = wbartext;
+		wstext_three.IText = padwbartext(ws_three);
 
-	wstext_two = wbartext;
-	wstext_two.IText = padwbartext(ws_two);
+		wstext_two = wbartext;
+		wstext_two.IText = padwbartext(ws_two);
 
-	wstext_one = wbartext;
-	wstext_one.IText = padwbartext(ws_one);
+		wstext_one = wbartext;
+		wstext_one.IText = padwbartext(ws_one);
 
-	wstext_zero = wbartext;
-	wstext_zero.IText = padwbartext(ws_zero);
+		wstext_zero = wbartext;
+		wstext_zero.IText = padwbartext(ws_zero);
+	} else {
+		wstext_zero = wbartext;
+		wstext_zero.IText = padwbartext(ws_wb);
+	}
 
 	wbarsep_one = wbartext;
 	wbarsep_one.IText = padwbartext(wbar_sep_one);
@@ -823,25 +838,39 @@ short init_wbar(void) {
 	wbarwtitle.FrontPen = *wbarfpti;
 	wbarwtitle.BackPen = *wbarbpti;
 
-	wstext_zero.NextText = &wstext_one;
-	wstext_one.NextText = &wstext_two;
-	wstext_two.NextText = &wstext_three;
-	wstext_three.NextText = &wstext_four;
-	wstext_four.NextText = &wstext_five;
-	wstext_five.NextText = &wbarsep_one;
-	wbarsep_one.NextText = &wbarmodetext;
-	wbarmodetext.NextText = &wbarsep_two;
-	wbarsep_two.NextText = &wbarwtitle;
+	if (vws_on) {
+		wstext_zero.NextText = &wstext_one;
+		wstext_one.NextText = &wstext_two;
+		wstext_two.NextText = &wstext_three;
+		wstext_three.NextText = &wstext_four;
+		wstext_four.NextText = &wstext_five;
+		wstext_five.NextText = &wbarsep_one;
+		wbarsep_one.NextText = &wbarmodetext;
+		wbarmodetext.NextText = &wbarsep_two;
+		wbarsep_two.NextText = &wbarwtitle;
+	} else {
+		wstext_zero.NextText = &wbarsep_one;
+		wbarsep_one.NextText = &wbarmodetext;
+		wbarmodetext.NextText = &wbarsep_two;
+		wbarsep_two.NextText = &wbarwtitle;
+	}
 
-	wstext_one.LeftEdge = wbartextwidth(0, wstext_zero.IText);
-	wstext_two.LeftEdge = wbartextwidth(wstext_one.LeftEdge, wstext_one.IText);
-	wstext_three.LeftEdge = wbartextwidth(wstext_two.LeftEdge, wstext_two.IText);
-	wstext_four.LeftEdge = wbartextwidth(wstext_three.LeftEdge, wstext_three.IText);
-	wstext_five.LeftEdge = wbartextwidth(wstext_four.LeftEdge, wstext_four.IText);
-	wbarsep_one.LeftEdge = wbartextwidth(wstext_five.LeftEdge, wstext_five.IText);
-	wbarmodetext.LeftEdge = wbartextwidth(wbarsep_one.LeftEdge, wbarsep_one.IText);
-	wbarsep_two.LeftEdge = wbartextwidth(wbarmodetext.LeftEdge, wbarmodetext.IText);
-	wbarwtitle.LeftEdge = wbartextwidth(wbarsep_two.LeftEdge, wbarsep_two.IText);
+	if (vws_on) {
+		wstext_one.LeftEdge = wbartextwidth(0, wstext_zero.IText);
+		wstext_two.LeftEdge = wbartextwidth(wstext_one.LeftEdge, wstext_one.IText);
+		wstext_three.LeftEdge = wbartextwidth(wstext_two.LeftEdge, wstext_two.IText);
+		wstext_four.LeftEdge = wbartextwidth(wstext_three.LeftEdge, wstext_three.IText);
+		wstext_five.LeftEdge = wbartextwidth(wstext_four.LeftEdge, wstext_four.IText);
+		wbarsep_one.LeftEdge = wbartextwidth(wstext_five.LeftEdge, wstext_five.IText);
+		wbarmodetext.LeftEdge = wbartextwidth(wbarsep_one.LeftEdge, wbarsep_one.IText);
+		wbarsep_two.LeftEdge = wbartextwidth(wbarmodetext.LeftEdge, wbarmodetext.IText);
+		wbarwtitle.LeftEdge = wbartextwidth(wbarsep_two.LeftEdge, wbarsep_two.IText);
+	} else {
+		wbarsep_one.LeftEdge = wbartextwidth(0, wstext_zero.IText);
+		wbarmodetext.LeftEdge = wbartextwidth(wbarsep_one.LeftEdge, wbarsep_one.IText);
+		wbarsep_two.LeftEdge = wbartextwidth(wbarmodetext.LeftEdge, wbarmodetext.IText);
+		wbarwtitle.LeftEdge = wbartextwidth(wbarsep_two.LeftEdge, wbarsep_two.IText);
+	}
 
 	return TRUE;
 }
@@ -902,6 +931,12 @@ void wbarcwb(void) {
 
 static inline void mapws(void)
 {
+	if (vws_on == FALSE) {
+		wstext_zero.FrontPen = *wbarfpws;
+		wstext_zero.BackPen = *wbarbpws;
+		return;
+	}
+
 	if (current_ws & WS_0) {
 		wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
 		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;

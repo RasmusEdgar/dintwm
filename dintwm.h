@@ -84,6 +84,7 @@
 #define AUTO_ID 1000 // AUTO TILE ID
 #define AUTO_INTERVAL_DELAY_ID 1001 // AUTO TILE MICRO ID
 #define INFO_OFF_ID 1002 // info off identifier
+#define VWS_ON_ID 1003 // turn on virtual workspaces
 #define TILE_FACT_ID 1200 // mfact opt id
 
 #define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
@@ -187,6 +188,7 @@ struct Window *active_win;
 
 // Wbar specific vars
 short bar_on;
+short vws_on;
 unsigned int hidewbar;
 int wbarheight;
 unsigned char wbarbgcolor[3];

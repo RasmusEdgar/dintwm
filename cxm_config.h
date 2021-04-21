@@ -104,6 +104,7 @@ char TYPE_CMD_7[] = "CMD_7";
 char TYPE_CMD_8[] = "CMD_8";
 char TYPE_CMD_9[] = "CMD_9";
 char TYPE_INFO_OFF[] = "INFO_OFF";
+char TYPE_VWS_ON[] = "VWS_ON";
 // Change default rawkey combos from here. Leave above alone.
 char KEY_TILE[] = "rawkey control lcommand t";
 char KEY_HGRID[] = "rawkey control lcommand g";
@@ -149,5 +150,5 @@ char KEY_CXM_EXIT[] = "rawkey control lcommand q";
 
 short autotile = FALSE;
 
-unsigned char bdwarn[] = "If you want virtual WSs, then don't backdrop WB.";
+unsigned char bdwarn[] = "Virtual WSs are incompatible with backdropped WB. Unbackdrop WB or remove TT VWS_ON. Quitting.";
 unsigned char uqwarn[] = "Commodity is already running. Quitting.";

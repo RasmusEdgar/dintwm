@@ -92,9 +92,12 @@ Changelog
 
 * v0.2
   - Add key combo to disable tiling globally i.e. TILE_OFF
-  - Ignore all WS shifting business when WB win is backdropped
+  - Ignore all WS shifting business when vws's are off
   - Fix bug with text not fitting in info windows
   - Add INFO_OFF TT to disable info boxes
+  - Quit if backdropped window is detected and vws's are on
+  - Don't show workspaces on bar if vws's are off
+  - Add VWS_ON to enable virtual workspaces
 * v0.1 initial release
 
 License

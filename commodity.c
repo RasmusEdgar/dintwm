@@ -126,6 +126,7 @@ Opts defopts[] = {
 	{ TYPE_CMD_8, CMD_ID_8, OPTTYPE_ID },
 	{ TYPE_CMD_9, CMD_ID_9, OPTTYPE_ID },
 	{ TYPE_INFO_OFF, INFO_OFF_ID, OPTTYPE_ID },
+	{ TYPE_VWS_ON, VWS_ON_ID, OPTTYPE_ID },
 };
 
 Ostore cmds[] = {0};
@@ -261,6 +262,9 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 				case INFO_OFF_ID:
 					info_on = FALSE;
 					break;
+				case VWS_ON_ID:
+					vws_on = TRUE;
+					break;
 				default:
 					// Do nothing
 					break;
@@ -371,12 +375,13 @@ short int commo(void)
 				}
 			}
 
-			if (autotile) {
+			if (vws_on == TRUE) {
 				(void)countwindows(1);
-				if (info_on) {
-					if (backdropped == TRUE) {
+				if (backdropped == TRUE) {
+					if (info_on) {
 						info_window(bdwarn);
-				 	}
+					}
+					running = FALSE;
 				}
 			}
 
