@@ -20,6 +20,7 @@ FLAWCMD = flawfinder
 FLAWOPTS = -F
 SPLINTCMD = splint
 SPLINTARGS = -I $(HOME)/opt/amiga/m68k-amigaos/ndk-include/
+PANDOC = awk -v RS='\\[/*.:.*pancut.*panend)' -v ORS= '1;NR==1' README.md | pandoc -f markdown -t plain --wrap=none | sed 's/~~/:DONE:/g' > readme.txt
 TARGET = dintwm
 
 ifdef strict
@@ -34,6 +35,7 @@ endif
 
 all : $(OBJECTS)
 	 $(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
+	 $(PANDOC)
 ifdef strict
 	 $(CPPLINTCMD) $(CPPLINTOPTS) $(SOURCES) $(filter-out $(EXTHEADERS),$(HEADERS))
 	 $(CPPCHECKCMD) $(CPPCHECKOPTS) $(HEADERS) $(SOURCES)

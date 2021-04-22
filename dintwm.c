@@ -722,10 +722,6 @@ short changews(const Arg * arg) {
 		return TRUE;
 	}
 
-	if (backdropped) {
-		return TRUE;
-	}
-
 	moveallwin(BACK);
 	current_ws = arg->u;
 	moveallwin(FRONT);
@@ -735,11 +731,6 @@ short changews(const Arg * arg) {
 
 short movetows(const Arg * arg) {
 	if (vws_on == FALSE) {
-		return TRUE;
-	}
-
-	if (backdropped) {
-		(void)arg;
 		return TRUE;
 	}
 

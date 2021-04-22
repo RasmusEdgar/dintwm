@@ -15,7 +15,7 @@ https://github.com/bebbo/amiga-gcc
 ```
 make all
 ```
-
+[//]: # (pancut)
 ## Demo
 
 Vanilla without any tooltype tweaks:
@@ -34,6 +34,7 @@ Change between virtual workspaces and resize tiling area dynamically:
 
 Dintwm also has a bar:
 ![Bar demo](https://github.com/RasmusEdgar/dintwm/blob/master/demo/bar.gif)
+[//]: # (panend)
 
 ## Running dintwm as a commodity
 
