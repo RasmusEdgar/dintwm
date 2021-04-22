@@ -13,20 +13,9 @@ Cross-compilation on Linux for AmigaOS (requires bebbo’s m68k-amigaos-gcc fork
 
     make all
 
-dintwm
+Demo
 
-Tiling window “manager” for AmigaOS 3.1.x.
-
-NOTE Dintwm is under rather heavy development, it is a hobby project and breakage may occur.
-
-Building from source
-
-Install crosscompiler:
-https://github.com/bebbo/amiga-gcc
-
-Cross-compilation on Linux for AmigaOS (requires bebbo’s m68k-amigaos-gcc fork)
-
-    make all
+Check demos on: https://github.com/RasmusEdgar/dintwm
 
 Running dintwm as a commodity
 
@@ -230,15 +219,15 @@ Options are:
 
 TODO
 
--   :DONE:Create an optional Dintwm commodity to enable hotkeys:DONE:
--   :DONE:Make dintwm dynamical, by saving position of windows before tiling.:DONE: Dropped
--   :DONE:Float -> Tile -> Float behaviour:DONE:
--   :DONE:Enable auto tiling when new windows appear.:DONE:
--   :DONE:Add leftgap, rightgap and bottomgap:DONE:
--   :DONE:Virtual workspaces:DONE:
--   :DONE:Add dintwm bar:DONE:
--   :DONE:Stop commodity with hotkey:DONE:
--   :DONE:Use github actions to build and package dintwm release:DONE:
+-   |DONE|Create an optional Dintwm commodity to enable hotkeys|DONE|
+-   |DONE|Make dintwm dynamical, by saving position of windows before tiling.|DONE| Dropped
+-   |DONE|Float -> Tile -> Float behaviour|DONE|
+-   |DONE|Enable auto tiling when new windows appear.|DONE|
+-   |DONE|Add leftgap, rightgap and bottomgap|DONE|
+-   |DONE|Virtual workspaces|DONE|
+-   |DONE|Add dintwm bar|DONE|
+-   |DONE|Stop commodity with hotkey|DONE|
+-   |DONE|Use github actions to build and package dintwm release|DONE|
 -   Implement dedicated dintwm screen
 -   Builtin dmenu like launcher
 -   Ensure AROS compatibility
