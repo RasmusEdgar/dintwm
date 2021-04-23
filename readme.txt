@@ -228,6 +228,7 @@ TODO
 -   |DONE|Add dintwm bar|DONE|
 -   |DONE|Stop commodity with hotkey|DONE|
 -   |DONE|Use github actions to build and package dintwm release|DONE|
+-   Make static bar text fields configurable
 -   Implement dedicated dintwm screen
 -   Builtin dmenu like launcher
 -   Ensure AROS compatibility

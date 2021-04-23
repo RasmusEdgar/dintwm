@@ -205,6 +205,7 @@ Options are:
 - ~~Add dintwm bar~~
 - ~~Stop commodity with hotkey~~
 - ~~Use github actions to build and package dintwm release~~
+- Make static bar text fields configurable
 - Implement dedicated dintwm screen
 - Builtin dmenu like launcher
 - Ensure AROS compatibility
