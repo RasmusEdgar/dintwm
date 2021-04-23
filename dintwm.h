@@ -13,6 +13,8 @@
 #include <clib/alib_protos.h>
 #include <stdio.h>
 
+#define DINTWM_VERSION "0.2"
+
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 
 #define KEYTYPE_ID 1 // Keytype id
@@ -112,6 +114,7 @@
 #define CMD_MAX 9 // Number of custom cmds
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define	FUNC_PRINTUSAGE 42 // printusage function identifier
+#define	PRINTVERSION 43 // printusage function identifier
 #define TT_MAX_LENGTH 128 // Tooltype Max Length
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
 #define TILE_FACT_DEF 550 // Default mfact value

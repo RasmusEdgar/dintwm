@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	swidth = screen->Width;
 	unlockbasescreen(&ilock, &screen);
 
-	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:Cdghst", 0)) >= 0) {
+	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:CdghstV", 0)) >= 0) {
 		switch (c) {
 		case 'u':
 			topgap = calcgap();
@@ -149,6 +149,13 @@ int main(int argc, char **argv)
 				dint_opt_state = FUNC_TILE;
 			}
 			break;
+		case 'V':
+			if (dint_opt_state != NOTSET) {
+				dint_fail_state = DOUBLE_OPTION_ERR;
+			} else {
+				dint_opt_state = PRINTVERSION;
+			}
+			break;
 		case ':':
 			dint_fail_state = MISSING;
 			break;
@@ -164,7 +171,7 @@ int main(int argc, char **argv)
 
 	switch (dint_fail_state) {
 	case DOUBLE_OPTION_ERR:
-		printf("Do not use two tile functions at the same time.\n");
+		printf("Do not use -%c with other option.\n", opt.opt);
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	case GAP_ERR:
@@ -208,6 +215,10 @@ int main(int argc, char **argv)
 		case FUNC_PRINTUSAGE:
 			dint_exit_state = printusage();
 			break;
+		case PRINTVERSION:
+			printf("Dintwm version: %s\n", DINTWM_VERSION);
+			dint_exit_state = TRUE;
+			break;
 		default:
 			dint_exit_state =
 		    		defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
@@ -225,17 +236,19 @@ int main(int argc, char **argv)
 
 static short printusage(void)
 {
-	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-	       "Options:",
-	       "-d: Fibonacci dwindle",
-	       "-g: Horizontal grid",
-	       "-t: Tile with left master",
-	       "-s: Fibonacci spiral",
-	       "<other arg> -u: Add workbench bar gap",
-	       "<other arg> -U<int>: Add custom top gap",
-	       "<other arg> -B<int>: Add custom bottom gap",
-	       "<other arg> -L<int>: Add custom left gap",
-	       "<other arg> -R<int>: Add custom right gap", "-h: This message");
+	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		"Options:",
+		"-d: Fibonacci dwindle",
+		"-g: Horizontal grid",
+		"-t: Tile with left master",
+		"-s: Fibonacci spiral",
+		"-V: Show version",
+		"<other arg> -u: Add workbench bar gap",
+		"<other arg> -U<int>: Add custom top gap",
+		"<other arg> -B<int>: Add custom bottom gap",
+		"<other arg> -L<int>: Add custom left gap",
+		"<other arg> -R<int>: Add custom right gap",
+		"-h: This message");
 
 	return TRUE;
 }
