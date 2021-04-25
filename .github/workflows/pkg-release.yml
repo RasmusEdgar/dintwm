@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build dintwm
-        run: make all
+        run: make setver all
       - name: Upload artifact 
         uses: actions/upload-artifact@v2
         with:
