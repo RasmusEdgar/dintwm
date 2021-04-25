@@ -13,7 +13,9 @@
 #include <clib/alib_protos.h>
 #include <stdio.h>
 
-#define DINTWM_VERSION "0.2"
+//VERCUT
+#define DINTWM_VERSION "VERGIT"
+//VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 

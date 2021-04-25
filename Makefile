@@ -22,6 +22,9 @@ SPLINTCMD = splint
 SPLINTARGS = -I $(HOME)/opt/amiga/m68k-amigaos/ndk-include/
 PANDOC = awk -v RS='\\[/*.:.*pancut.*panend)' -v ORS= '1;NR==1{printf "Check demos on: https://github.com/RasmusEdgar/dintwm"}' README.md | pandoc -f markdown -t plain --wrap=none | sed 's/~~/|DONE|/g' > readme.txt
 TARGET = dintwm
+GITVER = $(shell git describe --tags)
+VERCMD = sed -i "s/VERGIT/${GITVER}/g" dintwm.h
+CLRVER = $(shell gawk -i inplace -v RS='//VERCUT.*VERCUT' -v ORS= '1;NR==1{printf "//VERCUT\n#define DINTWM_VERSION \"VERGIT\"\n//VERCUT"}' dintwm.h)
 
 ifdef strict
 CFLAGS = $(CFLAGSSTRICT)
@@ -33,18 +36,22 @@ MPLOGFLAG = -d V2511,V2516,V2510 -a MISRA:1,2
 endif
 endif
 
+.PHONY: setver
+setver:
+	$(VERCMD)
+
 all : $(OBJECTS)
-	 $(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
-	 $(PANDOC)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
+	$(PANDOC)
 ifdef strict
-	 $(CPPLINTCMD) $(CPPLINTOPTS) $(SOURCES) $(filter-out $(EXTHEADERS),$(HEADERS))
-	 $(CPPCHECKCMD) $(CPPCHECKOPTS) $(HEADERS) $(SOURCES)
-	 $(FLAWCMD) $(FLAWOPTS) $(HEADERS) $(SOURCES)
-	 $(SPLINTCMD) $(SOURCES) $(SPLINTARGS)
-	 $(foreach elem,$(SOURCES),pvs-studio --cfg PVS-Studio.cfg $(PEXCL) --source-file $(elem) --i-file $(elem:.c=.i) --output-file $(elem:.c=.log)${newline})
-	 $(foreach elem,$(SOURCES),plog-converter $(MPLOGFLAG) -t csv $(elem:.c=.log) | grep 'Filtered' ${newline})
+	$(CPPLINTCMD) $(CPPLINTOPTS) $(SOURCES) $(filter-out $(EXTHEADERS),$(HEADERS))
+	$(CPPCHECKCMD) $(CPPCHECKOPTS) $(HEADERS) $(SOURCES)
+	$(FLAWCMD) $(FLAWOPTS) $(HEADERS) $(SOURCES)
+	$(SPLINTCMD) $(SOURCES) $(SPLINTARGS)
+	$(foreach elem,$(SOURCES),pvs-studio --cfg PVS-Studio.cfg $(PEXCL) --source-file $(elem) --i-file $(elem:.c=.i) --output-file $(elem:.c=.log)${newline})
+	$(foreach elem,$(SOURCES),plog-converter $(MPLOGFLAG) -t csv $(elem:.c=.log) | grep 'Filtered' ${newline})
 ifdef misra
-	 $(foreach elem,$(SOURCES),plog-converter -t csv $(elem:.c=.log) | grep 'Filtered' ${newline})
+	$(foreach elem,$(SOURCES),plog-converter -t csv $(elem:.c=.log) | grep 'Filtered' ${newline})
 endif
 endif
 
@@ -55,5 +62,6 @@ commodity.o : $(MAINHEADER) $(CONFHEADER)
 .PHONY : clean
 clean :
 	-rm dintwm $(OBJECTS) $(TEMPS) $(LOGS)
+	$(CLRVER)
 
 
