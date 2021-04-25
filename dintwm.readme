@@ -25,6 +25,7 @@ Changelog
   - Fix bug with text not fitting in info windows
   - Quit if backdropped window is detected and vws's are on
   - Don't show workspaces on bar if vws's are off
+  - Add version option to cli
 
 * v0.1
   - initial release
