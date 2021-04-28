@@ -85,6 +85,19 @@ Opts defopts[] = {
 	{ TYPE_BAR_BPSEP_ONE_COL, BAR_BPSEP_ONE_COL_ID, OPTTYPE_ID },
 	{ TYPE_BAR_FPSEP_TWO_COL, BAR_FPSEP_TWO_COL_ID, OPTTYPE_ID },
 	{ TYPE_BAR_BPSEP_TWO_COL, BAR_BPSEP_TWO_COL_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_WS0, BAR_TEXT_WS0_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_WS1, BAR_TEXT_WS1_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_WS2, BAR_TEXT_WS2_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_WS3, BAR_TEXT_WS3_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_WS4, BAR_TEXT_WS4_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_WS5, BAR_TEXT_WS5_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_TILE, BAR_TEXT_TILE_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_GRID, BAR_TEXT_GRID_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_DWINDLE, BAR_TEXT_DWINDLE_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_SPIRAL, BAR_TEXT_SPIRAL_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_SEP_1, BAR_TEXT_SEP_1_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_SEP_2, BAR_TEXT_SEP_2_ID, OPTTYPE_ID },
+	{ TYPE_BAR_TEXT_SPACE, BAR_TEXT_SPACE_ID, OPTTYPE_ID },
 	{ TYPE_EXCL_WTYPE_0, EXCL_WTYPE_ID_0, OPTTYPE_ID },
 	{ TYPE_EXCL_WTYPE_1, EXCL_WTYPE_ID_1, OPTTYPE_ID },
 	{ TYPE_EXCL_WTYPE_2, EXCL_WTYPE_ID_2, OPTTYPE_ID },
@@ -249,6 +262,45 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					break;
 				case BAR_HIDE_EMPTY_ID:
 					hidewbar |= BAR_HIDE_ON;
+					break;
+				case BAR_TEXT_WS0_ID:
+					(void)snprintf((char *)bar_text.ws_zero, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_WS1_ID:
+					(void)snprintf((char *)bar_text.ws_one, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_WS2_ID:
+					(void)snprintf((char *)bar_text.ws_two, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_WS3_ID:
+					(void)snprintf((char *)bar_text.ws_three, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_WS4_ID:
+					(void)snprintf((char *)bar_text.ws_four, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_WS5_ID:
+					(void)snprintf((char *)bar_text.ws_five, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_TILE_ID:
+					(void)snprintf((char *)bar_text.mode_tile, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_GRID_ID:
+					(void)snprintf((char *)bar_text.mode_grid, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_DWINDLE_ID:
+					(void)snprintf((char *)bar_text.mode_dwindle, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_SPIRAL_ID:
+					(void)snprintf((char *)bar_text.mode_spiral, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_SEP_1_ID:
+					(void)snprintf((char *)bar_text.sep_one, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_SEP_2_ID:
+					(void)snprintf((char *)bar_text.sep_two, TT_MAX_LENGTH, "%s", tt_optvalue);
+					break;
+				case BAR_TEXT_SPACE_ID:
+					(void)snprintf((char *)bar_text.space, TT_MAX_LENGTH, "%s", tt_optvalue);
 					break;
 				case AUTO_ID:
 					autotile = TRUE;

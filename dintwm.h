@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 //VERCUT
-#define DINTWM_VERSION "VERGIT"
+#define DINTWM_VERSION "v0.2"
 //VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
@@ -45,6 +45,19 @@
 #define BAR_FPSEP_TWO_COL_ID 420 // Bar seperator two frontpen color identifier
 #define BAR_BPSEP_TWO_COL_ID 421 // Bar seperator two backpen color identifier
 #define BAR_HIDE_EMPTY_ID 422 // Hide bar on empty workspaces
+#define BAR_TEXT_WS0_ID 423 // Bar text ws id
+#define BAR_TEXT_WS1_ID 424 // Bar text ws id
+#define BAR_TEXT_WS2_ID 425 // Bar text ws id
+#define BAR_TEXT_WS3_ID 426 // Bar text ws id
+#define BAR_TEXT_WS4_ID 427 // Bar text ws id
+#define BAR_TEXT_WS5_ID 428 // Bar text ws id
+#define BAR_TEXT_TILE_ID 429 // Bar text tile field id
+#define BAR_TEXT_GRID_ID 430 // Bar text tile field id
+#define BAR_TEXT_DWINDLE_ID 431 // Bar text tile field id
+#define BAR_TEXT_SPIRAL_ID 432 // Bar text tile field id
+#define BAR_TEXT_SEP_1_ID 433 // Bar text tile field id
+#define BAR_TEXT_SEP_2_ID 434 // Bar text tile field id
+#define BAR_TEXT_SPACE_ID 435 // Bar text tile field id
 #define	EXCL_WTYPE_ID_0 600 // exclude window type identifier
 #define	EXCL_WTYPE_ID_1 601 // exclude window type identifier
 #define	EXCL_WTYPE_ID_2 602 // exclude window type identifier
@@ -90,6 +103,23 @@
 #define INFO_OFF_ID 1002 // info off identifier
 #define VWS_ON_ID 1003 // turn on virtual workspaces
 #define TILE_FACT_ID 1200 // mfact opt id
+
+#define DEF_BAR_TEXT_WS_ZERO "W0"
+#define DEF_BAR_TEXT_WS_ONE "W1"
+#define DEF_BAR_TEXT_WS_TWO "W2"
+#define DEF_BAR_TEXT_WS_THREE "W3"
+#define DEF_BAR_TEXT_WS_FOUR "W4"
+#define DEF_BAR_TEXT_WS_FIVE "W5"
+
+#define DEF_BAR_TEXT_MODE_TILE "Tile"
+#define DEF_BAR_TEXT_MODE_GRID "Grid"
+#define DEF_BAR_TEXT_MODE_DWINDLE "FibD"
+#define DEF_BAR_TEXT_MODE_SPIRAL "FibS"
+
+#define DEF_BAR_TEXT_SEP_ONE ":"
+#define DEF_BAR_TEXT_SEP_TWO ":"
+#define DEF_BAR_TEXT_SPACE " "
+#define DEF_BAR_TEXT_ERR "Fail"
 
 #define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
 #define DEFCMD "NewShell"
@@ -246,3 +276,39 @@ extern Opts defopts[];
 
 extern int fact;
 extern int gap_change_value;
+
+/*typedef struct {
+	unsigned char ws_zero[TT_MAX_LENGTH],
+			ws_one[TT_MAX_LENGTH],
+			ws_two[TT_MAX_LENGTH],
+			ws_three[TT_MAX_LENGTH],
+			ws_four[TT_MAX_LENGTH],
+			ws_five[TT_MAX_LENGTH],
+			ws_wb[TT_MAX_LENGTH],
+			space[TT_MAX_LENGTH],
+			mode_tile[TT_MAX_LENGTH],
+			mode_grid[TT_MAX_LENGTH],
+			mode_dwindle[TT_MAX_LENGTH],
+			mode_spiral[TT_MAX_LENGTH],
+			sep_one[TT_MAX_LENGTH],
+			sep_two[TT_MAX_LENGTH],
+			err[TT_MAX_LENGTH];
+} Bar_Text;*/
+typedef struct {
+	unsigned char   * ws_zero,
+			* ws_one,
+			* ws_two,
+			* ws_three,
+			* ws_four,
+			* ws_five,
+			* ws_wb,
+			* space,
+			* mode_tile,
+			* mode_grid,
+			* mode_dwindle,
+			* mode_spiral,
+			* sep_one,
+			* sep_two,
+			* err;
+} Bar_Text;
+Bar_Text bar_text;

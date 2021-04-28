@@ -26,6 +26,7 @@ while getopts ":e:r:v:" opt; do
 done
 
 if [ $OPTIND -eq 1 ]; then
+  echo "No options passed. Quitting."
   exit 1
 fi
 
@@ -39,7 +40,8 @@ sed -i "s/EMAIL/$email/g;s/OBFE/$emailu/g;s/VERSION/$release/g" dintwm.readme
 
 wget --quiet https://github.com/RasmusEdgar/dintwm/releases/download/v"$release"/dintwm.lha
 
-ftp -inv ftp.aminet.net << EOF
+#ftp -inv ftp.aminet.net << EOF
+cat << EOF
 user anonymous $email
 
 cd /new
