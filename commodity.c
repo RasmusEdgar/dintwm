@@ -595,7 +595,7 @@ static short alloc_bar_text(unsigned char **b, const char * s)
 {
 	unsigned char nil = '\0';
 	if (**b == nil) {
-		if ((*b = malloc((strnlen(s, TT_MAX_LENGTH)) * sizeof(unsigned char))) == NULL) {
+		if ((*b = malloc((strnlen(s, TT_MAX_LENGTH)+1U))) == NULL) {
 			return FALSE;
 		}
 		(void)snprintf((char *)*b, TT_MAX_LENGTH, "%s", s);

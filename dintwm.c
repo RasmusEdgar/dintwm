@@ -794,7 +794,6 @@ short movetows(const Arg * arg) {
 static inline unsigned char * padwbartext(unsigned char * s)
 {
 	unsigned char * tmp = s;
-	wbarmodetext.IText = '\0';
 	(void)snprintf((char *)s, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
 	return s;
 }
@@ -861,8 +860,13 @@ short init_wbar(void) {
 	wbarsep_two.FrontPen = *wbarfpseptwo;
 	wbarsep_two.BackPen = *wbarbpseptwo;
 
+	bar_text[mode_tile].text = padwbartext(bar_text[mode_tile].text);
+	bar_text[mode_grid].text = padwbartext(bar_text[mode_grid].text);
+	bar_text[mode_dwindle].text = padwbartext(bar_text[mode_dwindle].text);
+	bar_text[mode_spiral].text = padwbartext(bar_text[mode_grid].text);
+
 	wbarmodetext = wbartext;
-	wbarmodetext.IText = padwbartext(bar_text[mode_tile].text);
+	wbarmodetext.IText = bar_text[mode_tile].text;
 	wbarmodetext.FrontPen = *wbarfptm;
 	wbarmodetext.BackPen = *wbarbptm;
 
@@ -933,7 +937,7 @@ short update_wbar(void) {
 	barbdata[9] = 1;
 
 	mapws();
-	wbarmodetext.IText = padwbartext(maptm());
+	wbarmodetext.IText = maptm();
 
 	(void)snprintf((char *)awintitle, TT_MAX_LENGTH, "%s", active_win->Title);
 
@@ -1037,7 +1041,7 @@ static inline unsigned char * maptm(void)
 		return bar_text[mode_tile].text;
 	}
 	if (*current_layout == 1) {
-		return bar_text[mode_grid].text;
+		return (bar_text[mode_grid].text);
 	}
 	if (*current_layout == 2) {
 		return bar_text[mode_dwindle].text;
