@@ -11,6 +11,7 @@ static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
+static short alloc_bar_text(unsigned char **b, const char * s);
 
 static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
@@ -162,7 +163,7 @@ static struct NewBroker MyBroker =
 
 _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
-	short rc = FALSE;
+	short rc = TRUE;
 	size_t keyarrsize;
 	size_t optarrsize;
 	struct Popkeys* keys;
@@ -264,43 +265,43 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					hidewbar |= BAR_HIDE_ON;
 					break;
 				case BAR_TEXT_WS0_ID:
-					(void)snprintf((char *)bar_text.ws_zero, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[ws_zero].text, tt_optvalue);
 					break;
 				case BAR_TEXT_WS1_ID:
-					(void)snprintf((char *)bar_text.ws_one, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[ws_one].text, tt_optvalue);
 					break;
 				case BAR_TEXT_WS2_ID:
-					(void)snprintf((char *)bar_text.ws_two, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[ws_two].text, tt_optvalue);
 					break;
 				case BAR_TEXT_WS3_ID:
-					(void)snprintf((char *)bar_text.ws_three, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[ws_three].text, tt_optvalue);
 					break;
 				case BAR_TEXT_WS4_ID:
-					(void)snprintf((char *)bar_text.ws_four, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[ws_four].text, tt_optvalue);
 					break;
 				case BAR_TEXT_WS5_ID:
-					(void)snprintf((char *)bar_text.ws_five, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[ws_five].text, tt_optvalue);
 					break;
 				case BAR_TEXT_TILE_ID:
-					(void)snprintf((char *)bar_text.mode_tile, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[mode_tile].text, tt_optvalue);
 					break;
 				case BAR_TEXT_GRID_ID:
-					(void)snprintf((char *)bar_text.mode_grid, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[mode_grid].text, tt_optvalue);
 					break;
 				case BAR_TEXT_DWINDLE_ID:
-					(void)snprintf((char *)bar_text.mode_dwindle, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[mode_dwindle].text, tt_optvalue);
 					break;
 				case BAR_TEXT_SPIRAL_ID:
-					(void)snprintf((char *)bar_text.mode_spiral, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[mode_spiral].text, tt_optvalue);
 					break;
 				case BAR_TEXT_SEP_1_ID:
-					(void)snprintf((char *)bar_text.sep_one, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[sep_one].text, tt_optvalue);
 					break;
 				case BAR_TEXT_SEP_2_ID:
-					(void)snprintf((char *)bar_text.sep_two, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[sep_two].text, tt_optvalue);
 					break;
 				case BAR_TEXT_SPACE_ID:
-					(void)snprintf((char *)bar_text.space, TT_MAX_LENGTH, "%s", tt_optvalue);
+					rc = alloc_bar_text(&bar_text[space].text, tt_optvalue);
 					break;
 				case AUTO_ID:
 					autotile = TRUE;
@@ -322,6 +323,27 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					break;
 			}
 		}
+	}
+
+	if (bar_on) {
+		rc = alloc_bar_text(&bar_text[ws_zero].text, DEF_BAR_TEXT_WS_ZERO);
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_one].text, DEF_BAR_TEXT_WS_ONE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_two].text, DEF_BAR_TEXT_WS_TWO) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_three].text, DEF_BAR_TEXT_WS_THREE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_four].text, DEF_BAR_TEXT_WS_FOUR) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_five].text, DEF_BAR_TEXT_WS_FIVE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_tile].text, DEF_BAR_TEXT_MODE_TILE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_grid].text, DEF_BAR_TEXT_MODE_GRID) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_dwindle].text, DEF_BAR_TEXT_MODE_DWINDLE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_spiral].text, DEF_BAR_TEXT_MODE_SPIRAL) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[sep_one].text, DEF_BAR_TEXT_SEP_ONE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[sep_two].text, DEF_BAR_TEXT_SEP_TWO) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[space].text, DEF_BAR_TEXT_SPACE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_text(&bar_text[err].text, DEF_BAR_TEXT_ERR) : FALSE;
+	}
+
+	if (rc == FALSE) {
+		return rc;
 	}
 
 	if (exclude_wtype) {
@@ -567,4 +589,17 @@ static void free_opts(void)
 			free(incls->strings[i]);
 		}
 	}
+}
+
+static short alloc_bar_text(unsigned char **b, const char * s)
+{
+	unsigned char nil = '\0';
+	if (**b == nil) {
+		if ((*b = malloc((strnlen(s, TT_MAX_LENGTH)) * sizeof(unsigned char))) == NULL) {
+			return FALSE;
+		}
+		(void)snprintf((char *)*b, TT_MAX_LENGTH, "%s", s);
+	}
+
+	return TRUE;
 }

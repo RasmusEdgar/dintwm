@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 //VERCUT
-#define DINTWM_VERSION "v0.2"
+#define DINTWM_VERSION "v0.2-1-g521e38c"
 //VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
@@ -294,21 +294,28 @@ extern int gap_change_value;
 			sep_two[TT_MAX_LENGTH],
 			err[TT_MAX_LENGTH];
 } Bar_Text;*/
+
+enum bar_text_items {
+	ws_zero,
+	ws_one,
+	ws_two,
+	ws_three,
+	ws_four,
+	ws_five,
+	ws_wb,
+	mode_tile,
+	mode_grid,
+	mode_dwindle,
+	mode_spiral,
+	sep_one,
+	sep_two,
+	space,
+	err,
+	TEXT_LAST
+};
+
 typedef struct {
-	unsigned char   * ws_zero,
-			* ws_one,
-			* ws_two,
-			* ws_three,
-			* ws_four,
-			* ws_five,
-			* ws_wb,
-			* space,
-			* mode_tile,
-			* mode_grid,
-			* mode_dwindle,
-			* mode_spiral,
-			* sep_one,
-			* sep_two,
-			* err;
+	unsigned char * text;
 } Bar_Text;
-Bar_Text bar_text;
+
+Bar_Text bar_text[TEXT_LAST];

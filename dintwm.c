@@ -214,9 +214,9 @@ int main(int argc, char **argv)
 
 	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
 	clearextdata();
-	freebartext();
 	if (bar_on) {
 		CloseWindow(wbw);
+		freebartext();
 	}
 	return dint_exit_state;
 }
@@ -243,35 +243,7 @@ static short initdefaults(void)
 	wbarfpseptwo[0] = DEF_BAR_FPSEP_TWO_COL;
 	wbarbpseptwo[0] = DEF_BAR_BPSEP_TWO_COL;
 
-	if ((bar_text.ws_zero = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.ws_one = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.ws_two = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.ws_three = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.ws_four = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.ws_five = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.mode_tile = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.mode_grid = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.mode_dwindle = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.mode_spiral = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.sep_one = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.sep_two = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.space = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-	if ((bar_text.err = (unsigned char *)malloc(TT_MAX_LENGTH)) == NULL) { return FALSE; }
-
-	(void)snprintf((char *)bar_text.ws_zero, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_WS_ZERO);
-	(void)snprintf((char *)bar_text.ws_one, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_WS_ONE);
-	(void)snprintf((char *)bar_text.ws_two, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_WS_TWO);
-	(void)snprintf((char *)bar_text.ws_three, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_WS_THREE);
-	(void)snprintf((char *)bar_text.ws_four, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_WS_FOUR);
-	(void)snprintf((char *)bar_text.ws_five, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_WS_FIVE);
-	(void)snprintf((char *)bar_text.mode_tile, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_MODE_TILE);
-	(void)snprintf((char *)bar_text.mode_grid, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_MODE_GRID);
-	(void)snprintf((char *)bar_text.mode_dwindle, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_MODE_DWINDLE);
-	(void)snprintf((char *)bar_text.mode_spiral, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_MODE_SPIRAL);
-	(void)snprintf((char *)bar_text.sep_one, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_SEP_ONE);
-	(void)snprintf((char *)bar_text.sep_two, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_SEP_TWO);
-	(void)snprintf((char *)bar_text.space, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_SPACE);
-	(void)snprintf((char *)bar_text.err, TT_MAX_LENGTH, "%s", DEF_BAR_TEXT_ERR);
+	(void)memset(bar_text, '\0', sizeof(bar_text));
 
 	bar_on = FALSE;
 	vws_on = FALSE;
@@ -283,20 +255,10 @@ static short initdefaults(void)
 
 static void freebartext(void)
 {
-	free(bar_text.ws_zero);
-	free(bar_text.ws_one);
-	free(bar_text.ws_two);
-	free(bar_text.ws_three);
-	free(bar_text.ws_four);
-	free(bar_text.ws_five);
-	free(bar_text.mode_tile);
-	free(bar_text.mode_grid);
-	free(bar_text.mode_dwindle);
-	free(bar_text.mode_spiral);
-	free(bar_text.sep_one);
-	free(bar_text.sep_two);
-	free(bar_text.space);
-	free(bar_text.err);
+	int i;
+	for (i = 0; i < TEXT_LAST; ++i) {
+		free(&bar_text[i].text);
+	}
 }
 
 static short printusage(void)
@@ -832,7 +794,8 @@ short movetows(const Arg * arg) {
 static inline unsigned char * padwbartext(unsigned char * s)
 {
 	unsigned char * tmp = s;
-	(void)snprintf((char *)s, (sizeof(s) + sizeof(bar_text.space)), "%s%s", tmp, bar_text.space);
+	wbarmodetext.IText = '\0';
+	(void)snprintf((char *)s, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
 	return s;
 }
 
@@ -867,39 +830,39 @@ short init_wbar(void) {
 
 	if (vws_on) {
 		wstext_five = wbartext;
-		wstext_five.IText = padwbartext(bar_text.ws_five);
+		wstext_five.IText = padwbartext(bar_text[ws_five].text);
 
 		wstext_four = wbartext;
-		wstext_four.IText = padwbartext(bar_text.ws_four);
+		wstext_four.IText = padwbartext(bar_text[ws_four].text);
 
 		wstext_three = wbartext;
-		wstext_three.IText = padwbartext(bar_text.ws_three);
+		wstext_three.IText = padwbartext(bar_text[ws_three].text);
 
 		wstext_two = wbartext;
-		wstext_two.IText = padwbartext(bar_text.ws_two);
+		wstext_two.IText = padwbartext(bar_text[ws_two].text);
 
 		wstext_one = wbartext;
-		wstext_one.IText = padwbartext(bar_text.ws_one);
+		wstext_one.IText = padwbartext(bar_text[ws_one].text);
 
 		wstext_zero = wbartext;
-		wstext_zero.IText = padwbartext(bar_text.ws_zero);
+		wstext_zero.IText = padwbartext(bar_text[ws_zero].text);
 	} else {
 		wstext_zero = wbartext;
-		wstext_zero.IText = padwbartext(bar_text.ws_wb);
+		wstext_zero.IText = padwbartext(bar_text[ws_wb].text);
 	}
 
 	wbarsep_one = wbartext;
-	wbarsep_one.IText = padwbartext(bar_text.sep_one);
+	wbarsep_one.IText = padwbartext(bar_text[sep_one].text);
 	wbarsep_one.FrontPen = *wbarfpsepone;
 	wbarsep_one.BackPen = *wbarbpsepone;
 
 	wbarsep_two = wbartext;
-	wbarsep_two.IText = padwbartext(bar_text.sep_two);
+	wbarsep_two.IText = padwbartext(bar_text[sep_two].text);
 	wbarsep_two.FrontPen = *wbarfpseptwo;
 	wbarsep_two.BackPen = *wbarbpseptwo;
 
 	wbarmodetext = wbartext;
-	wbarmodetext.IText = padwbartext(bar_text.mode_tile);
+	wbarmodetext.IText = padwbartext(bar_text[mode_tile].text);
 	wbarmodetext.FrontPen = *wbarfptm;
 	wbarmodetext.BackPen = *wbarbptm;
 
@@ -970,7 +933,7 @@ short update_wbar(void) {
 	barbdata[9] = 1;
 
 	mapws();
-	wbarmodetext.IText = maptm();
+	wbarmodetext.IText = padwbartext(maptm());
 
 	(void)snprintf((char *)awintitle, TT_MAX_LENGTH, "%s", active_win->Title);
 
@@ -1071,19 +1034,19 @@ static inline void mapws(void)
 static inline unsigned char * maptm(void)
 {
 	if (*current_layout == 0) {
-		return bar_text.mode_tile;
+		return bar_text[mode_tile].text;
 	}
 	if (*current_layout == 1) {
-		return bar_text.mode_grid;
+		return bar_text[mode_grid].text;
 	}
 	if (*current_layout == 2) {
-		return bar_text.mode_dwindle;
+		return bar_text[mode_dwindle].text;
 	}
 	if (*current_layout == 3) {
-		return bar_text.mode_spiral;
+		return bar_text[mode_spiral].text;
 	}
 
-	return bar_text.err;
+	return bar_text[err].text;
 }
 
 short info_window(unsigned char * info_text)
