@@ -431,6 +431,8 @@ short int commo(void)
 			static short first_run = TRUE;
 			static struct Window *awin_comp;
 			static struct Window *firstwin_comp;
+			static struct Window *nwin_comp;
+			static struct Window *nnwin_comp;
 
 			if (bar_on) {
 				if (wbarheight == 0) {
@@ -469,7 +471,8 @@ short int commo(void)
 				if (tile_off == FALSE && autotile == TRUE) {
 					short act = FALSE;
 					// If previous active window is no longer active, refresh bar
-					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) != (unsigned long)WFLG_WINDOWACTIVE) {
+					if (awin_comp == NULL || (awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
+						printf("Trig new act\n");
 						getactive();
 						awin_comp = active_win;
 						if (bar_on) {
@@ -487,9 +490,20 @@ short int commo(void)
 						}
 						act = TRUE;
 					}
+					// If last window disappears retile and resize bar
+					if (nwin_comp->NextWindow != nnwin_comp) {
+						if (bar_on) {
+							wbarcwb();
+						}
+						act = TRUE;
+					}
 					if (act) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						firstwin_comp = screen->FirstWindow;
+						if (screen->FirstWindow->NextWindow) {
+							nwin_comp = screen->FirstWindow->NextWindow;
+							nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
+						}
 					}
 					Delay(auto_interval);
 				} else {
