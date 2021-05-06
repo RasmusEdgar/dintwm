@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 //VERCUT
-#define DINTWM_VERSION "v0.2-3-g775aecc"
+#define DINTWM_VERSION "VERGIT"
 //VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
@@ -160,18 +160,18 @@
 #define WBAR_HEIGHT 20
 #define BAR_HIDE_ON (1U << 0)
 #define BAR_HIDE_TOGGLE (1U << 1)
-#define DEF_BAR_FPWS_COL 1U // Default bar workspace frontpen color
-#define DEF_BAR_BPWS_COL 3U // Default bar workspace backpen color
-#define DEF_BAR_FPCURW_COL 6U // Default bar active workspace frontpen color
-#define DEF_BAR_BPCURW_COL 3U // Default bar workspace backpen color
-#define DEF_BAR_FPTM_COL 1U // Default bar tilemode frontpen color
-#define DEF_BAR_BPTM_COL 3U // Default bar tilemode backpen color
-#define DEF_BAR_FPTI_COL 1U // Default bar title frontpen color
-#define DEF_BAR_BPTI_COL 3U // Default bar title backpen color
-#define DEF_BAR_FPSEP_ONE_COL 1U // Default bar title frontpen color
-#define DEF_BAR_BPSEP_ONE_COL 3U // Default bar title frontpen color
-#define DEF_BAR_FPSEP_TWO_COL 1U // Default bar title backpen color
-#define DEF_BAR_BPSEP_TWO_COL 3U // Default bar title backpen color
+#define DEF_BAR_FP_WS_COL 1U // Default bar workspace frontpen color
+#define DEF_BAR_BP_WS_COL 3U // Default bar workspace backpen color
+#define DEF_BAR_FP_CUR_COL 6U // Default bar active workspace frontpen color
+#define DEF_BAR_BP_CUR_COL 3U // Default bar workspace backpen color
+#define DEF_BAR_FP_TM_COL 1U // Default bar tilemode frontpen color
+#define DEF_BAR_BP_TM_COL 3U // Default bar tilemode backpen color
+#define DEF_BAR_FP_TI_COL 1U // Default bar title frontpen color
+#define DEF_BAR_BP_TI_COL 3U // Default bar title backpen color
+#define DEF_BAR_FP_SEP_ONE_COL 1U // Default bar title frontpen color
+#define DEF_BAR_BP_SEP_ONE_COL 3U // Default bar title frontpen color
+#define DEF_BAR_FP_SEP_TWO_COL 1U // Default bar title backpen color
+#define DEF_BAR_BP_SEP_TWO_COL 3U // Default bar title backpen color
 #define DEF_BAR_BG_COL 3U // Default bar bg color
 
 typedef union {
@@ -226,19 +226,6 @@ short bar_on;
 short vws_on;
 unsigned int hidewbar;
 int wbarheight;
-unsigned char wbarbgcolor[3];
-unsigned char wbarfpws[3];
-unsigned char wbarbpws[3];
-unsigned char wbarfpwscur[3];
-unsigned char wbarbpwscur[3];
-unsigned char wbarfptm[3];
-unsigned char wbarbptm[3];
-unsigned char wbarfpti[3];
-unsigned char wbarbpti[3];
-unsigned char wbarfpsepone[3];
-unsigned char wbarbpsepone[3];
-unsigned char wbarfpseptwo[3];
-unsigned char wbarbpseptwo[3];
 
 // commodity headers
 short int commo(void);
@@ -277,25 +264,8 @@ extern Opts defopts[];
 extern int fact;
 extern int gap_change_value;
 
-/*typedef struct {
-	unsigned char ws_zero[TT_MAX_LENGTH],
-			ws_one[TT_MAX_LENGTH],
-			ws_two[TT_MAX_LENGTH],
-			ws_three[TT_MAX_LENGTH],
-			ws_four[TT_MAX_LENGTH],
-			ws_five[TT_MAX_LENGTH],
-			ws_wb[TT_MAX_LENGTH],
-			space[TT_MAX_LENGTH],
-			mode_tile[TT_MAX_LENGTH],
-			mode_grid[TT_MAX_LENGTH],
-			mode_dwindle[TT_MAX_LENGTH],
-			mode_spiral[TT_MAX_LENGTH],
-			sep_one[TT_MAX_LENGTH],
-			sep_two[TT_MAX_LENGTH],
-			err[TT_MAX_LENGTH];
-} Bar_Text;*/
-
-enum bar_text_items {
+enum bar_texts {
+	// text items
 	ws_zero,
 	ws_one,
 	ws_two,
@@ -311,11 +281,33 @@ enum bar_text_items {
 	sep_two,
 	space,
 	err,
-	TEXT_LAST
+	BAR_LAST_TEXT
+};
+
+enum bar_colors {
+	bg,
+	fp_ws,
+	bp_ws,
+	fp_cur,
+	bp_cur,
+	fp_tm,
+	bp_tm,
+	fp_ti,
+	bp_ti,
+	fp_sep_one,
+	bp_sep_one,
+	fp_sep_two,
+	bp_sep_two,
+	BAR_LAST_COLOR
 };
 
 typedef struct {
 	unsigned char * text;
 } Bar_Text;
 
-Bar_Text bar_text[TEXT_LAST];
+typedef struct {
+	unsigned char color[1];
+} Bar_Color;
+
+Bar_Text bar_text[BAR_LAST_TEXT];
+Bar_Color bar_color[BAR_LAST_COLOR];

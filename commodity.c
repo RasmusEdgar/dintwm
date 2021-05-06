@@ -11,7 +11,7 @@ static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
-static short alloc_bar_text(unsigned char **b, const char * s);
+static short alloc_bar_item(unsigned char **b, const char * s);
 
 static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
@@ -223,85 +223,85 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 					bar_on = TRUE;
 					break;
 				case BAR_BG_COL_ID:
-					(void)snprintf((char *)wbarbgcolor, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bg].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_FPW_COL_ID:
-					(void)snprintf((char *)wbarfpws, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[fp_ws].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_BPW_COL_ID:
-					(void)snprintf((char *)wbarbpws, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bp_ws].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_FPCURW_COL_ID:
-					(void)snprintf((char *)wbarfpwscur, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[fp_cur].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_BPCURW_COL_ID:
-					(void)snprintf((char *)wbarbpwscur, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bp_cur].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_FPTM_COL_ID:
-					(void)snprintf((char *)wbarfptm, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[fp_tm].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_BPTM_COL_ID:
-					(void)snprintf((char *)wbarbptm, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bp_tm].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_FPTI_COL_ID:
-					(void)snprintf((char *)wbarfpti, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[fp_ti].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_BPTI_COL_ID:
-					(void)snprintf((char *)wbarbpti, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bp_ti].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_FPSEP_ONE_COL_ID:
-					(void)snprintf((char *)wbarfpsepone, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[fp_sep_one].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_BPSEP_ONE_COL_ID:
-					(void)snprintf((char *)wbarbpsepone, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bp_sep_one].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_FPSEP_TWO_COL_ID:
-					(void)snprintf((char *)wbarfpseptwo, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[fp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_BPSEP_TWO_COL_ID:
-					(void)snprintf((char *)wbarbpseptwo, BAR_COLOR_LENGTH, "%s", tt_optvalue);
+					bar_color[bp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
 					break;
 				case BAR_HIDE_EMPTY_ID:
 					hidewbar |= BAR_HIDE_ON;
 					break;
 				case BAR_TEXT_WS0_ID:
-					rc = alloc_bar_text(&bar_text[ws_zero].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_zero].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS1_ID:
-					rc = alloc_bar_text(&bar_text[ws_one].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_one].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS2_ID:
-					rc = alloc_bar_text(&bar_text[ws_two].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_two].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS3_ID:
-					rc = alloc_bar_text(&bar_text[ws_three].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_three].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS4_ID:
-					rc = alloc_bar_text(&bar_text[ws_four].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_four].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS5_ID:
-					rc = alloc_bar_text(&bar_text[ws_five].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_five].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_TILE_ID:
-					rc = alloc_bar_text(&bar_text[mode_tile].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_tile].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_GRID_ID:
-					rc = alloc_bar_text(&bar_text[mode_grid].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_grid].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_DWINDLE_ID:
-					rc = alloc_bar_text(&bar_text[mode_dwindle].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_dwindle].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SPIRAL_ID:
-					rc = alloc_bar_text(&bar_text[mode_spiral].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_spiral].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SEP_1_ID:
-					rc = alloc_bar_text(&bar_text[sep_one].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[sep_one].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SEP_2_ID:
-					rc = alloc_bar_text(&bar_text[sep_two].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[sep_two].text, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SPACE_ID:
-					rc = alloc_bar_text(&bar_text[space].text, tt_optvalue);
+					rc = rc == TRUE ? alloc_bar_item(&bar_text[space].text, tt_optvalue) : FALSE;
 					break;
 				case AUTO_ID:
 					autotile = TRUE;
@@ -325,21 +325,38 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 		}
 	}
 
-	if (bar_on) {
-		rc = alloc_bar_text(&bar_text[ws_zero].text, DEF_BAR_TEXT_WS_ZERO);
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_one].text, DEF_BAR_TEXT_WS_ONE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_two].text, DEF_BAR_TEXT_WS_TWO) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_three].text, DEF_BAR_TEXT_WS_THREE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_four].text, DEF_BAR_TEXT_WS_FOUR) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[ws_five].text, DEF_BAR_TEXT_WS_FIVE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_tile].text, DEF_BAR_TEXT_MODE_TILE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_grid].text, DEF_BAR_TEXT_MODE_GRID) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_dwindle].text, DEF_BAR_TEXT_MODE_DWINDLE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[mode_spiral].text, DEF_BAR_TEXT_MODE_SPIRAL) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[sep_one].text, DEF_BAR_TEXT_SEP_ONE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[sep_two].text, DEF_BAR_TEXT_SEP_TWO) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[space].text, DEF_BAR_TEXT_SPACE) : FALSE;
-		rc = rc == TRUE ? alloc_bar_text(&bar_text[err].text, DEF_BAR_TEXT_ERR) : FALSE;
+	if (rc == TRUE && bar_on == TRUE) {
+		// Bar text allocation
+		rc = alloc_bar_item(&bar_text[ws_zero].text, DEF_BAR_TEXT_WS_ZERO);
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_one].text, DEF_BAR_TEXT_WS_ONE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_two].text, DEF_BAR_TEXT_WS_TWO) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_three].text, DEF_BAR_TEXT_WS_THREE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_four].text, DEF_BAR_TEXT_WS_FOUR) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[ws_five].text, DEF_BAR_TEXT_WS_FIVE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_tile].text, DEF_BAR_TEXT_MODE_TILE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_grid].text, DEF_BAR_TEXT_MODE_GRID) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_dwindle].text, DEF_BAR_TEXT_MODE_DWINDLE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[mode_spiral].text, DEF_BAR_TEXT_MODE_SPIRAL) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[sep_one].text, DEF_BAR_TEXT_SEP_ONE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[sep_two].text, DEF_BAR_TEXT_SEP_TWO) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[space].text, DEF_BAR_TEXT_SPACE) : FALSE;
+		rc = rc == TRUE ? alloc_bar_item(&bar_text[err].text, DEF_BAR_TEXT_ERR) : FALSE;
+
+		// Bar color assignment
+		unsigned char nil = '\0';
+		if (*bar_color[bg].color == nil) { bar_color[bg].color[0] = DEF_BAR_BG_COL; }
+		if (*bar_color[fp_ws].color == nil) { bar_color[fp_ws].color[0] = DEF_BAR_FP_WS_COL; }
+		if (*bar_color[bp_ws].color == nil) { bar_color[bp_ws].color[0] = DEF_BAR_BP_WS_COL; }
+		if (*bar_color[fp_cur].color == nil) { bar_color[fp_cur].color[0] = DEF_BAR_FP_CUR_COL; }
+		if (*bar_color[bp_cur].color == nil) { bar_color[bp_cur].color[0] = DEF_BAR_BP_CUR_COL; }
+		if (*bar_color[fp_tm].color == nil) { bar_color[fp_tm].color[0] = DEF_BAR_FP_TM_COL; }
+		if (*bar_color[bp_tm].color == nil) { bar_color[bp_tm].color[0] = DEF_BAR_BP_TM_COL; }
+		if (*bar_color[fp_ti].color == nil) { bar_color[fp_ti].color[0] = DEF_BAR_FP_TI_COL; }
+		if (*bar_color[bp_ti].color == nil) { bar_color[bp_ti].color[0] = DEF_BAR_BP_TI_COL; }
+		if (*bar_color[fp_sep_one].color == nil) { bar_color[fp_sep_one].color[0]  = DEF_BAR_FP_SEP_ONE_COL; }
+		if (*bar_color[bp_sep_one].color == nil) { bar_color[bp_sep_one].color[0] = DEF_BAR_BP_SEP_ONE_COL; }
+		if (*bar_color[fp_sep_two].color == nil) { bar_color[fp_sep_two].color[0] = DEF_BAR_FP_SEP_TWO_COL; }
+		if (*bar_color[bp_sep_two].color == nil) { bar_color[bp_sep_two].color[0] = DEF_BAR_BP_SEP_TWO_COL; }
 	}
 
 	if (rc == FALSE) {
@@ -605,7 +622,7 @@ static void free_opts(void)
 	}
 }
 
-static short alloc_bar_text(unsigned char **b, const char * s)
+static short alloc_bar_item(unsigned char **b, const char * s)
 {
 	unsigned char nil = '\0';
 	if (**b == nil) {
