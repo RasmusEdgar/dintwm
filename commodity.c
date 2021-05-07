@@ -489,7 +489,6 @@ short int commo(void)
 					short act = FALSE;
 					// If previous active window is no longer active, refresh bar
 					if (awin_comp == NULL || (awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
-						printf("Trig new act\n");
 						getactive();
 						awin_comp = active_win;
 						if (bar_on) {
