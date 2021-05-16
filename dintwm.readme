@@ -17,6 +17,12 @@ DintWM is a tiling window manager for AmigaOS 3.1.x.
 Changelog
 ---------
 
+* v0.3
+  - Make text items in bar configurable
+  - Make bar color items behave internally as text items
+  - Fix bug when window on current ws is closed after moving other window to
+    other ws
+
 * v0.2
   - Add TT VWS_ON to enable virtual workspaces
   - Add INFO_OFF TT to disable info boxes
@@ -94,10 +100,8 @@ dintwm -h
 TODO
 ----
 
-* Make static bar text fields configurable
 * Implement dedicated dintwm screen
-* Builtin dmenu like launcher
-* Ensure AROS compatibility
+* Ensure AROS compatibility (works without bar)
 
 ------------------------
 Documentation and Source

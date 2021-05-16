@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 //VERCUT
-#define DINTWM_VERSION "v0.2-5-g6df33fb"
+#define DINTWM_VERSION "VERGIT"
 //VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))

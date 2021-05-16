@@ -144,7 +144,7 @@ Since virtual workspaces depend on moving windows to be the back of the window s
 
 ### Dintwm bar
 
-The bar is at the moment only available in the bottom of screen. It shows tilemode, active window title and indicates current active workspace. 
+The bar is at the moment only available in the bottom of the tiling area. It shows tilemode, active window title and indicates current active workspace. 
 
 ### Default ToolTypes
 
@@ -217,10 +217,10 @@ Options are:
 - ~~Add dintwm bar~~
 - ~~Stop commodity with hotkey~~
 - ~~Use github actions to build and package dintwm release~~
-- Make static bar text fields configurable
+- ~~Make static bar text fields configurable~~
 - Implement dedicated dintwm screen
-- Builtin dmenu like launcher
-- Ensure AROS compatibility
+- ~~Builtin dmenu like launcher~~ *Will create new tool instead*
+- Ensure AROS compatibility (works without bar atm)
 
 ## Note on licensing
 

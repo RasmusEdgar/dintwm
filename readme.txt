@@ -117,7 +117,7 @@ Tooltype Options Table
 
   BAR_BPW_COL           3                                         Dintwm bar backpen color                                                                  BAR
 
-  BAR_FPCURW_COL        139                                       Dintwm bar active workspace color frontpen                                                BAR
+  BAR_FPCURW_COL        6                                         Dintwm bar active workspace color frontpen                                                BAR
 
   BAR_BPCURW_COL        3                                         Dintwm bar active workspace color backpen                                                 BAR
 
@@ -136,6 +136,30 @@ Tooltype Options Table
   BAR_FPSEP_TWO_COL     1                                         Dintwm bar seperator two frontpen color                                                   BAR
 
   BAR_BPSEP_TWO_COL     3                                         Dintwm bar seperator two backpen color                                                    BAR
+
+  BAR_TEXT_WS0          WS0                                       Dintwm bar text for ws0                                                                   BAR
+
+  BAR_TEXT_WS1          WS1                                       Dintwm bar text for ws1                                                                   BAR
+
+  BAR_TEXT_WS2          WS2                                       Dintwm bar text for ws2                                                                   BAR
+
+  BAR_TEXT_WS3          WS3                                       Dintwm bar text for ws3                                                                   BAR
+
+  BAR_TEXT_WS4          WS4                                       Dintwm bar text for ws4                                                                   BAR
+
+  BAR_TEXT_WS5          WS5                                       Dintwm bar text for ws5                                                                   BAR
+
+  BAR_TEXT_TILE         Tile                                      Dintwm bar text for tile mode                                                             BAR
+
+  BAR_TEXT_GRID         Grid                                      Dintwm bar text for grid mode                                                             BAR
+
+  BAR_TEXT_DWINDLE      FibD                                      Dintwm bar text for dwindle mode                                                          BAR
+
+  BAR_TEXT_SPIRAL       FibS                                      Dintwm bar text for spiral mode                                                           BAR
+
+  BAR_TEXT_SEP_1        |                                         Dintwm bar text for sepator one                                                           BAR
+
+  BAR_TEXT_SEP_2        |                                         Dintwm bar text for sepator one                                                           BAR
 
   BAR_HIDE_EMPTY        empty                                     Hide bar if workspace is empty                                                            BAR
 
