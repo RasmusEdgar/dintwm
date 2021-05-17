@@ -24,6 +24,8 @@ static inline void mapws(void);
 static inline unsigned char * maptm(void);
 static inline unsigned char * padwbartext(unsigned char * s);
 static short int wbartextwidth(int lei, unsigned char * it);
+static short initdefaults(void);
+static void freebartext(void);
 
 int main(int argc, char **argv)
 {
@@ -33,29 +35,13 @@ int main(int argc, char **argv)
 	static int dint_exit_state = EXIT_SUCCESS;
 	static int dint_fail_state = EXIT_SUCCESS;
 	static int not_known;
+	short init_val = TRUE;
 
-	fact = TILE_FACT_DEF;
-	hidewbar = 0U;
-	current_ws = 0U;
-	current_ws |= WS_0;
-	backdropped = FALSE;
-	tile_off = FALSE;
-	wbarbgcolor[0] = DEF_BAR_BG_COL;
-	wbarfpws[0] = DEF_BAR_FPWS_COL;
-	wbarbpws[0] = DEF_BAR_BPWS_COL;
-	wbarfpwscur[0] = DEF_BAR_FPCURW_COL;
-	wbarbpwscur[0] = DEF_BAR_BPCURW_COL;
-	wbarfptm[0] = DEF_BAR_FPTM_COL;
-	wbarbptm[0] = DEF_BAR_BPTM_COL;
-	wbarfpti[0] = DEF_BAR_FPTI_COL;
-	wbarbpti[0] = DEF_BAR_BPTI_COL;
-	wbarfpsepone[0] = DEF_BAR_FPSEP_ONE_COL;
-	wbarbpsepone[0] = DEF_BAR_BPSEP_ONE_COL;
-	wbarfpseptwo[0] = DEF_BAR_FPSEP_TWO_COL;
-	wbarbpseptwo[0] = DEF_BAR_BPSEP_TWO_COL;
-	bar_on = FALSE;
-	vws_on = FALSE;
-	wbarheight = 0;
+	init_val = initdefaults();
+	if (init_val == FALSE) {
+		freebartext();
+		return EXIT_FAILURE;
+	}
 
 	lockbasescreen(&ilock, &screen);
 	sheight = screen->Height;
@@ -230,8 +216,40 @@ int main(int argc, char **argv)
 	clearextdata();
 	if (bar_on) {
 		CloseWindow(wbw);
+		freebartext();
 	}
 	return dint_exit_state;
+}
+
+static short initdefaults(void)
+{
+	unsigned char nil = '\0';
+	fact = TILE_FACT_DEF;
+	hidewbar = 0U;
+	current_ws = 0U;
+	current_ws |= WS_0;
+	backdropped = FALSE;
+	tile_off = FALSE;
+
+	(void)memset(bar_text, nil, sizeof(bar_text));
+	for (int i = 0; i < BAR_LAST_COLOR; ++i) {
+		bar_color[i].color[0] = nil;
+	}
+
+	bar_on = FALSE;
+	vws_on = FALSE;
+	wbarheight = 0;
+
+	return TRUE;
+}
+
+
+static void freebartext(void)
+{
+	int i;
+	for (i = 0; i < BAR_LAST_TEXT; ++i) {
+		free(&bar_text[i].text);
+	}
 }
 
 static short printusage(void)
@@ -767,7 +785,7 @@ short movetows(const Arg * arg) {
 static inline unsigned char * padwbartext(unsigned char * s)
 {
 	unsigned char * tmp = s;
-	(void)snprintf((char *)s, (sizeof(s) + sizeof(wbarspace)), "%s%s", tmp, wbarspace);
+	(void)snprintf((char *)s, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
 	return s;
 }
 
@@ -802,45 +820,50 @@ short init_wbar(void) {
 
 	if (vws_on) {
 		wstext_five = wbartext;
-		wstext_five.IText = padwbartext(ws_five);
+		wstext_five.IText = padwbartext(bar_text[ws_five].text);
 
 		wstext_four = wbartext;
-		wstext_four.IText = padwbartext(ws_four);
+		wstext_four.IText = padwbartext(bar_text[ws_four].text);
 
 		wstext_three = wbartext;
-		wstext_three.IText = padwbartext(ws_three);
+		wstext_three.IText = padwbartext(bar_text[ws_three].text);
 
 		wstext_two = wbartext;
-		wstext_two.IText = padwbartext(ws_two);
+		wstext_two.IText = padwbartext(bar_text[ws_two].text);
 
 		wstext_one = wbartext;
-		wstext_one.IText = padwbartext(ws_one);
+		wstext_one.IText = padwbartext(bar_text[ws_one].text);
 
 		wstext_zero = wbartext;
-		wstext_zero.IText = padwbartext(ws_zero);
+		wstext_zero.IText = padwbartext(bar_text[ws_zero].text);
 	} else {
 		wstext_zero = wbartext;
-		wstext_zero.IText = padwbartext(ws_wb);
+		wstext_zero.IText = padwbartext(bar_text[ws_wb].text);
 	}
 
 	wbarsep_one = wbartext;
-	wbarsep_one.IText = padwbartext(wbar_sep_one);
-	wbarsep_one.FrontPen = *wbarfpsepone;
-	wbarsep_one.BackPen = *wbarbpsepone;
+	wbarsep_one.IText = padwbartext(bar_text[sep_one].text);
+	wbarsep_one.FrontPen = *bar_color[fp_sep_one].color;
+	wbarsep_one.BackPen = *bar_color[bp_sep_one].color;
 
 	wbarsep_two = wbartext;
-	wbarsep_two.IText = padwbartext(wbar_sep_two);
-	wbarsep_two.FrontPen = *wbarfpseptwo;
-	wbarsep_two.BackPen = *wbarbpseptwo;
+	wbarsep_two.IText = padwbartext(bar_text[sep_two].text);
+	wbarsep_two.FrontPen = *bar_color[fp_sep_two].color;
+	wbarsep_two.BackPen = *bar_color[bp_sep_two].color;
+
+	bar_text[mode_tile].text = padwbartext(bar_text[mode_tile].text);
+	bar_text[mode_grid].text = padwbartext(bar_text[mode_grid].text);
+	bar_text[mode_dwindle].text = padwbartext(bar_text[mode_dwindle].text);
+	bar_text[mode_spiral].text = padwbartext(bar_text[mode_grid].text);
 
 	wbarmodetext = wbartext;
-	wbarmodetext.IText = padwbartext(mode_tile);
-	wbarmodetext.FrontPen = *wbarfptm;
-	wbarmodetext.BackPen = *wbarbptm;
+	wbarmodetext.IText = bar_text[mode_tile].text;
+	wbarmodetext.FrontPen = *bar_color[fp_tm].color;
+	wbarmodetext.BackPen = *bar_color[bp_tm].color;
 
 	wbarwtitle = wbartext;
-	wbarwtitle.FrontPen = *wbarfpti;
-	wbarwtitle.BackPen = *wbarbpti;
+	wbarwtitle.FrontPen = *bar_color[fp_ti].color;
+	wbarwtitle.BackPen = *bar_color[bp_ti].color;
 
 	if (vws_on) {
 		wstext_zero.NextText = &wstext_one;
@@ -913,7 +936,7 @@ short update_wbar(void) {
 
 	barb.XY = barbdata;
 
-	SetRast(wbw->RPort, *wbarbgcolor);
+	SetRast(wbw->RPort, *bar_color[bg].color);
 	DrawBorder(wbw->RPort, &barb, 0, 0);
 	PrintIText(wbw->RPort, &wstext_zero, 4, 0);
 
@@ -936,89 +959,89 @@ void wbarcwb(void) {
 static inline void mapws(void)
 {
 	if (vws_on == FALSE) {
-		wstext_zero.FrontPen = *wbarfpws;
-		wstext_zero.BackPen = *wbarbpws;
+		wstext_zero.FrontPen = *bar_color[fp_ws].color;
+		wstext_zero.BackPen = *bar_color[bp_ws].color;
 		return;
 	}
 
 	if (current_ws & WS_0) {
 		wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
 		wstext_one.BackPen = wstext_two.BackPen = wstext_three.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
-		wstext_zero.FrontPen = *wbarfpwscur;
-		wstext_zero.BackPen = *wbarbpwscur;
+		wstext_zero.FrontPen = *bar_color[fp_cur].color;
+		wstext_zero.BackPen = *bar_color[bp_cur].color;
 	}
 	if (current_ws & WS_1) {
 		wstext_zero.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
 		wstext_zero.BackPen = wstext_two.BackPen = wstext_three.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;;
 
-		wstext_one.FrontPen = *wbarfpwscur;
-		wstext_one.BackPen = *wbarbpwscur;
+		wstext_one.FrontPen = *bar_color[fp_cur].color;
+		wstext_one.BackPen = *bar_color[bp_cur].color;
 	}
 	if (current_ws & WS_2) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_three.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
 		wstext_zero.BackPen = wstext_one.BackPen = wstext_three.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
-		wstext_two.FrontPen = *wbarfpwscur;
-		wstext_two.BackPen = *wbarbpwscur;
+		wstext_two.FrontPen = *bar_color[fp_cur].color;
+		wstext_two.BackPen = *bar_color[bp_cur].color;
 	}
 	if (current_ws & WS_3) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *wbarfpws;
+		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
 		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *wbarbpws;
+		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
-		wstext_three.FrontPen = *wbarfpwscur;
-		wstext_three.BackPen = *wbarbpwscur;
+		wstext_three.FrontPen = *bar_color[fp_cur].color;
+		wstext_three.BackPen = *bar_color[bp_cur].color;
 	}
 	if (current_ws & WS_4) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
-		wstext_three.FrontPen = wstext_five.FrontPen = *wbarfpws;
+		wstext_three.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
 		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
-		wstext_three.BackPen = wstext_five.BackPen = *wbarbpws;
+		wstext_three.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
-		wstext_four.FrontPen = *wbarfpwscur;
-		wstext_four.BackPen = *wbarbpwscur;
+		wstext_four.FrontPen = *bar_color[fp_cur].color;
+		wstext_four.BackPen = *bar_color[bp_cur].color;
 	}
 	if (current_ws & WS_5) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
-		wstext_three.FrontPen = wstext_four.FrontPen = *wbarfpws;
+		wstext_three.FrontPen = wstext_four.FrontPen = *bar_color[fp_ws].color;
 
 		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
-		wstext_three.BackPen = wstext_four.BackPen = *wbarbpws;
+		wstext_three.BackPen = wstext_four.BackPen = *bar_color[bp_ws].color;
 
-		wstext_five.FrontPen = *wbarfpwscur;
-		wstext_five.BackPen = *wbarbpwscur;
+		wstext_five.FrontPen = *bar_color[fp_cur].color;
+		wstext_five.BackPen = *bar_color[bp_cur].color;
 	}
 }
 
 static inline unsigned char * maptm(void)
 {
 	if (*current_layout == 0) {
-		return mode_tile;
+		return bar_text[mode_tile].text;
 	}
 	if (*current_layout == 1) {
-		return mode_grid;
+		return (bar_text[mode_grid].text);
 	}
 	if (*current_layout == 2) {
-		return mode_dwindle;
+		return bar_text[mode_dwindle].text;
 	}
 	if (*current_layout == 3) {
-		return mode_spiral;
+		return bar_text[mode_spiral].text;
 	}
 
-	return wbar_err;
+	return bar_text[err].text;
 }
 
 short info_window(unsigned char * info_text)

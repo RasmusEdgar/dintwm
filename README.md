@@ -102,7 +102,7 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | BAR\_BG\_COL | 3 (color 3 on palette) |  Dintwm bar bg color | BAR |
 | BAR\_FPW\_COL | 1 | Dintwm bar frontpen color | BAR |
 | BAR\_BPW\_COL | 3 | Dintwm bar backpen color | BAR |
-| BAR\_FPCURW\_COL | 139 | Dintwm bar active workspace color frontpen | BAR |
+| BAR\_FPCURW\_COL | 6 | Dintwm bar active workspace color frontpen | BAR |
 | BAR\_BPCURW\_COL | 3 | Dintwm bar active workspace color backpen | BAR | 
 | BAR\_FPTM\_COL | 1 | Dintwm bar tilemode frontpen color | BAR |
 | BAR\_BPTM\_COL | 3 | Dintwm bar tilemode backpen color | BAR |
@@ -112,6 +112,18 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | BAR\_BPSEP\_ONE\_COL | 3 | Dintwm bar seperator one backpen color | BAR |
 | BAR\_FPSEP\_TWO\_COL | 1 | Dintwm bar seperator two frontpen color | BAR |
 | BAR\_BPSEP\_TWO\_COL | 3 | Dintwm bar seperator two backpen color | BAR |
+| BAR\_TEXT\_WS0 | WS0 | Dintwm bar text for ws0 | BAR |
+| BAR\_TEXT\_WS1 | WS1 | Dintwm bar text for ws1 | BAR |
+| BAR\_TEXT\_WS2 | WS2 | Dintwm bar text for ws2 | BAR |
+| BAR\_TEXT\_WS3 | WS3 | Dintwm bar text for ws3 | BAR |
+| BAR\_TEXT\_WS4 | WS4 | Dintwm bar text for ws4 | BAR |
+| BAR\_TEXT\_WS5 | WS5 | Dintwm bar text for ws5 | BAR |
+| BAR\_TEXT\_TILE | Tile | Dintwm bar text for tile mode | BAR |
+| BAR\_TEXT\_GRID | Grid | Dintwm bar text for grid mode | BAR |
+| BAR\_TEXT\_DWINDLE | FibD | Dintwm bar text for dwindle mode | BAR |
+| BAR\_TEXT\_SPIRAL | FibS | Dintwm bar text for spiral mode | BAR |
+| BAR\_TEXT\_SEP\_1 | \| | Dintwm bar text for sepator one | BAR |
+| BAR\_TEXT\_SEP\_2 | \| | Dintwm bar text for sepator one | BAR |
 | BAR\_HIDE\_EMPTY | empty | Hide bar if workspace is empty | BAR |
 | INFO\_OFF | empty | Supress info windows - not recommended | NA |
 | VWS\_ON | FALSE | Enable virtual workspaces | NA |
@@ -132,7 +144,7 @@ Since virtual workspaces depend on moving windows to be the back of the window s
 
 ### Dintwm bar
 
-The bar is at the moment only available in the bottom of screen. It shows tilemode, active window title and indicates current active workspace. 
+The bar is at the moment only available in the bottom of the tiling area. It shows tilemode, active window title and indicates current active workspace. 
 
 ### Default ToolTypes
 
@@ -205,10 +217,10 @@ Options are:
 - ~~Add dintwm bar~~
 - ~~Stop commodity with hotkey~~
 - ~~Use github actions to build and package dintwm release~~
-- Make static bar text fields configurable
+- ~~Make static bar text fields configurable~~
 - Implement dedicated dintwm screen
-- Builtin dmenu like launcher
-- Ensure AROS compatibility
+- ~~Builtin dmenu like launcher~~ *Will create new tool instead*
+- Ensure AROS compatibility (works without bar atm)
 
 ## Note on licensing
 

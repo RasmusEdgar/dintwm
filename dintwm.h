@@ -45,6 +45,19 @@
 #define BAR_FPSEP_TWO_COL_ID 420 // Bar seperator two frontpen color identifier
 #define BAR_BPSEP_TWO_COL_ID 421 // Bar seperator two backpen color identifier
 #define BAR_HIDE_EMPTY_ID 422 // Hide bar on empty workspaces
+#define BAR_TEXT_WS0_ID 423 // Bar text ws id
+#define BAR_TEXT_WS1_ID 424 // Bar text ws id
+#define BAR_TEXT_WS2_ID 425 // Bar text ws id
+#define BAR_TEXT_WS3_ID 426 // Bar text ws id
+#define BAR_TEXT_WS4_ID 427 // Bar text ws id
+#define BAR_TEXT_WS5_ID 428 // Bar text ws id
+#define BAR_TEXT_TILE_ID 429 // Bar text tile field id
+#define BAR_TEXT_GRID_ID 430 // Bar text tile field id
+#define BAR_TEXT_DWINDLE_ID 431 // Bar text tile field id
+#define BAR_TEXT_SPIRAL_ID 432 // Bar text tile field id
+#define BAR_TEXT_SEP_1_ID 433 // Bar text tile field id
+#define BAR_TEXT_SEP_2_ID 434 // Bar text tile field id
+#define BAR_TEXT_SPACE_ID 435 // Bar text tile field id
 #define	EXCL_WTYPE_ID_0 600 // exclude window type identifier
 #define	EXCL_WTYPE_ID_1 601 // exclude window type identifier
 #define	EXCL_WTYPE_ID_2 602 // exclude window type identifier
@@ -91,6 +104,23 @@
 #define VWS_ON_ID 1003 // turn on virtual workspaces
 #define TILE_FACT_ID 1200 // mfact opt id
 
+#define DEF_BAR_TEXT_WS_ZERO "W0"
+#define DEF_BAR_TEXT_WS_ONE "W1"
+#define DEF_BAR_TEXT_WS_TWO "W2"
+#define DEF_BAR_TEXT_WS_THREE "W3"
+#define DEF_BAR_TEXT_WS_FOUR "W4"
+#define DEF_BAR_TEXT_WS_FIVE "W5"
+
+#define DEF_BAR_TEXT_MODE_TILE "Tile"
+#define DEF_BAR_TEXT_MODE_GRID "Grid"
+#define DEF_BAR_TEXT_MODE_DWINDLE "FibD"
+#define DEF_BAR_TEXT_MODE_SPIRAL "FibS"
+
+#define DEF_BAR_TEXT_SEP_ONE ":"
+#define DEF_BAR_TEXT_SEP_TWO ":"
+#define DEF_BAR_TEXT_SPACE " "
+#define DEF_BAR_TEXT_ERR "Fail"
+
 #define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
 #define DEFCMD "NewShell"
 #define COMMODITIZE -1 // Commoditize on/off
@@ -130,18 +160,18 @@
 #define WBAR_HEIGHT 20
 #define BAR_HIDE_ON (1U << 0)
 #define BAR_HIDE_TOGGLE (1U << 1)
-#define DEF_BAR_FPWS_COL 1U // Default bar workspace frontpen color
-#define DEF_BAR_BPWS_COL 3U // Default bar workspace backpen color
-#define DEF_BAR_FPCURW_COL 6U // Default bar active workspace frontpen color
-#define DEF_BAR_BPCURW_COL 3U // Default bar workspace backpen color
-#define DEF_BAR_FPTM_COL 1U // Default bar tilemode frontpen color
-#define DEF_BAR_BPTM_COL 3U // Default bar tilemode backpen color
-#define DEF_BAR_FPTI_COL 1U // Default bar title frontpen color
-#define DEF_BAR_BPTI_COL 3U // Default bar title backpen color
-#define DEF_BAR_FPSEP_ONE_COL 1U // Default bar title frontpen color
-#define DEF_BAR_BPSEP_ONE_COL 3U // Default bar title frontpen color
-#define DEF_BAR_FPSEP_TWO_COL 1U // Default bar title backpen color
-#define DEF_BAR_BPSEP_TWO_COL 3U // Default bar title backpen color
+#define DEF_BAR_FP_WS_COL 1U // Default bar workspace frontpen color
+#define DEF_BAR_BP_WS_COL 3U // Default bar workspace backpen color
+#define DEF_BAR_FP_CUR_COL 6U // Default bar active workspace frontpen color
+#define DEF_BAR_BP_CUR_COL 3U // Default bar workspace backpen color
+#define DEF_BAR_FP_TM_COL 1U // Default bar tilemode frontpen color
+#define DEF_BAR_BP_TM_COL 3U // Default bar tilemode backpen color
+#define DEF_BAR_FP_TI_COL 1U // Default bar title frontpen color
+#define DEF_BAR_BP_TI_COL 3U // Default bar title backpen color
+#define DEF_BAR_FP_SEP_ONE_COL 1U // Default bar title frontpen color
+#define DEF_BAR_BP_SEP_ONE_COL 3U // Default bar title frontpen color
+#define DEF_BAR_FP_SEP_TWO_COL 1U // Default bar title backpen color
+#define DEF_BAR_BP_SEP_TWO_COL 3U // Default bar title backpen color
 #define DEF_BAR_BG_COL 3U // Default bar bg color
 
 typedef union {
@@ -196,19 +226,6 @@ short bar_on;
 short vws_on;
 unsigned int hidewbar;
 int wbarheight;
-unsigned char wbarbgcolor[3];
-unsigned char wbarfpws[3];
-unsigned char wbarbpws[3];
-unsigned char wbarfpwscur[3];
-unsigned char wbarbpwscur[3];
-unsigned char wbarfptm[3];
-unsigned char wbarbptm[3];
-unsigned char wbarfpti[3];
-unsigned char wbarbpti[3];
-unsigned char wbarfpsepone[3];
-unsigned char wbarbpsepone[3];
-unsigned char wbarfpseptwo[3];
-unsigned char wbarbpseptwo[3];
 
 // commodity headers
 short int commo(void);
@@ -246,3 +263,51 @@ extern Opts defopts[];
 
 extern int fact;
 extern int gap_change_value;
+
+enum bar_texts {
+	// text items
+	ws_zero,
+	ws_one,
+	ws_two,
+	ws_three,
+	ws_four,
+	ws_five,
+	ws_wb,
+	mode_tile,
+	mode_grid,
+	mode_dwindle,
+	mode_spiral,
+	sep_one,
+	sep_two,
+	space,
+	err,
+	BAR_LAST_TEXT
+};
+
+enum bar_colors {
+	bg,
+	fp_ws,
+	bp_ws,
+	fp_cur,
+	bp_cur,
+	fp_tm,
+	bp_tm,
+	fp_ti,
+	bp_ti,
+	fp_sep_one,
+	bp_sep_one,
+	fp_sep_two,
+	bp_sep_two,
+	BAR_LAST_COLOR
+};
+
+typedef struct {
+	unsigned char * text;
+} Bar_Text;
+
+typedef struct {
+	unsigned char color[1];
+} Bar_Color;
+
+Bar_Text bar_text[BAR_LAST_TEXT];
+Bar_Color bar_color[BAR_LAST_COLOR];
