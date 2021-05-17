@@ -184,7 +184,7 @@ To enable do not backdrop the workbench window and set tooltype VWS_ON=TRUE
 
 Dintwm bar
 
-The bar is at the moment only available in the bottom of screen. It shows tilemode, active window title and indicates current active workspace.
+The bar is at the moment only available in the bottom of the tiling area. It shows tilemode, active window title and indicates current active workspace.
 
 Default ToolTypes
 
@@ -252,10 +252,10 @@ TODO
 -   |DONE|Add dintwm bar|DONE|
 -   |DONE|Stop commodity with hotkey|DONE|
 -   |DONE|Use github actions to build and package dintwm release|DONE|
--   Make static bar text fields configurable
+-   |DONE|Make static bar text fields configurable|DONE|
 -   Implement dedicated dintwm screen
--   Builtin dmenu like launcher
--   Ensure AROS compatibility
+-   |DONE|Builtin dmenu like launcher|DONE| Will create new tool instead
+-   Ensure AROS compatibility (works without bar atm)
 
 Note on licensing
 

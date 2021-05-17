@@ -10,7 +10,7 @@ CC = m68k-amigaos-gcc
 CFLAGS =-std=c11 -Ofast -noixemul -Wall -Wextra -s -fomit-frame-pointer -fbaserel
 MAINHEADER = dintwm.h
 CONFHEADER = cxm_config.h
-EXTHEADERS = ketopt.h
+EXTHEADERS = ketopt.h wbar_config.h
 HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
 CPPLINTCMD = cpplint
 CPPLINTOPTS = --linelength 150 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard
