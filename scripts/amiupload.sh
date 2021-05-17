@@ -40,8 +40,7 @@ sed -i "s/EMAIL/$email/g;s/OBFE/$emailu/g;s/VERSION/$release/g" dintwm.readme
 
 wget --quiet https://github.com/RasmusEdgar/dintwm/releases/download/v"$release"/dintwm.lha
 
-#ftp -inv ftp.aminet.net << EOF
-cat << EOF
+ftp -inv ftp.aminet.net << EOF
 user anonymous $email
 
 cd /new
