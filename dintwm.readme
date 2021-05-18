@@ -22,6 +22,7 @@ Changelog
   - Make bar color items behave internally as text items
   - Fix bug when window on current ws is closed after moving other window to
     other ws
+  - Fix off by one memleak bug
 
 * v0.2
   - Add TT VWS_ON to enable virtual workspaces
