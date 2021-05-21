@@ -174,7 +174,7 @@ Here is a short outline of the different features and their limitations.
 
 Virtual workspaces
 
-Creates layers of window sets, which could also be seen as virtual workspaces and change be between using the POPKEY_WS_0..5 hotkeys.
+Creates layers of window sets, which could also be seen as virtual workspaces and change between them using the POPKEY_WS_0..5 hotkeys.
 
 Move active window to another virtual workspace using the POPKEY_CWS_0..5 hotkeys.
 
@@ -184,7 +184,7 @@ To enable do not backdrop the workbench window and set tooltype VWS_ON=TRUE
 
 Dintwm bar
 
-The bar is at the moment only available in the bottom of the tiling area. It shows tilemode, active window title and indicates current active workspace.
+The bar is at the moment only available in the bottom of the tiling area. It shows tilemode, active window title and indicates the current active workspace.
 
 Default ToolTypes
 
@@ -226,7 +226,7 @@ That is, you could basically set tiling to occur where ever you decide on the sc
 
     dintwm -U 320 -L 320 -t
 
-It is of course possible to use something as FKey to bind the above commands to your own HotKeys and thereby using Dintwm as manual tiling utility.
+It is of course possible to use something as FKey to bind the above commands to your own HotKeys and use Dintwm as a manual tiling utility.
 
 Options are:
 

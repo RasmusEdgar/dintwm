@@ -488,7 +488,7 @@ short int commo(void)
 				if (tile_off == FALSE && autotile == TRUE) {
 					short act = FALSE;
 					// If previous active window is no longer active, refresh bar
-					if (awin_comp == NULL || (awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
+					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 						getactive();
 						awin_comp = active_win;
 						if (bar_on) {
@@ -506,7 +506,14 @@ short int commo(void)
 						}
 						act = TRUE;
 					}
-					// If last window disappears retile and resize bar
+					// If second win changes retile and resize bar
+					if (firstwin_comp->NextWindow != nwin_comp) {
+						if (bar_on) {
+							wbarcwb();
+						}
+						act = TRUE;
+					}
+					// If third win changes retile and resize bar
 					if (nwin_comp->NextWindow != nnwin_comp) {
 						if (bar_on) {
 							wbarcwb();
@@ -516,7 +523,7 @@ short int commo(void)
 					if (act) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						firstwin_comp = screen->FirstWindow;
-						if (screen->FirstWindow->NextWindow) {
+						if (firstwin_comp->NextWindow) {
 							nwin_comp = screen->FirstWindow->NextWindow;
 							nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
 						}

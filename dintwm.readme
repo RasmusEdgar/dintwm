@@ -20,8 +20,6 @@ Changelog
 * v0.3
   - Make text items in bar configurable
   - Make bar color items behave internally as text items
-  - Fix bug when window on current ws is closed after moving other window to
-    other ws
   - Fix off by one memleak bug
 
 * v0.2
@@ -36,6 +34,15 @@ Changelog
 
 * v0.1
   - initial release
+
+----------
+Known bugs
+----------
+
+* <=v0.3
+  - Automatic retile is not always triggered when closing windows in current ws
+    after moving windows to other workspaces. Work in the main loop and a
+    better way to keep track windows is needed.
 
 --------
 Features
