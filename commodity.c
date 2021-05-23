@@ -494,23 +494,29 @@ short int commo(void)
 				}
 			}
 
-			subtask = CreateTask(subactionchkname, -127L, subactionchk, 2000L);
+			// Muting GCC warning here. Following official Amiga CreateTask example
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wpedantic"
+			subtask = CreateTask(subactionchkname, -20L, subactionchk, 2000L);
+			#pragma GCC diagnostic pop
 			if(!subtask) {
-				printf("Can't create subtask\n");
+				running = FALSE;
 			}
 
 			//Main Loop
 			while (running)
 			{
-				wakeupsigs = Wait((mainsig) | (1L << mp->mp_SigBit));
+				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
 
 				if(wakeupsigs & mainsig) {
-					getactive();
-					awin_comp = active_win;
-					if (bar_on) {
-						wbarcwb();
+					if (tile_off == FALSE) {
+						getactive();
+						awin_comp = active_win;
+						if (bar_on) {
+							wbarcwb();
+						}
+						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 					}
-					running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 				}
 
 				while ((msg = (void *)GetMsg(mp)))
@@ -628,15 +634,25 @@ static short alloc_bar_item(unsigned char **b, const char * s)
 
 void subactionchk(void)
 {
+	struct timeval currentval;
+	struct timerequest *tr;
 	short act;
+
+	if (!(tr = create_timer(UNIT_VBLANK))) {
+		running = FALSE;
+	}
+	currentval.tv_secs = 0UL;
+	currentval.tv_micro = auto_interval;
 	while(running) {
+		time_delay(tr, &currentval);
 		act = FALSE;
 		if (tile_off == FALSE && autotile == TRUE) {
 			// If previous active window is no longer active, refresh bar
 			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 				act = TRUE;
 			}
-			// If first window in screen window list changed, when a new window opens, retile and resize bar
+			// If first window in screen window list changed, when a new window opens,
+			// retile and resize bar
 			if (firstwin_comp != screen->FirstWindow || first_run == TRUE) {
 				first_run = FALSE;
 				act = TRUE;
@@ -649,15 +665,80 @@ void subactionchk(void)
 			if (nwin_comp->NextWindow != nnwin_comp) {
 				act = TRUE;
 			}
+
 			if (act) {
 				printf("Sending signal\n");
 				Signal(maintask, mainsig);
+				firstwin_comp = screen->FirstWindow;
+				if (firstwin_comp->NextWindow) {
+					nwin_comp = screen->FirstWindow->NextWindow;
+					nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
+				}
 			}
 
 			if (running == FALSE) {
 				printf("subtask done\n");
+				delete_timer(tr);
 				(void)Wait(0L);
 			}
 		}
+	}
+}
+
+struct timerequest *create_timer(unsigned long unit)
+{
+	/* return a pointer to a timer request.  If any problem, return NULL */
+	struct MsgPort *timerport;
+	signed char error;
+	struct timerequest *TimerIO;
+	unsigned char tdevice[] = "timer.device";
+
+	timerport = CreatePort(0, 0);
+
+	if (timerport == NULL) {
+		return (NULL);
+	}
+
+	TimerIO =
+	    (struct timerequest *)CreateExtIO(timerport, //-V2545
+					      sizeof(struct timerequest));
+
+	if (TimerIO == NULL) {
+		DeletePort(timerport);	/* Delete message port */
+		return (NULL);
+	}
+
+	error = OpenDevice(tdevice, unit, (struct IORequest *)TimerIO, 0L); //-V2545
+
+	if ((int)error != 0) {
+		delete_timer(TimerIO);
+		return (NULL);
+	}
+
+	return (TimerIO);
+}
+
+void time_delay(struct timerequest *tr, struct timeval *tv) {
+	unsigned short traddreq = TR_ADDREQUEST;
+	tr->tr_node.io_Command = traddreq;	/* add a new timer request */
+
+	/* structure assignment */
+	tr->tr_time = *tv;
+
+	/* post request to the timer -- will go to sleep till done */
+	(void)DoIO((struct IORequest *)tr); //-V2545
+}
+
+void delete_timer(struct timerequest *tr) {
+	if (tr != 0) {
+		struct MsgPort *tp;
+		tp = tr->tr_node.io_Message.mn_ReplyPort;
+
+		if (tp != 0) {
+			DeletePort(tp);
+		}
+
+		CloseDevice((struct IORequest *)tr); //-V2545
+		DeleteExtIO((struct IORequest *)tr); //-V2545
 	}
 }

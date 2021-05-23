@@ -12,9 +12,10 @@
 #include <exec/lists.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
+#include <devices/timer.h>
 
 //VERCUT
-#define DINTWM_VERSION "v0.3-2-g02835cb"
+#define DINTWM_VERSION "VERGIT"
 //VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
@@ -135,7 +136,7 @@
 #define FRONT 0 // Front on/off
 #define	SKIP 1 // Skip window on/off
 #define BACK 1 // Back on/off
-#define AUTO_INTERVAL_DELAY_DEF 1 // default AUTO_TILE Delay INTERVAL in ticks
+#define AUTO_INTERVAL_DELAY_DEF 100000UL // default AUTO_TILE Delay INTERVAL in microseconds
 #define	FUNC_TILE 0 // tile function identifier
 #define	FUNC_HGRID 1 // hgrid function identifier
 #define	FUNC_SPIRAL 2 // spiral function identifier
@@ -311,3 +312,9 @@ typedef struct {
 
 Bar_Text bar_text[BAR_LAST_TEXT];
 Bar_Color bar_color[BAR_LAST_COLOR];
+
+// timer stuff
+void delete_timer(struct timerequest *);
+struct timerequest *create_timer(ULONG);
+void time_delay(struct timerequest *tr, struct timeval *tv);
+#define AUTO_INTERVAL_MICRO_DEF 90000
