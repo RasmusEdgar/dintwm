@@ -17,6 +17,18 @@ static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
 short info_on = TRUE;
+void subactionchk(void);
+
+long mainsignum = -1;
+unsigned long mainsig, wakeupsigs;
+struct Task *maintask = NULL, *subtask = NULL;
+unsigned char subactionchkname[] = "CXM_window_state_checker";
+static short first_run = TRUE;
+static struct Window *awin_comp;
+static struct Window *firstwin_comp;
+static struct Window *nwin_comp;
+static struct Window *nnwin_comp;
+short running = TRUE;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE_ID, tile, {0} },
@@ -415,15 +427,24 @@ short int commo(void)
 
 	if (!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
+		return 1;
 	}
 
 	if ((diskobj = GetDiskObject(diskobjname)) == NULL) {
 		DeleteMsgPort(mp);
+		return 1;
 	}
+
+	if ((mainsignum = AllocSignal(-1)) == -1L) {
+		DeleteMsgPort(mp);
+		return 1;
+	}
+
+	mainsig = 1UL << (unsigned long)mainsignum;
+	maintask = FindTask(NULL);
 
 	if (mp)
 	{
-		short running = TRUE;
 		CxObj *broker;
 
 		MyBroker.nb_Port = mp;
@@ -445,11 +466,6 @@ short int commo(void)
 				return 1;
 			}
 
-			static short first_run = TRUE;
-			static struct Window *awin_comp;
-			static struct Window *firstwin_comp;
-			static struct Window *nwin_comp;
-			static struct Window *nnwin_comp;
 
 			if (bar_on) {
 				if (wbarheight == 0) {
@@ -478,59 +494,23 @@ short int commo(void)
 				}
 			}
 
+			subtask = CreateTask(subactionchkname, -127L, subactionchk, 2000L);
+			if(!subtask) {
+				printf("Can't create subtask\n");
+			}
+
 			//Main Loop
 			while (running)
 			{
-				if(tile_off) {
-					Delay(auto_interval);
-				}
+				wakeupsigs = Wait((mainsig) | (1L << mp->mp_SigBit));
 
-				if (tile_off == FALSE && autotile == TRUE) {
-					short act = FALSE;
-					// If previous active window is no longer active, refresh bar
-					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
-						getactive();
-						awin_comp = active_win;
-						if (bar_on) {
-							update_wbar();
-						}
-						act = TRUE;
+				if(wakeupsigs & mainsig) {
+					getactive();
+					awin_comp = active_win;
+					if (bar_on) {
+						wbarcwb();
 					}
-					// If first window in screen window list changed, when a new window opens, retile and resize bar
-					if (firstwin_comp != screen->FirstWindow || first_run == TRUE) {
-						if (bar_on) {
-							wbarcwb();
-						}
-						if (first_run == TRUE) {
-							first_run = FALSE;
-						}
-						act = TRUE;
-					}
-					// If second win changes retile and resize bar
-					if (firstwin_comp->NextWindow != nwin_comp) {
-						if (bar_on) {
-							wbarcwb();
-						}
-						act = TRUE;
-					}
-					// If third win changes retile and resize bar
-					if (nwin_comp->NextWindow != nnwin_comp) {
-						if (bar_on) {
-							wbarcwb();
-						}
-						act = TRUE;
-					}
-					if (act) {
-						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
-						firstwin_comp = screen->FirstWindow;
-						if (firstwin_comp->NextWindow) {
-							nwin_comp = screen->FirstWindow->NextWindow;
-							nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
-						}
-					}
-					Delay(auto_interval);
-				} else {
-					(void)WaitPort(mp);
+					running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 				}
 
 				while ((msg = (void *)GetMsg(mp)))
@@ -586,6 +566,11 @@ short int commo(void)
 		DeleteMsgPort(mp);
 	}
 
+	Forbid();
+	DeleteTask(subtask);
+	Permit();
+	FreeSignal(mainsignum);
+
 	free_opts();
 
 	return 0;
@@ -609,7 +594,7 @@ static void free_opts(void)
 {
 	int i;
 
-	for (i = 0; i <= CMD_MAX; ++i) {
+	for (i = 0; i < CMD_MAX; ++i) {
 		if (cons->strings[i]) {
 			free(cons->strings[i]);
 		}
@@ -618,7 +603,7 @@ static void free_opts(void)
 		}
 	}
 
-	for (i = 0; i <= WTYPE_MAX; ++i) {
+	for (i = 0; i < WTYPE_MAX; ++i) {
 		if (excls->strings[i]) {
 			free(excls->strings[i]);
 		}
@@ -639,4 +624,40 @@ static short alloc_bar_item(unsigned char **b, const char * s)
 	}
 
 	return TRUE;
+}
+
+void subactionchk(void)
+{
+	short act;
+	while(running) {
+		act = FALSE;
+		if (tile_off == FALSE && autotile == TRUE) {
+			// If previous active window is no longer active, refresh bar
+			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
+				act = TRUE;
+			}
+			// If first window in screen window list changed, when a new window opens, retile and resize bar
+			if (firstwin_comp != screen->FirstWindow || first_run == TRUE) {
+				first_run = FALSE;
+				act = TRUE;
+			}
+			// If second win changes retile and resize bar
+			if (firstwin_comp->NextWindow != nwin_comp) {
+				act = TRUE;
+			}
+			// If third win changes retile and resize bar
+			if (nwin_comp->NextWindow != nnwin_comp) {
+				act = TRUE;
+			}
+			if (act) {
+				printf("Sending signal\n");
+				Signal(maintask, mainsig);
+			}
+
+			if (running == FALSE) {
+				printf("subtask done\n");
+				(void)Wait(0L);
+			}
+		}
+	}
 }
