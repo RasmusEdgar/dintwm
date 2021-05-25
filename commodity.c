@@ -609,7 +609,7 @@ static void free_opts(void)
 {
 	int i;
 
-	for (i = 0; i <= CMD_MAX; ++i) {
+	for (i = 0; i < CMD_MAX; ++i) {
 		if (cons->strings[i]) {
 			free(cons->strings[i]);
 		}
@@ -618,7 +618,7 @@ static void free_opts(void)
 		}
 	}
 
-	for (i = 0; i <= WTYPE_MAX; ++i) {
+	for (i = 0; i < WTYPE_MAX; ++i) {
 		if (excls->strings[i]) {
 			free(excls->strings[i]);
 		}

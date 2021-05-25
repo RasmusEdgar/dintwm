@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 //VERCUT
-#define DINTWM_VERSION "v0.3-1-g48990aa"
+#define DINTWM_VERSION "VERGIT"
 //VERCUT
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
@@ -142,8 +142,8 @@
 #define	FUNC_DWINDLE 3 // dwindle function identifier
 #define	TILE_FUNC_LIMIT 3 // switcher function - maximum limit of tiling layouts to switch through
 #define	BAR_COLOR_LENGTH 3 // Color Max Length
-#define WTYPE_MAX 9 // Number excluded/included window titles
-#define CMD_MAX 9 // Number of custom cmds
+#define WTYPE_MAX 10 // Number excluded/included window titles
+#define CMD_MAX 10 // Number of custom cmds
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define	FUNC_PRINTUSAGE 42 // printusage function identifier
 #define	PRINTVERSION 43 // printusage function identifier
