@@ -603,7 +603,7 @@ short docmd(const Arg * arg)
 		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", DEFCMD);
 	}
 
-	if ((file = Open(conline, MODE_OLDFILE))) {
+	if ((file = Open(conline, MODE_NEWFILE))) {
 		// Will not fix MISRA warnings from amiga NDK
 		stags[0].ti_Tag = SYS_Input; //-V2544 //-V2568
 		stags[0].ti_Data = (long unsigned int)file;
@@ -614,7 +614,9 @@ short docmd(const Arg * arg)
 		stags[3].ti_Tag = SYS_UserShell; //-V2544 //-V2568
 		stags[3].ti_Data = TRUE; //-V2568
 		stags[4].ti_Tag = TAG_DONE; //-V2568
-		(void)SystemTagList(cmd, stags);
+		if ((SystemTagList(cmd, stags)) == -1) {
+			return FALSE;
+		}
 
 		return TRUE;
 	} else {

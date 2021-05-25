@@ -121,8 +121,8 @@
 #define DEF_BAR_TEXT_SPACE " "
 #define DEF_BAR_TEXT_ERR "Fail"
 
-#define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
-#define DEFCMD "NewShell"
+#define DEFCON "RAW:"
+#define DEFCMD "NewShell CON:0/200/640/150/Shell/AUTO/CLOSE/WAIT"
 #define COMMODITIZE -1 // Commoditize on/off
 #define LAYOUT_START -1 // switcher function - determines if current_layot should be set
 #define DOUBLE_OPTION_ERR -2 // Can not call two tile functions from cli
@@ -135,7 +135,7 @@
 #define FRONT 0 // Front on/off
 #define	SKIP 1 // Skip window on/off
 #define BACK 1 // Back on/off
-#define AUTO_INTERVAL_DELAY_DEF 1 // default AUTO_TILE Delay INTERVAL in ticks
+#define AUTO_INTERVAL_DELAY_DEF 5 // default AUTO_TILE Delay INTERVAL in ticks
 #define	FUNC_TILE 0 // tile function identifier
 #define	FUNC_HGRID 1 // hgrid function identifier
 #define	FUNC_SPIRAL 2 // spiral function identifier
