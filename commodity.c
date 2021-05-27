@@ -20,7 +20,8 @@ short info_on = TRUE;
 void subactionchk(void);
 
 long mainsignum = -1;
-unsigned long mainsig, wakeupsigs;
+long subsignum = -1;
+unsigned long mainsig, wakeupsigs, subsig, subwake;
 struct Task *maintask = NULL, *subtask = NULL;
 unsigned char subactionchkname[] = "CXM_window_state_checker";
 static short first_run = TRUE;
@@ -440,7 +441,13 @@ short int commo(void)
 		return 1;
 	}
 
+	if ((subsignum = AllocSignal(-1)) == -1L) {
+		DeleteMsgPort(mp);
+		return 1;
+	}
+
 	mainsig = 1UL << (unsigned long)mainsignum;
+	subsig = 1UL << (unsigned long)subsignum;
 	maintask = FindTask(NULL);
 
 	if (mp)
@@ -497,7 +504,7 @@ short int commo(void)
 			// Muting GCC warning here. Following official Amiga CreateTask example
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wpedantic"
-			subtask = CreateTask(subactionchkname, -20L, subactionchk, 2000L);
+			subtask = CreateTask(subactionchkname, -20L, subactionchk, 8000L);
 			#pragma GCC diagnostic pop
 			if(!subtask) {
 				running = FALSE;
@@ -510,13 +517,13 @@ short int commo(void)
 
 				if(wakeupsigs & mainsig) {
 					if (tile_off == FALSE) {
-						getactive();
-						awin_comp = active_win;
 						if (bar_on) {
 							wbarcwb();
 						}
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+						update_wbar();
 					}
+					Signal(subtask, subsig);
 				}
 
 				while ((msg = (void *)GetMsg(mp)))
@@ -667,8 +674,12 @@ void subactionchk(void)
 			}
 
 			if (act) {
+				getactive();
+				awin_comp = active_win;
 				printf("Sending signal\n");
 				Signal(maintask, mainsig);
+				(void)Wait((subsig));
+				printf("Received signal from main\n");
 				firstwin_comp = screen->FirstWindow;
 				if (firstwin_comp->NextWindow) {
 					nwin_comp = screen->FirstWindow->NextWindow;
