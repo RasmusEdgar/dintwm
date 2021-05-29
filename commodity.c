@@ -27,6 +27,7 @@ unsigned char subactionchkname[] = "CXM_window_state_checker";
 static short first_run = TRUE;
 static struct Window *awin_comp;
 static struct Window *firstwin_comp;
+static struct Window *firstwin_old;
 static struct Window *nwin_comp;
 static struct Window *nnwin_comp;
 short running = TRUE;
@@ -504,7 +505,7 @@ short int commo(void)
 			// Muting GCC warning here. Following official Amiga CreateTask example
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wpedantic"
-			subtask = CreateTask(subactionchkname, -20L, subactionchk, 8000L);
+			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 8000L);
 			#pragma GCC diagnostic pop
 			if(!subtask) {
 				running = FALSE;
@@ -513,13 +514,15 @@ short int commo(void)
 			//Main Loop
 			while (running)
 			{
+				firstwin_old = screen->FirstWindow;
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
 
 				if(wakeupsigs & mainsig) {
+					printf("Trig main\n");
 					if (tile_off == FALSE) {
-						if (bar_on) {
+						/*if (bar_on) {
 							wbarcwb();
-						}
+						}*/
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						update_wbar();
 					}
@@ -583,6 +586,7 @@ short int commo(void)
 	DeleteTask(subtask);
 	Permit();
 	FreeSignal(mainsignum);
+	FreeSignal(subsignum);
 
 	free_opts();
 
@@ -643,7 +647,6 @@ void subactionchk(void)
 {
 	struct timeval currentval;
 	struct timerequest *tr;
-	short act;
 
 	if (!(tr = create_timer(UNIT_VBLANK))) {
 		running = FALSE;
@@ -652,43 +655,45 @@ void subactionchk(void)
 	currentval.tv_micro = auto_interval;
 	while(running) {
 		time_delay(tr, &currentval);
-		act = FALSE;
 		if (tile_off == FALSE && autotile == TRUE) {
+			firstwin_comp = screen->FirstWindow;
+			if (firstwin_comp->NextWindow) {
+				nwin_comp = screen->FirstWindow->NextWindow;
+				nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
+			}
+
+			if (awin_comp == NULL || awin_comp != active_win) {
+				getactive();
+				awin_comp = active_win;
+				update_wbar();
+			}
+
 			// If previous active window is no longer active, refresh bar
 			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
-				act = TRUE;
+				getactive();
+				awin_comp = active_win;
+				update_wbar();
 			}
+
 			// If first window in screen window list changed, when a new window opens,
 			// retile and resize bar
-			if (firstwin_comp != screen->FirstWindow || first_run == TRUE) {
+			if (firstwin_comp != firstwin_old || first_run == TRUE) {
+				Signal(maintask, mainsig);
 				first_run = FALSE;
-				act = TRUE;
+				(void)Wait((subsig));
 			}
 			// If second win changes retile and resize bar
 			if (firstwin_comp->NextWindow != nwin_comp) {
-				act = TRUE;
+				Signal(maintask, mainsig);
+				(void)Wait((subsig));
 			}
 			// If third win changes retile and resize bar
 			if (nwin_comp->NextWindow != nnwin_comp) {
-				act = TRUE;
-			}
-
-			if (act) {
-				getactive();
-				awin_comp = active_win;
-				printf("Sending signal\n");
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
-				printf("Received signal from main\n");
-				firstwin_comp = screen->FirstWindow;
-				if (firstwin_comp->NextWindow) {
-					nwin_comp = screen->FirstWindow->NextWindow;
-					nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
-				}
 			}
 
 			if (running == FALSE) {
-				printf("subtask done\n");
 				delete_timer(tr);
 				(void)Wait(0L);
 			}
