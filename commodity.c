@@ -21,7 +21,7 @@ void subactionchk(void);
 unsigned long hash(unsigned char *str);
 unsigned long winhashes(void);
 unsigned long whash_start;
-static inline unsigned char* mystrcat(unsigned char* dest, unsigned char* src);
+static inline __attribute__((always_inline)) unsigned char* mystrcat(unsigned char* dest, unsigned char* src);
 
 long mainsignum = -1;
 long subsignum = -1;
@@ -30,10 +30,6 @@ struct Task *maintask = NULL, *subtask = NULL;
 unsigned char subactionchkname[] = "CXM_window_state_checker";
 static short first_run = TRUE;
 static struct Window *awin_comp;
-//static struct Window *firstwin_comp;
-//static struct Window *firstwin_old;
-//static struct Window *nwin_comp;
-//static struct Window *nnwin_comp;
 short running = TRUE;
 
 Keys defkeys[] = {
@@ -525,9 +521,6 @@ short int commo(void)
 
 				if(wakeupsigs & mainsig) {
 					if (tile_off == FALSE) {
-						/*if (bar_on) {
-							wbarcwb();
-						}*/
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						update_wbar();
 					}
@@ -669,13 +662,6 @@ void subactionchk(void)
 	while(running) {
 		time_delay(tr, &currentval);
 		if (tile_off == FALSE && autotile == TRUE) {
-			/*firstwin_comp = screen->FirstWindow;
-
-			if (firstwin_comp->NextWindow) {
-				nwin_comp = screen->FirstWindow->NextWindow;
-				nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
-			}*/
-
 			if (awin_comp == NULL || awin_comp != active_win) {
 				getactive();
 				awin_comp = active_win;
@@ -689,23 +675,6 @@ void subactionchk(void)
 				update_wbar();
 			}
 
-			// If first window in screen window list changed, when a new window opens,
-			// retile and resize bar
-			/*if (firstwin_comp != firstwin_old || first_run == TRUE) {
-				Signal(maintask, mainsig);
-				first_run = FALSE;
-				(void)Wait((subsig));
-			}
-			// If second win changes retile and resize bar
-			if (firstwin_comp->NextWindow != nwin_comp) {
-				Signal(maintask, mainsig);
-				(void)Wait((subsig));
-			}
-			// If third win changes retile and resize bar
-			if (nwin_comp->NextWindow != nnwin_comp) {
-				Signal(maintask, mainsig);
-				(void)Wait((subsig));
-			}*/
 			if (whash_start != (winhashes())) {
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
@@ -803,7 +772,7 @@ unsigned long hash(unsigned char *str)
     return hash;
 }
 
-static inline unsigned char* mystrcat(unsigned char* dest, unsigned char* src)
+static inline __attribute__((always_inline)) unsigned char* mystrcat(unsigned char* dest, unsigned char* src)
 {
 	while (*dest) { dest++; }
 	while ((*dest++ = *src++)) {}
