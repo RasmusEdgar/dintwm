@@ -136,7 +136,7 @@
 #define FRONT 0 // Front on/off
 #define	SKIP 1 // Skip window on/off
 #define BACK 1 // Back on/off
-#define AUTO_INTERVAL_DELAY_DEF 10000UL // default AUTO_TILE Delay INTERVAL in microseconds
+#define AUTO_INTERVAL_DELAY_DEF 50000UL // default AUTO_TILE Delay INTERVAL in microseconds
 #define	FUNC_TILE 0 // tile function identifier
 #define	FUNC_HGRID 1 // hgrid function identifier
 #define	FUNC_SPIRAL 2 // spiral function identifier

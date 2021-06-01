@@ -1119,7 +1119,7 @@ short info_window(unsigned char * info_text)
 		struct IntuiMessage *msg;
 		(void)Wait(1UL << iwin->UserPort->mp_SigBit);
 		msg = (struct IntuiMessage *)GetMsg(iwin->UserPort);
-		ReplyMsg(msg); //-V2545
+		ReplyMsg((struct Message *)msg); //-V2545
 		if (msg->Class == (unsigned long)IDCMP_CLOSEWINDOW) {
 			CloseWindow(iwin);
 			closewin = TRUE;

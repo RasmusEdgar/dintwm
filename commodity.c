@@ -18,6 +18,10 @@ int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
 short info_on = TRUE;
 void subactionchk(void);
+unsigned long hash(unsigned char *str);
+unsigned long winhashes(void);
+unsigned long whash_start;
+static inline unsigned char* mystrcat(unsigned char* dest, unsigned char* src);
 
 long mainsignum = -1;
 long subsignum = -1;
@@ -26,10 +30,10 @@ struct Task *maintask = NULL, *subtask = NULL;
 unsigned char subactionchkname[] = "CXM_window_state_checker";
 static short first_run = TRUE;
 static struct Window *awin_comp;
-static struct Window *firstwin_comp;
-static struct Window *firstwin_old;
-static struct Window *nwin_comp;
-static struct Window *nnwin_comp;
+//static struct Window *firstwin_comp;
+//static struct Window *firstwin_old;
+//static struct Window *nwin_comp;
+//static struct Window *nnwin_comp;
 short running = TRUE;
 
 Keys defkeys[] = {
@@ -505,7 +509,7 @@ short int commo(void)
 			// Muting GCC warning here. Following official Amiga CreateTask example
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wpedantic"
-			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 8000L);
+			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L);
 			#pragma GCC diagnostic pop
 			if(!subtask) {
 				running = FALSE;
@@ -514,11 +518,12 @@ short int commo(void)
 			//Main Loop
 			while (running)
 			{
-				firstwin_old = screen->FirstWindow;
+				whash_start = winhashes();
+				//firstwin_old = screen->FirstWindow;
+
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
 
 				if(wakeupsigs & mainsig) {
-					printf("Trig main\n");
 					if (tile_off == FALSE) {
 						/*if (bar_on) {
 							wbarcwb();
@@ -651,16 +656,25 @@ void subactionchk(void)
 	if (!(tr = create_timer(UNIT_VBLANK))) {
 		running = FALSE;
 	}
+
 	currentval.tv_secs = 0UL;
 	currentval.tv_micro = auto_interval;
+
+	if (first_run) {
+		Signal(maintask, mainsig);
+		first_run = FALSE;
+		(void)Wait((subsig));
+	}
+
 	while(running) {
 		time_delay(tr, &currentval);
 		if (tile_off == FALSE && autotile == TRUE) {
-			firstwin_comp = screen->FirstWindow;
+			/*firstwin_comp = screen->FirstWindow;
+
 			if (firstwin_comp->NextWindow) {
 				nwin_comp = screen->FirstWindow->NextWindow;
 				nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
-			}
+			}*/
 
 			if (awin_comp == NULL || awin_comp != active_win) {
 				getactive();
@@ -677,7 +691,7 @@ void subactionchk(void)
 
 			// If first window in screen window list changed, when a new window opens,
 			// retile and resize bar
-			if (firstwin_comp != firstwin_old || first_run == TRUE) {
+			/*if (firstwin_comp != firstwin_old || first_run == TRUE) {
 				Signal(maintask, mainsig);
 				first_run = FALSE;
 				(void)Wait((subsig));
@@ -689,6 +703,10 @@ void subactionchk(void)
 			}
 			// If third win changes retile and resize bar
 			if (nwin_comp->NextWindow != nnwin_comp) {
+				Signal(maintask, mainsig);
+				(void)Wait((subsig));
+			}*/
+			if (whash_start != (winhashes())) {
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
 			}
@@ -757,4 +775,37 @@ void delete_timer(struct timerequest *tr) {
 		CloseDevice((struct IORequest *)tr); //-V2545
 		DeleteExtIO((struct IORequest *)tr); //-V2545
 	}
+}
+
+unsigned long winhashes(void)
+{
+	unsigned char stringh[512];
+	unsigned char *d = stringh;
+	struct Window *w;
+	stringh[0] = '\0';
+	w = screen->FirstWindow;
+	while (w->NextWindow != NULL) {
+		//len += snprintf(stringh + len, maxbuf - (size_t)len, "%s",  w->Title);
+		d = mystrcat(d, w->Title);
+		w = w->NextWindow;
+	}
+	return hash(stringh);
+}
+
+unsigned long hash(unsigned char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while ((c = *str++))
+        hash = ((hash << 5UL) + hash) + (unsigned long)c; /* hash * 33 + c */
+
+    return hash;
+}
+
+static inline unsigned char* mystrcat(unsigned char* dest, unsigned char* src)
+{
+	while (*dest) { dest++; }
+	while ((*dest++ = *src++)) {}
+	return --dest;
 }
