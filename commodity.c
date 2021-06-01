@@ -754,7 +754,6 @@ unsigned long winhashes(void)
 	stringh[0] = '\0';
 	w = screen->FirstWindow;
 	while (w->NextWindow != NULL) {
-		//len += snprintf(stringh + len, maxbuf - (size_t)len, "%s",  w->Title);
 		d = mystrcat(d, w->Title);
 		w = w->NextWindow;
 	}
