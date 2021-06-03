@@ -122,8 +122,8 @@
 #define DEF_BAR_TEXT_SPACE " "
 #define DEF_BAR_TEXT_ERR "Fail"
 
-#define DEFCON "CON:0/40/640/150/dintwm/AUTO/CLOSE/WAIT"
-#define DEFCMD "NewShell"
+#define DEFCON "CON:"
+#define DEFCMD "NewShell CON:0/0/50/50/Shell/AUTO/CLOSE/WAIT"
 #define COMMODITIZE -1 // Commoditize on/off
 #define LAYOUT_START -1 // switcher function - determines if current_layot should be set
 #define DOUBLE_OPTION_ERR -2 // Can not call two tile functions from cli
