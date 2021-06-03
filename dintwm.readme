@@ -17,10 +17,14 @@ DintWM is a tiling window manager for AmigaOS 3.1.x.
 Changelog
 ---------
 
-* v0.3
+* v0.4
   - Make text items in bar configurable
   - Make bar color items behave internally as text items
-  - Fix off by one memleak bug
+  - Really fix off by one memleak bug
+  - Set better defaults for docmd (conline and newshell)
+  - Tighten up mainloop
+
+* v0.3 DUD RELEASE BUGS FOUND
 
 * v0.2
   - Add TT VWS_ON to enable virtual workspaces
