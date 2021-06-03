@@ -18,10 +18,10 @@ int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
 short info_on = TRUE;
 void subactionchk(void);
-unsigned long hash(unsigned char *str);
+static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str);
 unsigned long winhashes(void);
 unsigned long whash_start;
-static inline __attribute__((always_inline)) unsigned char* mystrcat(unsigned char* dest, unsigned char* src);
+static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src);
 
 long mainsignum = -1;
 long subsignum = -1;
@@ -673,6 +673,8 @@ void subactionchk(void)
 				getactive();
 				awin_comp = active_win;
 				update_wbar();
+				Signal(maintask, mainsig);
+				(void)Wait((subsig));
 			}
 
 			if (whash_start != (winhashes())) {
@@ -750,30 +752,36 @@ unsigned long winhashes(void)
 {
 	unsigned char stringh[512];
 	unsigned char *d = stringh;
+	unsigned char nil = '\0';
 	struct Window *w;
-	stringh[0] = '\0';
+	stringh[0] = nil;
+
 	w = screen->FirstWindow;
 	while (w->NextWindow != NULL) {
-		d = mystrcat(d, w->Title);
+		d = twocat(d, w->Title);
 		w = w->NextWindow;
 	}
+	*d++ = nil;
+
 	return hash(stringh);
 }
 
-unsigned long hash(unsigned char *str)
+static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str)
 {
-    unsigned long hash = 5381;
-    int c;
+	unsigned long hash = 5381;
+	int c;
 
-    while ((c = *str++))
-        hash = ((hash << 5UL) + hash) + (unsigned long)c; /* hash * 33 + c */
+	while ((c = (int)*str++)) {
+		hash = ((hash << 5UL) + hash) + (unsigned long)c; /* hash * 33 + c */
+	}
 
-    return hash;
+	return hash;
 }
 
-static inline __attribute__((always_inline)) unsigned char* mystrcat(unsigned char* dest, unsigned char* src)
+static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src)
 {
-	while (*dest) { dest++; }
-	while ((*dest++ = *src++)) {}
+	unsigned int i = 3;
+
+	while (i != 0U && (*dest++ = *src++) != 0U) { i--; }
 	return --dest;
 }
