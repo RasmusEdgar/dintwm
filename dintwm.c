@@ -603,7 +603,7 @@ short docmd(const Arg * arg)
 		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", DEFCMD);
 	}
 
-	if ((file = Open(conline, MODE_OLDFILE))) {
+	if ((file = Open(conline, MODE_NEWFILE))) {
 		// Will not fix MISRA warnings from amiga NDK
 		stags[0].ti_Tag = SYS_Input; //-V2544 //-V2568
 		stags[0].ti_Data = (long unsigned int)file;
