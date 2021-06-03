@@ -27,6 +27,9 @@ static short int wbartextwidth(int lei, unsigned char * it);
 static short initdefaults(void);
 static void freebartext(void);
 
+// docmd warning
+unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
+
 int main(int argc, char **argv)
 {
 	ketopt_t opt = KETOPT_INIT;
@@ -614,7 +617,11 @@ short docmd(const Arg * arg)
 		stags[3].ti_Tag = SYS_UserShell; //-V2544 //-V2568
 		stags[3].ti_Data = TRUE; //-V2568
 		stags[4].ti_Tag = TAG_DONE; //-V2568
-		(void)SystemTagList(cmd, stags);
+
+		if ((SystemTagList(cmd, stags)) == -1) {
+			info_window(dcwarn);
+			return FALSE;
+		}
 
 		return TRUE;
 	} else {

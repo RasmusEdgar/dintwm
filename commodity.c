@@ -515,7 +515,6 @@ short int commo(void)
 			while (running)
 			{
 				whash_start = winhashes();
-				//firstwin_old = screen->FirstWindow;
 
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
 
