@@ -23,6 +23,7 @@ Changelog
   - Really fix off by one memleak bug
   - Set better defaults for docmd (conline and newshell)
   - Create hash of windows to keep track of them
+  - Much better window change tracking
   - Much lower CPU foot print
   - Window checking handled in subtask
 
