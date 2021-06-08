@@ -175,6 +175,8 @@
 #define DEF_BAR_BP_SEP_TWO_COL 3U // Default bar title backpen color
 #define DEF_BAR_BG_COL 3U // Default bar bg color
 
+#define WTSTRING_INIT_SIZE 256U // Allow 128 windows before realloc of wtstring
+
 typedef union {
 	int i;
 	unsigned int u;

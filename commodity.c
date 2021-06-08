@@ -22,6 +22,7 @@ static inline __attribute__((always_inline)) unsigned long hash(unsigned char *s
 unsigned long winhashes(void);
 unsigned long whash_start;
 static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src);
+short alloc_wtstring(void);
 
 long mainsignum = -1;
 long subsignum = -1;
@@ -31,6 +32,8 @@ unsigned char subactionchkname[] = "CXM_window_state_checker";
 static short first_run = TRUE;
 static struct Window *awin_comp;
 short running = TRUE;
+unsigned char *wtstring;
+unsigned int wtincrementer = 1;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE_ID, tile, {0} },
@@ -511,9 +514,11 @@ short int commo(void)
 				running = FALSE;
 			}
 
+			running = alloc_wtstring();
 			//Main Loop
 			while (running)
 			{
+				running = alloc_wtstring();
 				whash_start = winhashes();
 
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
@@ -586,6 +591,7 @@ short int commo(void)
 	FreeSignal(subsignum);
 
 	free_opts();
+	free(wtstring);
 
 	return 0;
 }
@@ -747,13 +753,38 @@ void delete_timer(struct timerequest *tr) {
 	}
 }
 
+short alloc_wtstring(void)
+{
+	if (wtstring == NULL) {
+		// Use calloc to skip nul terminator later
+		if ((wtstring = (unsigned char *)calloc(WTSTRING_INIT_SIZE, sizeof(unsigned char))) == NULL) {
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+	}
+
+	// Check if string is about to overflow (use 4 bytes offset to be extra safe)
+	// realloc window string with WTSTRING_INIT_SIZE times wtincrementer
+	if ((strnlen((const char *)wtstring, (WTSTRING_INIT_SIZE * wtincrementer))) > ((WTSTRING_INIT_SIZE * wtincrementer) - 4U)) {
+		unsigned char * tmp  = (unsigned char *)realloc(wtstring, WTSTRING_INIT_SIZE * wtincrementer);
+		if (tmp == NULL) {
+			return FALSE;
+		} else {
+			wtstring = tmp;
+			wtincrementer++;
+			return TRUE;
+		}
+	}
+
+	return TRUE;
+}
+
 unsigned long winhashes(void)
 {
-	unsigned char stringh[512];
-	unsigned char *d = stringh;
+	unsigned char *d = wtstring;
 	unsigned char nil = '\0';
 	struct Window *w;
-	stringh[0] = nil;
 
 	w = screen->FirstWindow;
 	while (w->NextWindow != NULL) {
@@ -762,7 +793,7 @@ unsigned long winhashes(void)
 	}
 	*d++ = nil;
 
-	return hash(stringh);
+	return hash(wtstring);
 }
 
 static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str)
@@ -779,8 +810,15 @@ static inline __attribute__((always_inline)) unsigned long hash(unsigned char *s
 
 static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src)
 {
-	unsigned int i = 3;
-
-	while (i != 0U && (*dest++ = *src++) != 0U) { i--; }
-	return --dest;
+	if (src) {
+		*dest++ = *src++;
+		*dest++ = *src++;
+		return dest;
+	} else {
+		unsigned char n = 'n';
+		unsigned char t = 't';
+		*dest++ = n;
+		*dest++ = t;
+		return dest;
+	}
 }

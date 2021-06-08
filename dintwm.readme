@@ -22,10 +22,11 @@ Changelog
   - Make bar color items behave internally as text items
   - Really fix off by one memleak bug
   - Set better defaults for docmd (conline and newshell)
-  - Create hash of windows to keep track of them
+  - Create hash of window title snips to keep track of them
   - Much better window change tracking
   - Much lower CPU foot print
   - Window checking handled in subtask
+  - Fix bug with tile mode in bar
 
 * v0.3 DUD RELEASE BUGS FOUND
 

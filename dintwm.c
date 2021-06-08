@@ -861,7 +861,7 @@ short init_wbar(void) {
 	bar_text[mode_tile].text = padwbartext(bar_text[mode_tile].text);
 	bar_text[mode_grid].text = padwbartext(bar_text[mode_grid].text);
 	bar_text[mode_dwindle].text = padwbartext(bar_text[mode_dwindle].text);
-	bar_text[mode_spiral].text = padwbartext(bar_text[mode_grid].text);
+	bar_text[mode_spiral].text = padwbartext(bar_text[mode_spiral].text);
 
 	wbarmodetext = wbartext;
 	wbarmodetext.IText = bar_text[mode_tile].text;
