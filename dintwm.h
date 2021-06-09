@@ -12,6 +12,7 @@
 #include <exec/lists.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
+#include <devices/timer.h>
 
 //VERCUT
 #define DINTWM_VERSION "VERGIT"
@@ -121,8 +122,8 @@
 #define DEF_BAR_TEXT_SPACE " "
 #define DEF_BAR_TEXT_ERR "Fail"
 
-#define DEFCON "RAW:"
-#define DEFCMD "NewShell CON:0/200/640/150/Shell/AUTO/CLOSE/WAIT"
+#define DEFCON "CON:"
+#define DEFCMD "NewShell CON:0/0/50/50/Shell/AUTO/CLOSE/WAIT"
 #define COMMODITIZE -1 // Commoditize on/off
 #define LAYOUT_START -1 // switcher function - determines if current_layot should be set
 #define DOUBLE_OPTION_ERR -2 // Can not call two tile functions from cli
@@ -135,15 +136,15 @@
 #define FRONT 0 // Front on/off
 #define	SKIP 1 // Skip window on/off
 #define BACK 1 // Back on/off
-#define AUTO_INTERVAL_DELAY_DEF 5 // default AUTO_TILE Delay INTERVAL in ticks
+#define AUTO_INTERVAL_DELAY_DEF 50000UL // default AUTO_TILE Delay INTERVAL in microseconds
 #define	FUNC_TILE 0 // tile function identifier
 #define	FUNC_HGRID 1 // hgrid function identifier
 #define	FUNC_SPIRAL 2 // spiral function identifier
 #define	FUNC_DWINDLE 3 // dwindle function identifier
 #define	TILE_FUNC_LIMIT 3 // switcher function - maximum limit of tiling layouts to switch through
 #define	BAR_COLOR_LENGTH 3 // Color Max Length
-#define WTYPE_MAX 10 // Number excluded/included window titles
-#define CMD_MAX 10 // Number of custom cmds
+#define WTYPE_MAX 9 // Number excluded/included window titles
+#define CMD_MAX 9 // Number of custom cmds
 #define GAP_CHANGE_VALUE_DEF 20 // default gap increment/decrement value
 #define	FUNC_PRINTUSAGE 42 // printusage function identifier
 #define	PRINTVERSION 43 // printusage function identifier
@@ -173,6 +174,8 @@
 #define DEF_BAR_FP_SEP_TWO_COL 1U // Default bar title backpen color
 #define DEF_BAR_BP_SEP_TWO_COL 3U // Default bar title backpen color
 #define DEF_BAR_BG_COL 3U // Default bar bg color
+
+#define WTSTRING_INIT_SIZE 256U // Allow 128 windows before realloc of wtstring
 
 typedef union {
 	int i;
@@ -311,3 +314,8 @@ typedef struct {
 
 Bar_Text bar_text[BAR_LAST_TEXT];
 Bar_Color bar_color[BAR_LAST_COLOR];
+
+// timer stuff
+void delete_timer(struct timerequest *);
+struct timerequest *create_timer(ULONG);
+void time_delay(struct timerequest *tr, struct timeval *tv);

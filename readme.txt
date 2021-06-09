@@ -40,133 +40,133 @@ The tooltypes in the dintwm file could look like this:
 
 Tooltype Options Table
 
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Tooltype              Default                                   Description                                                                               Related Tooltype(s)
-  --------------------- ----------------------------------------- ----------------------------------------------------------------------------------------- -----------------------------
-  POPKEY_TILE           rawkey control lcommand t                 tile with master window layout                                                            TILE_FACT
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Tooltype              Default                                        Description                                                                               Related Tooltype(s)
+  --------------------- ---------------------------------------------- ----------------------------------------------------------------------------------------- -----------------------------
+  POPKEY_TILE           rawkey control lcommand t                      tile with master window layout                                                            TILE_FACT
 
-  POPKEY_HGRID          rawkey control lcommand g                 grid layout                                                                               NA
+  POPKEY_HGRID          rawkey control lcommand g                      grid layout                                                                               NA
 
-  POPKEY_SPIRAL         rawkey control lcommand f                 fibonacci variant layout                                                                  NA
+  POPKEY_SPIRAL         rawkey control lcommand f                      fibonacci variant layout                                                                  NA
 
-  POPKEY_DWINDLE        rawkey control lcommand d                 another fibonacci variant layout                                                          NA
+  POPKEY_DWINDLE        rawkey control lcommand d                      another fibonacci variant layout                                                          NA
 
-  POPKEY_SWITCHF        rawkey control lcommand s                 flip through layouts forwards                                                             NA
+  POPKEY_SWITCHF        rawkey control lcommand s                      flip through layouts forwards                                                             NA
 
-  POPKEY_SWITCHB        rawkey control lcommand x                 flip through layouts backwards                                                            NA
+  POPKEY_SWITCHB        rawkey control lcommand x                      flip through layouts backwards                                                            NA
 
-  POPKEY_INCTOPGAP      rawkey control lcommand cursor_up         increase topgap while running                                                             GAP_CHANGE_VALUE
+  POPKEY_INCTOPGAP      rawkey control lcommand cursor_up              increase topgap while running                                                             GAP_CHANGE_VALUE
 
-  POPKEY_INCLEFTGAP     rawkey control lcommand cursor_left       increase leftgap while running                                                            GAP_CHANGE_VALUE
+  POPKEY_INCLEFTGAP     rawkey control lcommand cursor_left            increase leftgap while running                                                            GAP_CHANGE_VALUE
 
-  POPKEY_INCRIGHTGAP    rawkey control lcommand cursor_right      increase rightgap while running                                                           GAP_CHANGE_VALUE
+  POPKEY_INCRIGHTGAP    rawkey control lcommand cursor_right           increase rightgap while running                                                           GAP_CHANGE_VALUE
 
-  POPKEY_DECTOPGAP      rawkey control shift cursor_up            decrease topgap while running                                                             GAP_CHANGE_VALUE
+  POPKEY_DECTOPGAP      rawkey control shift cursor_up                 decrease topgap while running                                                             GAP_CHANGE_VALUE
 
-  POPKEY_DECBOTTOMGAP   rawkey control shift cursor_down          decrease bottomgap while running                                                          GAP_CHANGE_VALUE
+  POPKEY_DECBOTTOMGAP   rawkey control shift cursor_down               decrease bottomgap while running                                                          GAP_CHANGE_VALUE
 
-  POPKEY_DECLEFTGAP     rawkey control shift cursor_left          decrease leftgap while running                                                            GAP_CHANGE_VALUE
+  POPKEY_DECLEFTGAP     rawkey control shift cursor_left               decrease leftgap while running                                                            GAP_CHANGE_VALUE
 
-  POPKEY_DECRIGHTGAP    rawkey control shift cursor_right         decrease rightgap while running                                                           GAP_CHANGE_VALUE
+  POPKEY_DECRIGHTGAP    rawkey control shift cursor_right              decrease rightgap while running                                                           GAP_CHANGE_VALUE
 
-  POPKEY_INCALLGAPS     rawkey control lcommand numeric_pad +     increase all gaps while running                                                           GAP_CHANGE_VALUE
+  POPKEY_INCALLGAPS     rawkey control lcommand numeric_pad +          increase all gaps while running                                                           GAP_CHANGE_VALUE
 
-  POPKEY_DECALLGAPS     rawkey control lcommand numeric_pad –     (double dash to escape special function of dash) decrease all gaps while running          GAP_CHANGE_VALUE
+  POPKEY_DECALLGAPS     rawkey control lcommand numeric_pad –          (double dash to escape special function of dash) decrease all gaps while running          GAP_CHANGE_VALUE
 
-  POPKEY_CMD_0..9       spawns custom commands                    rawkey control lcommand 0..9                                                              CMD_0..9, CONLINE_0..9
+  POPKEY_CMD_0..9       spawns custom commands                         rawkey control lcommand 0..9                                                              CMD_0..9, CONLINE_0..9
 
-  POPKEY_WS_0..5        change to virtual workspace               rawkey control lcommand numpad 0..5                                                       POPKEY_CWS_0..5
+  POPKEY_WS_0..5        change to virtual workspace                    rawkey control lcommand numpad 0..5                                                       POPKEY_CWS_0..5
 
-  POPKEY_CWS_0..5       move active window to virtual workspace   rawkey control shift numpad 0..5                                                          POPKEY_CWS_0..5
+  POPKEY_CWS_0..5       move active window to virtual workspace        rawkey control shift numpad 0..5                                                          POPKEY_CWS_0..5
 
-  POPKEY_CXM_EXIT       rawkey control lcommand q                 exits commodity                                                                           NA
+  POPKEY_CXM_EXIT       rawkey control lcommand q                      exits commodity                                                                           NA
 
-  POPKEY_TILE_OFF       rawkey control lcommand o                 disables tiling globally                                                                  NA
+  POPKEY_TILE_OFF       rawkey control lcommand o                      disables tiling globally                                                                  NA
 
-  TOPGAP                0                                         sets the top gap of the screen                                                            NA
+  TOPGAP                0                                              sets the top gap of the screen                                                            NA
 
-  BOTTOMGAP             0                                         sets a bottom gap                                                                         NA
+  BOTTOMGAP             0                                              sets a bottom gap                                                                         NA
 
-  LEFTGAP               0                                         sets a left gap                                                                           NA
+  LEFTGAP               0                                              sets a left gap                                                                           NA
 
-  RIGHTGAP              0                                         sets a right gap                                                                          NA
+  RIGHTGAP              0                                              sets a right gap                                                                          NA
 
-  GAP_CHANGE_VALUE      20                                        sets the increment/decrement value for gap adjustment                                     *GAP
+  GAP_CHANGE_VALUE      20                                             sets the increment/decrement value for gap adjustment                                     *GAP
 
-  DEFAULT_TOPGAP        TRUE                                      set automatically calculated gap                                                          NA
+  DEFAULT_TOPGAP        TRUE                                           set automatically calculated gap                                                          NA
 
-  CMD_0..9              empty                                     sets custom commands to spawn, like a shell or a program                                  CONLINE_0..9
+  CMD_0..9              NewShell CON:0/0/50/50/Shell/AUTO/CLOSE/WAIT   sets custom commands to spawn, like a shell or a program                                  CONLINE_0..9
 
-  CONLINE_0..9          emtpy                                     sets custom conline for the matching CMD_0..9                                             CMD_0..9
+  CONLINE_0..9          CON:                                           sets custom conline for the matching CMD_0..9                                             CMD_0..9
 
-  EXCL_WTYPE_0..9       empty                                     excludes windows based on window->Title                                                   deactivates INCL_WTYPE_0..9
+  EXCL_WTYPE_0..9       empty                                          excludes windows based on window->Title                                                   deactivates INCL_WTYPE_0..9
 
-  INCL_WTYPE_0..9       empty                                     includes windows based on window->Title                                                   deactivates EXCL_WTYPE_0..9
+  INCL_WTYPE_0..9       empty                                          includes windows based on window->Title                                                   deactivates EXCL_WTYPE_0..9
 
-  AUTO                  empty                                     enable auto tiling, all non-filtered new windows will be tiled                            AUTO_INTERVAL_DELAY
+  AUTO                  empty                                          enable auto tiling, all non-filtered new windows will be tiled                            AUTO_INTERVAL_DELAY
 
-  AUTO_INTERVAL_DELAY   1                                         Auto tile refresh rate, how often it checks for new windows. Set to 50 ticks per second   AUTO
+  AUTO_INTERVAL_DELAY   1                                              Auto tile refresh rate, how often it checks for new windows. Set to 50 ticks per second   AUTO
 
-  TILE_FACT             550                                       size factor of master window (val / 1000) in tiling function                              POPKEY_TILE
+  TILE_FACT             550                                            size factor of master window (val / 1000) in tiling function                              POPKEY_TILE
 
-  BAR                   empty                                     Bar on or off                                                                             BAR_*
+  BAR                   empty                                          Bar on or off                                                                             BAR_*
 
-  BAR_BG_COL            3 (color 3 on palette)                    Dintwm bar bg color                                                                       BAR
+  BAR_BG_COL            3 (color 3 on palette)                         Dintwm bar bg color                                                                       BAR
 
-  BAR_FPW_COL           1                                         Dintwm bar frontpen color                                                                 BAR
+  BAR_FPW_COL           1                                              Dintwm bar frontpen color                                                                 BAR
 
-  BAR_BPW_COL           3                                         Dintwm bar backpen color                                                                  BAR
+  BAR_BPW_COL           3                                              Dintwm bar backpen color                                                                  BAR
 
-  BAR_FPCURW_COL        6                                         Dintwm bar active workspace color frontpen                                                BAR
+  BAR_FPCURW_COL        6                                              Dintwm bar active workspace color frontpen                                                BAR
 
-  BAR_BPCURW_COL        3                                         Dintwm bar active workspace color backpen                                                 BAR
+  BAR_BPCURW_COL        3                                              Dintwm bar active workspace color backpen                                                 BAR
 
-  BAR_FPTM_COL          1                                         Dintwm bar tilemode frontpen color                                                        BAR
+  BAR_FPTM_COL          1                                              Dintwm bar tilemode frontpen color                                                        BAR
 
-  BAR_BPTM_COL          3                                         Dintwm bar tilemode backpen color                                                         BAR
+  BAR_BPTM_COL          3                                              Dintwm bar tilemode backpen color                                                         BAR
 
-  BAR_FPTI_COL          1                                         Dintwm bar active window title frontpen color                                             BAR
+  BAR_FPTI_COL          1                                              Dintwm bar active window title frontpen color                                             BAR
 
-  BAR_BPTI_COL          3                                         Dintwm bar active window title backpen color                                              BAR
+  BAR_BPTI_COL          3                                              Dintwm bar active window title backpen color                                              BAR
 
-  BAR_FPSEP_ONE_COL     1                                         Dintwm bar seperator one frontpen color                                                   BAR
+  BAR_FPSEP_ONE_COL     1                                              Dintwm bar seperator one frontpen color                                                   BAR
 
-  BAR_BPSEP_ONE_COL     3                                         Dintwm bar seperator one backpen color                                                    BAR
+  BAR_BPSEP_ONE_COL     3                                              Dintwm bar seperator one backpen color                                                    BAR
 
-  BAR_FPSEP_TWO_COL     1                                         Dintwm bar seperator two frontpen color                                                   BAR
+  BAR_FPSEP_TWO_COL     1                                              Dintwm bar seperator two frontpen color                                                   BAR
 
-  BAR_BPSEP_TWO_COL     3                                         Dintwm bar seperator two backpen color                                                    BAR
+  BAR_BPSEP_TWO_COL     3                                              Dintwm bar seperator two backpen color                                                    BAR
 
-  BAR_TEXT_WS0          WS0                                       Dintwm bar text for ws0                                                                   BAR
+  BAR_TEXT_WS0          WS0                                            Dintwm bar text for ws0                                                                   BAR
 
-  BAR_TEXT_WS1          WS1                                       Dintwm bar text for ws1                                                                   BAR
+  BAR_TEXT_WS1          WS1                                            Dintwm bar text for ws1                                                                   BAR
 
-  BAR_TEXT_WS2          WS2                                       Dintwm bar text for ws2                                                                   BAR
+  BAR_TEXT_WS2          WS2                                            Dintwm bar text for ws2                                                                   BAR
 
-  BAR_TEXT_WS3          WS3                                       Dintwm bar text for ws3                                                                   BAR
+  BAR_TEXT_WS3          WS3                                            Dintwm bar text for ws3                                                                   BAR
 
-  BAR_TEXT_WS4          WS4                                       Dintwm bar text for ws4                                                                   BAR
+  BAR_TEXT_WS4          WS4                                            Dintwm bar text for ws4                                                                   BAR
 
-  BAR_TEXT_WS5          WS5                                       Dintwm bar text for ws5                                                                   BAR
+  BAR_TEXT_WS5          WS5                                            Dintwm bar text for ws5                                                                   BAR
 
-  BAR_TEXT_TILE         Tile                                      Dintwm bar text for tile mode                                                             BAR
+  BAR_TEXT_TILE         Tile                                           Dintwm bar text for tile mode                                                             BAR
 
-  BAR_TEXT_GRID         Grid                                      Dintwm bar text for grid mode                                                             BAR
+  BAR_TEXT_GRID         Grid                                           Dintwm bar text for grid mode                                                             BAR
 
-  BAR_TEXT_DWINDLE      FibD                                      Dintwm bar text for dwindle mode                                                          BAR
+  BAR_TEXT_DWINDLE      FibD                                           Dintwm bar text for dwindle mode                                                          BAR
 
-  BAR_TEXT_SPIRAL       FibS                                      Dintwm bar text for spiral mode                                                           BAR
+  BAR_TEXT_SPIRAL       FibS                                           Dintwm bar text for spiral mode                                                           BAR
 
-  BAR_TEXT_SEP_1        |                                         Dintwm bar text for sepator one                                                           BAR
+  BAR_TEXT_SEP_1        |                                              Dintwm bar text for sepator one                                                           BAR
 
-  BAR_TEXT_SEP_2        |                                         Dintwm bar text for sepator one                                                           BAR
+  BAR_TEXT_SEP_2        |                                              Dintwm bar text for sepator one                                                           BAR
 
-  BAR_HIDE_EMPTY        empty                                     Hide bar if workspace is empty                                                            BAR
+  BAR_HIDE_EMPTY        empty                                          Hide bar if workspace is empty                                                            BAR
 
-  INFO_OFF              empty                                     Supress info windows - not recommended                                                    NA
+  INFO_OFF              empty                                          Supress info windows - not recommended                                                    NA
 
-  VWS_ON                FALSE                                     Enable virtual workspaces                                                                 NA
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  VWS_ON                FALSE                                          Enable virtual workspaces                                                                 NA
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Features explained
 

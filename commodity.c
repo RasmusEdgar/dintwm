@@ -17,6 +17,23 @@ static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
 short info_on = TRUE;
+void subactionchk(void);
+static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str);
+unsigned long winhashes(void);
+unsigned long whash_start;
+static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src);
+short alloc_wtstring(void);
+
+long mainsignum = -1;
+long subsignum = -1;
+unsigned long mainsig, wakeupsigs, subsig, subwake;
+struct Task *maintask = NULL, *subtask = NULL;
+unsigned char subactionchkname[] = "CXM_window_state_checker";
+static short first_run = TRUE;
+static struct Window *awin_comp;
+short running = TRUE;
+unsigned char *wtstring;
+unsigned int wtincrementer = 1;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE_ID, tile, {0} },
@@ -415,15 +432,30 @@ short int commo(void)
 
 	if (!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
+		return 1;
 	}
 
 	if ((diskobj = GetDiskObject(diskobjname)) == NULL) {
 		DeleteMsgPort(mp);
+		return 1;
 	}
+
+	if ((mainsignum = AllocSignal(-1)) == -1L) {
+		DeleteMsgPort(mp);
+		return 1;
+	}
+
+	if ((subsignum = AllocSignal(-1)) == -1L) {
+		DeleteMsgPort(mp);
+		return 1;
+	}
+
+	mainsig = 1UL << (unsigned long)mainsignum;
+	subsig = 1UL << (unsigned long)subsignum;
+	maintask = FindTask(NULL);
 
 	if (mp)
 	{
-		short running = TRUE;
 		CxObj *broker;
 
 		MyBroker.nb_Port = mp;
@@ -445,11 +477,6 @@ short int commo(void)
 				return 1;
 			}
 
-			static short first_run = TRUE;
-			static struct Window *awin_comp;
-			static struct Window *firstwin_comp;
-			static struct Window *nwin_comp;
-			static struct Window *nnwin_comp;
 
 			if (bar_on) {
 				if (wbarheight == 0) {
@@ -478,59 +505,30 @@ short int commo(void)
 				}
 			}
 
+			// Muting GCC warning here. Following official Amiga CreateTask example
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wpedantic"
+			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L);
+			#pragma GCC diagnostic pop
+			if(!subtask) {
+				running = FALSE;
+			}
+
+			running = alloc_wtstring();
 			//Main Loop
 			while (running)
 			{
-				if(tile_off) {
-					Delay(auto_interval);
-				}
+				running = alloc_wtstring();
+				whash_start = winhashes();
 
-				if (tile_off == FALSE && autotile == TRUE) {
-					short act = FALSE;
-					// If previous active window is no longer active, refresh bar
-					if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
-						getactive();
-						awin_comp = active_win;
-						if (bar_on) {
-							update_wbar();
-						}
-						act = TRUE;
-					}
-					// If first window in screen window list changed, when a new window opens, retile and resize bar
-					if (firstwin_comp != screen->FirstWindow || first_run == TRUE) {
-						if (bar_on) {
-							wbarcwb();
-						}
-						if (first_run == TRUE) {
-							first_run = FALSE;
-						}
-						act = TRUE;
-					}
-					// If second win changes retile and resize bar
-					if (firstwin_comp->NextWindow != nwin_comp) {
-						if (bar_on) {
-							wbarcwb();
-						}
-						act = TRUE;
-					}
-					// If third win changes retile and resize bar
-					if (nwin_comp->NextWindow != nnwin_comp) {
-						if (bar_on) {
-							wbarcwb();
-						}
-						act = TRUE;
-					}
-					if (act) {
+				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
+
+				if(wakeupsigs & mainsig) {
+					if (tile_off == FALSE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
-						firstwin_comp = screen->FirstWindow;
-						if (firstwin_comp->NextWindow) {
-							nwin_comp = screen->FirstWindow->NextWindow;
-							nnwin_comp = screen->FirstWindow->NextWindow->NextWindow;
-						}
+						update_wbar();
 					}
-					Delay(auto_interval);
-				} else {
-					(void)WaitPort(mp);
+					Signal(subtask, subsig);
 				}
 
 				while ((msg = (void *)GetMsg(mp)))
@@ -586,7 +584,14 @@ short int commo(void)
 		DeleteMsgPort(mp);
 	}
 
+	Forbid();
+	DeleteTask(subtask);
+	Permit();
+	FreeSignal(mainsignum);
+	FreeSignal(subsignum);
+
 	free_opts();
+	free(wtstring);
 
 	return 0;
 }
@@ -639,4 +644,181 @@ static short alloc_bar_item(unsigned char **b, const char * s)
 	}
 
 	return TRUE;
+}
+
+void subactionchk(void)
+{
+	struct timeval currentval;
+	struct timerequest *tr;
+
+	if (!(tr = create_timer(UNIT_VBLANK))) {
+		running = FALSE;
+	}
+
+	currentval.tv_secs = 0UL;
+	currentval.tv_micro = auto_interval;
+
+	if (first_run) {
+		Signal(maintask, mainsig);
+		first_run = FALSE;
+		(void)Wait((subsig));
+	}
+
+	while(running) {
+		time_delay(tr, &currentval);
+		if (tile_off == FALSE && autotile == TRUE) {
+			if (awin_comp == NULL || awin_comp != active_win) {
+				getactive();
+				awin_comp = active_win;
+				update_wbar();
+			}
+
+			// If previous active window is no longer active, refresh bar
+			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
+				getactive();
+				awin_comp = active_win;
+				update_wbar();
+				Signal(maintask, mainsig);
+				(void)Wait((subsig));
+			}
+
+			if (whash_start != (winhashes())) {
+				Signal(maintask, mainsig);
+				(void)Wait((subsig));
+			}
+
+			if (running == FALSE) {
+				delete_timer(tr);
+				(void)Wait(0L);
+			}
+		}
+	}
+}
+
+struct timerequest *create_timer(unsigned long unit)
+{
+	/* return a pointer to a timer request.  If any problem, return NULL */
+	struct MsgPort *timerport;
+	signed char error;
+	struct timerequest *TimerIO;
+	unsigned char tdevice[] = "timer.device";
+
+	timerport = CreatePort(0, 0);
+
+	if (timerport == NULL) {
+		return (NULL);
+	}
+
+	TimerIO =
+	    (struct timerequest *)CreateExtIO(timerport, //-V2545
+					      sizeof(struct timerequest));
+
+	if (TimerIO == NULL) {
+		DeletePort(timerport);	/* Delete message port */
+		return (NULL);
+	}
+
+	error = OpenDevice(tdevice, unit, (struct IORequest *)TimerIO, 0L); //-V2545
+
+	if ((int)error != 0) {
+		delete_timer(TimerIO);
+		return (NULL);
+	}
+
+	return (TimerIO);
+}
+
+void time_delay(struct timerequest *tr, struct timeval *tv) {
+	unsigned short traddreq = TR_ADDREQUEST;
+	tr->tr_node.io_Command = traddreq;	/* add a new timer request */
+
+	/* structure assignment */
+	tr->tr_time = *tv;
+
+	/* post request to the timer -- will go to sleep till done */
+	(void)DoIO((struct IORequest *)tr); //-V2545
+}
+
+void delete_timer(struct timerequest *tr) {
+	if (tr != 0) {
+		struct MsgPort *tp;
+		tp = tr->tr_node.io_Message.mn_ReplyPort;
+
+		if (tp != 0) {
+			DeletePort(tp);
+		}
+
+		CloseDevice((struct IORequest *)tr); //-V2545
+		DeleteExtIO((struct IORequest *)tr); //-V2545
+	}
+}
+
+short alloc_wtstring(void)
+{
+	if (wtstring == NULL) {
+		// Use calloc to skip nul terminator later
+		if ((wtstring = (unsigned char *)calloc(WTSTRING_INIT_SIZE, sizeof(unsigned char))) == NULL) {
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+	}
+
+	// Check if string is about to overflow (use 4 bytes offset to be extra safe)
+	// realloc window string with WTSTRING_INIT_SIZE times wtincrementer
+	if ((strnlen((const char *)wtstring, (WTSTRING_INIT_SIZE * wtincrementer))) > ((WTSTRING_INIT_SIZE * wtincrementer) - 4U)) {
+		unsigned char * tmp  = (unsigned char *)realloc(wtstring, WTSTRING_INIT_SIZE * wtincrementer);
+		if (tmp == NULL) {
+			return FALSE;
+		} else {
+			wtstring = tmp;
+			wtincrementer++;
+			return TRUE;
+		}
+	}
+
+	return TRUE;
+}
+
+unsigned long winhashes(void)
+{
+	unsigned char *d = wtstring;
+	unsigned char nil = '\0';
+	struct Window *w;
+
+	w = screen->FirstWindow;
+	while (w->NextWindow != NULL) {
+		d = twocat(d, w->Title);
+		w = w->NextWindow;
+	}
+	*d++ = nil;
+
+	return hash(wtstring);
+}
+
+static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str)
+{
+	unsigned long hash = 5381;
+	int c;
+
+	while ((c = (int)*str++)) {
+		hash = ((hash << 5UL) + hash) + (unsigned long)c; /* hash * 33 + c */
+	}
+
+	return hash;
+}
+
+static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src)
+{
+	if (src) {
+		*dest++ = *src++;
+		*dest++ = *src++;
+		return dest;
+	} else {
+		unsigned char n = 'n';
+		unsigned char t = 't';
+		*dest++ = n;
+		*dest++ = t;
+		return dest;
+	}
 }

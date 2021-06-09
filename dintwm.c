@@ -27,6 +27,9 @@ static short int wbartextwidth(int lei, unsigned char * it);
 static short initdefaults(void);
 static void freebartext(void);
 
+// docmd warning
+unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
+
 int main(int argc, char **argv)
 {
 	ketopt_t opt = KETOPT_INIT;
@@ -614,7 +617,9 @@ short docmd(const Arg * arg)
 		stags[3].ti_Tag = SYS_UserShell; //-V2544 //-V2568
 		stags[3].ti_Data = TRUE; //-V2568
 		stags[4].ti_Tag = TAG_DONE; //-V2568
+
 		if ((SystemTagList(cmd, stags)) == -1) {
+			info_window(dcwarn);
 			return FALSE;
 		}
 
@@ -856,7 +861,7 @@ short init_wbar(void) {
 	bar_text[mode_tile].text = padwbartext(bar_text[mode_tile].text);
 	bar_text[mode_grid].text = padwbartext(bar_text[mode_grid].text);
 	bar_text[mode_dwindle].text = padwbartext(bar_text[mode_dwindle].text);
-	bar_text[mode_spiral].text = padwbartext(bar_text[mode_grid].text);
+	bar_text[mode_spiral].text = padwbartext(bar_text[mode_spiral].text);
 
 	wbarmodetext = wbartext;
 	wbarmodetext.IText = bar_text[mode_tile].text;
@@ -1121,7 +1126,7 @@ short info_window(unsigned char * info_text)
 		struct IntuiMessage *msg;
 		(void)Wait(1UL << iwin->UserPort->mp_SigBit);
 		msg = (struct IntuiMessage *)GetMsg(iwin->UserPort);
-		ReplyMsg(msg); //-V2545
+		ReplyMsg((struct Message *)msg); //-V2545
 		if (msg->Class == (unsigned long)IDCMP_CLOSEWINDOW) {
 			CloseWindow(iwin);
 			closewin = TRUE;
