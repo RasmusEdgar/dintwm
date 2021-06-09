@@ -24,9 +24,11 @@ Changelog
   - Set better defaults for docmd (conline and newshell)
   - Create hash of window title snips to keep track of them
   - Much better window change tracking
-  - Much lower CPU foot print
   - Window checking handled in subtask
+  - Closing windows always triggers retile
+  - Much lower CPU foot print
   - Fix bug with tile mode in bar
+  - fbaserel no longer prodcues working binary, dropped
 
 * v0.3 DUD RELEASE BUGS FOUND
 
