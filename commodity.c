@@ -34,6 +34,7 @@ static struct Window *awin_comp;
 short running = TRUE;
 unsigned char *wtstring;
 unsigned int wtincrementer = 1;
+static void cleanup(void);
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE_ID, tile, {0} },
@@ -496,7 +497,8 @@ short int commo(void)
 			}
 
 			if (vws_on == TRUE) {
-				(void)countwindows(1);
+				//(void)countwindows(1);
+				getactive();
 				if (backdropped == TRUE) {
 					if (info_on) {
 						info_window(bdwarn);
@@ -584,14 +586,7 @@ short int commo(void)
 		DeleteMsgPort(mp);
 	}
 
-	Forbid();
-	DeleteTask(subtask);
-	Permit();
-	FreeSignal(mainsignum);
-	FreeSignal(subsignum);
-
-	free_opts();
-	free(wtstring);
+	cleanup();
 
 	return 0;
 }
@@ -822,3 +817,34 @@ static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char
 		return dest;
 	}
 }
+
+static void cleanup(void)
+{
+	Forbid();
+	DeleteTask(subtask);
+	Permit();
+	FreeSignal(mainsignum);
+	FreeSignal(subsignum);
+
+	free_opts();
+	free(wtstring);
+
+	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
+
+	//lockbasescreen(&ilock, &screen);
+	for (struct Window *window = screen->FirstWindow; window;
+	     window = window->NextWindow) {
+		if (window->ExtData) {
+			window->ExtData = NULL;
+		}
+	}
+	//unlockbasescreen(&ilock, &screen);
+
+	if (bar_on) {
+		CloseWindow(wbw);
+		for (int i = 0; i < BAR_LAST_TEXT; ++i) {
+			free(&bar_text[i].text);
+		}
+	}
+}
+

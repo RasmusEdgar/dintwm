@@ -17,39 +17,38 @@ static int nolock = 0;
 static short printusage(void);
 static short skipper(struct Window *w);
 static void moveallwin(int m);
-static void clearextdata(void);
+//static void cleanup(void);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static inline void mapws(void);
 static inline unsigned char * maptm(void);
 static inline unsigned char * padwbartext(unsigned char * s);
 static short int wbartextwidth(int lei, unsigned char * it);
-static short initdefaults(void);
-static void freebartext(void);
+static int dintwmrun(int argc, char **argv);
+static void initdefaults(void);
 
-// docmd warning
-unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
 
 int main(int argc, char **argv)
+{
+	static int dint_exit_state = EXIT_SUCCESS;
+
+	initdefaults();
+
+	dint_exit_state = dintwmrun(argc, argv);
+
+	//cleanup();
+
+	return dint_exit_state;
+}
+
+static int dintwmrun(int argc, char **argv)
 {
 	ketopt_t opt = KETOPT_INIT;
 	static int c;
 	static int dint_opt_state = NOTSET;
-	static int dint_exit_state = EXIT_SUCCESS;
 	static int dint_fail_state = EXIT_SUCCESS;
+	static int dint_exit_state = EXIT_SUCCESS;
 	static int not_known;
-	short init_val = TRUE;
-
-	init_val = initdefaults();
-	if (init_val == FALSE) {
-		freebartext();
-		return EXIT_FAILURE;
-	}
-
-	lockbasescreen(&ilock, &screen);
-	sheight = screen->Height;
-	swidth = screen->Width;
-	unlockbasescreen(&ilock, &screen);
 
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:CdghstV", 0)) >= 0) {
 		switch (c) {
@@ -215,16 +214,10 @@ int main(int argc, char **argv)
 		}
 	}
 
-	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
-	clearextdata();
-	if (bar_on) {
-		CloseWindow(wbw);
-		freebartext();
-	}
 	return dint_exit_state;
 }
 
-static short initdefaults(void)
+static void initdefaults(void)
 {
 	unsigned char nil = '\0';
 	fact = TILE_FACT_DEF;
@@ -243,16 +236,10 @@ static short initdefaults(void)
 	vws_on = FALSE;
 	wbarheight = 0;
 
-	return TRUE;
-}
-
-
-static void freebartext(void)
-{
-	int i;
-	for (i = 0; i < BAR_LAST_TEXT; ++i) {
-		free(&bar_text[i].text);
-	}
+	lockbasescreen(&ilock, &screen);
+	sheight = screen->Height;
+	swidth = screen->Width;
+	unlockbasescreen(&ilock, &screen);
 }
 
 static short printusage(void)
@@ -271,7 +258,7 @@ static short printusage(void)
 		"<other arg> -R<int>: Add custom right gap",
 		"-h: This message");
 
-	return TRUE;
+	return EXIT_SUCCESS;
 }
 
 static short skipper(struct Window *w)
@@ -532,18 +519,6 @@ short switcher(const Arg * arg)
 	return rc;
 }
 
-static void clearextdata(void)
-{
-	lockbasescreen(&ilock, &screen);
-	for (window = screen->FirstWindow; window;
-	     window = window->NextWindow) {
-		if (window->ExtData) {
-			window->ExtData = NULL;
-		}
-	}
-	unlockbasescreen(&ilock, &screen);
-}
-
 int countwindows(int l)
 {
 	int wincount;
@@ -619,6 +594,7 @@ short docmd(const Arg * arg)
 		stags[4].ti_Tag = TAG_DONE; //-V2568
 
 		if ((SystemTagList(cmd, stags)) == -1) {
+			unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
 			info_window(dcwarn);
 			return FALSE;
 		}
