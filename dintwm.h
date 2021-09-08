@@ -123,7 +123,7 @@
 #define DEF_BAR_TEXT_SPACE " "
 #define DEF_BAR_TEXT_ERR "Fail"
 
-#define DEFCON "CON:"
+#define DEFCON "NIL:"
 #define DEFCMD "NewShell CON:0/0/50/50/Shell/AUTO/CLOSE/WAIT"
 #define COMMODITIZE -1 // Commoditize on/off
 #define LAYOUT_START -1 // switcher function - determines if current_layot should be set
@@ -178,6 +178,9 @@
 
 #define WTSTRING_INIT_SIZE 256U // Allow 128 windows before realloc of wtstring
 
+#define MOD1 "control"
+#define MOD2 "lshift"
+
 typedef union {
 	int i;
 	unsigned int u;
@@ -224,6 +227,7 @@ int sheight;
 int swidth;
 struct Screen *screen;
 struct Window *active_win;
+unsigned char nil;
 
 // Wbar specific vars
 short bar_on;

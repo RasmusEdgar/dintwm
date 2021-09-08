@@ -8,7 +8,7 @@ static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
-_Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
+static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
 static short alloc_bar_item(unsigned char **b, const char * s);
@@ -179,7 +179,7 @@ static struct NewBroker MyBroker =
         0
 };
 
-_Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
+static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
 	short rc = TRUE;
 	size_t keyarrsize;
@@ -361,7 +361,6 @@ _Bool attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *di
 		rc = rc == TRUE ? alloc_bar_item(&bar_text[err].text, DEF_BAR_TEXT_ERR) : FALSE;
 
 		// Bar color assignment
-		unsigned char nil = '\0';
 		if (*bar_color[bg].color == nil) { bar_color[bg].color[0] = DEF_BAR_BG_COL; }
 		if (*bar_color[fp_ws].color == nil) { bar_color[fp_ws].color[0] = DEF_BAR_FP_WS_COL; }
 		if (*bar_color[bp_ws].color == nil) { bar_color[bp_ws].color[0] = DEF_BAR_BP_WS_COL; }
@@ -433,22 +432,22 @@ short int commo(void)
 
 	if (!(iconbase = OpenLibrary(iconlib, 37))) {
 		DeleteMsgPort(mp);
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	if ((diskobj = GetDiskObject(diskobjname)) == NULL) {
 		DeleteMsgPort(mp);
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	if ((mainsignum = AllocSignal(-1)) == -1L) {
 		DeleteMsgPort(mp);
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	if ((subsignum = AllocSignal(-1)) == -1L) {
 		DeleteMsgPort(mp);
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	mainsig = 1UL << (unsigned long)mainsignum;
@@ -466,7 +465,7 @@ short int commo(void)
 			running = FALSE;
 		}
 
-		if (running == TRUE && (attachtooltypes(broker, mp, diskobj)))
+		if (running == TRUE && (attachtooltypes(broker, mp, diskobj) == TRUE))
 		{
 			CxMsg *msg;
 			CloseLibrary(iconbase);
@@ -588,7 +587,7 @@ short int commo(void)
 
 	cleanup();
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 static short alloc_opts(char *t, Ostore *s, size_t i, int subtract)
@@ -630,7 +629,6 @@ static void free_opts(void)
 
 static short alloc_bar_item(unsigned char **b, const char * s)
 {
-	unsigned char nil = '\0';
 	if (**b == nil) {
 		if ((*b = malloc((strnlen(s, TT_MAX_LENGTH)+1U))) == NULL) {
 			return FALSE;
@@ -778,7 +776,6 @@ short alloc_wtstring(void)
 unsigned long winhashes(void)
 {
 	unsigned char *d = wtstring;
-	unsigned char nil = '\0';
 	struct Window *w;
 
 	w = screen->FirstWindow;
@@ -847,4 +844,3 @@ static void cleanup(void)
 		}
 	}
 }
-

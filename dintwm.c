@@ -17,7 +17,6 @@ static int nolock = 0;
 static short printusage(void);
 static short skipper(struct Window *w);
 static void moveallwin(int m);
-//static void cleanup(void);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static inline void mapws(void);
@@ -27,7 +26,6 @@ static short int wbartextwidth(int lei, unsigned char * it);
 static int dintwmrun(int argc, char **argv);
 static void initdefaults(void);
 
-
 int main(int argc, char **argv)
 {
 	static int dint_exit_state = EXIT_SUCCESS;
@@ -35,8 +33,6 @@ int main(int argc, char **argv)
 	initdefaults();
 
 	dint_exit_state = dintwmrun(argc, argv);
-
-	//cleanup();
 
 	return dint_exit_state;
 }
@@ -219,7 +215,7 @@ static int dintwmrun(int argc, char **argv)
 
 static void initdefaults(void)
 {
-	unsigned char nil = '\0';
+	nil = (unsigned char)'\0';
 	fact = TILE_FACT_DEF;
 	hidewbar = 0U;
 	current_ws = 0U;
