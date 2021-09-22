@@ -123,7 +123,7 @@
 #define DEF_BAR_TEXT_SPACE " "
 #define DEF_BAR_TEXT_ERR "Fail"
 
-#define DEFCON "CON://///AUTO/CLOSE/WAIT"
+#define DEFCON "CON:0/0/550/350/Dintwm Shell/AUTO/CLOSE/WAIT"
 #define DEFCMD "NewShell"
 #define COMMODITIZE -1 // Commoditize on/off
 #define LAYOUT_START -1 // switcher function - determines if current_layot should be set
