@@ -496,7 +496,7 @@ short int commo(void)
 			}
 
 			if (vws_on == TRUE) {
-				//(void)countwindows(1);
+				(void)countwindows(1);
 				getactive();
 				if (backdropped == TRUE) {
 					if (info_on) {
@@ -515,7 +515,9 @@ short int commo(void)
 				running = FALSE;
 			}
 
-			running = alloc_wtstring();
+			if (running) {
+				running = alloc_wtstring();
+			}
 			//Main Loop
 			while (running)
 			{

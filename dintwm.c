@@ -262,8 +262,6 @@ static short skipper(struct Window *w)
 	if (w->Flags & (unsigned long)WFLG_BACKDROP) {
 		backdropped = TRUE;
 		return SKIP;
-	} else {
-		backdropped = FALSE;
 	}
 
 	if (w->Flags & (unsigned long)WFLG_GIMMEZEROZERO) {
@@ -553,7 +551,7 @@ void getactive(void)
 short docmd(const Arg * arg)
 {
 	int cmdid = arg->i - (int)CMD_ID_0;
-	struct TagItem stags[5];
+	struct TagItem stags[6];
 	long int file;
 	unsigned char conline[TT_MAX_LENGTH];
 	unsigned char cmd[TT_MAX_LENGTH];
@@ -587,7 +585,9 @@ short docmd(const Arg * arg)
 		stags[2].ti_Data = TRUE; //-V2568
 		stags[3].ti_Tag = SYS_UserShell; //-V2544 //-V2568
 		stags[3].ti_Data = TRUE; //-V2568
-		stags[4].ti_Tag = TAG_DONE; //-V2568
+		stags[4].ti_Tag = NP_StackSize; //-V2544 //-V2568
+		stags[4].ti_Data = 16000UL; //-V2568
+		stags[5].ti_Tag = TAG_DONE; //-V2568
 
 		if ((SystemTagList(cmd, stags)) == -1) {
 			unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
