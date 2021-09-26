@@ -179,8 +179,8 @@
 #define WTSTRING_INIT_SIZE 256U // Allow 128 windows before realloc of wtstring
 
 #define MOD1 "control"
-#define MOD2 "lcommand"
-#define MOD3 "shift"
+#define MOD2 "shift"
+#define MOD3 "alt"
 
 typedef union {
 	int i;
