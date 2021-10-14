@@ -25,6 +25,7 @@ static inline unsigned char * padwbartext(unsigned char * s);
 static short int wbartextwidth(int lei, unsigned char * it);
 static int dintwmrun(int argc, char **argv);
 static void initdefaults(void);
+static struct Window * findfirstwin(void);
 
 int main(int argc, char **argv)
 {
@@ -733,8 +734,25 @@ short changews(const Arg * arg) {
 	moveallwin(BACK);
 	current_ws = arg->u;
 	moveallwin(FRONT);
+	ActivateWindow(findfirstwin());
 
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+}
+
+struct Window * findfirstwin(void) {
+	lockbasescreen(&ilock, &screen);
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+		if ((skip = skipper(window)) == SKIP) {
+			continue;
+		}
+		if ((unsigned int)window->ExtData & current_ws) {
+			unlockbasescreen(&ilock, &screen);
+			return window;
+		}
+	}
+	unlockbasescreen(&ilock, &screen);
+	return window;
 }
 
 short movetows(const Arg * arg) {
@@ -756,6 +774,7 @@ short movetows(const Arg * arg) {
 		}
 	}
 	unlockbasescreen(&ilock, &screen);
+	ActivateWindow(findfirstwin());
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
