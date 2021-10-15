@@ -39,10 +39,10 @@ static void cleanup(void);
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE_ID, tile, {0} },
 	{ TYPE_HGRID, KEY_HGRID, KEYTYPE_ID, hgrid, {0} },
-	{ TYPE_SPIRAL, KEY_SPIRAL, KEYTYPE_ID, fibonacci, {.i = 0} },
-	{ TYPE_DWINDLE, KEY_DWINDLE, KEYTYPE_ID, fibonacci, {.i = 1} },
-	{ TYPE_SWITCHF, KEY_SWITCHF, KEYTYPE_ID, switcher, {.i = 1} },
-	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE_ID, switcher, {.i = 0} },
+	{ TYPE_SPIRAL, KEY_SPIRAL, KEYTYPE_ID, fibonacci, { .i = 0} },
+	{ TYPE_DWINDLE, KEY_DWINDLE, KEYTYPE_ID, fibonacci, { .i = 1 } },
+	{ TYPE_SWITCHF, KEY_SWITCHF, KEYTYPE_ID, switcher, { .i = 1 } },
+	{ TYPE_SWITCHB, KEY_SWITCHB, KEYTYPE_ID, switcher, { .i = 0 } },
 	{ TYPE_INCTOPGAP, KEY_INCTOPGAP, KEYTYPE_ID, changegaps, {.i = TOPGAP_ID} },
 	{ TYPE_INCBOTTOMGAP, KEY_INCBOTTOMGAP, KEYTYPE_ID, changegaps, {.i = BOTTOMGAP_ID} },
 	{ TYPE_INCLEFTGAP, KEY_INCLEFTGAP, KEYTYPE_ID, changegaps, {.i = LEFTGAP_ID} },
@@ -76,6 +76,7 @@ Keys defkeys[] = {
 	{ TYPE_KEY_CWS_3, KEY_CWS_3, KEYTYPE_ID, movetows, { .u = WS_3 } },
 	{ TYPE_KEY_CWS_4, KEY_CWS_4, KEYTYPE_ID, movetows, { .u = WS_4 } },
 	{ TYPE_KEY_CWS_5, KEY_CWS_5, KEYTYPE_ID, movetows, { .u = WS_5 } },
+	{ TYPE_KEY_TAB_NEXT, KEY_TAB_NEXT, KEYTYPE_ID, tabnextwin, { .i = 0 } },
 	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE_ID, exit_cxm, {.s = FALSE} },
 };
 

@@ -778,6 +778,30 @@ short movetows(const Arg * arg) {
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
+short tabnextwin(const Arg * arg) {
+	(void)arg;
+	lockbasescreen(&ilock, &screen);
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+		if ((skip = skipper(window)) == SKIP) {
+			continue;
+		}
+		if ((unsigned int)window->ExtData & current_ws) {
+			if (window->Flags & (unsigned long)WINDOWACTIVE) {
+				if ((unsigned int)window->NextWindow->ExtData & current_ws) {
+					ActivateWindow(window->NextWindow);
+					unlockbasescreen(&ilock, &screen);
+					return TRUE;
+				}
+				continue;
+			}
+		}
+	}
+	unlockbasescreen(&ilock, &screen);
+	ActivateWindow(findfirstwin());
+	return TRUE;
+}
+
 static inline unsigned char * padwbartext(unsigned char * s)
 {
 	unsigned char * tmp = s;

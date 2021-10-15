@@ -211,6 +211,7 @@ short update_wbar(void);
 void wbarcwb(void);
 short info_window(unsigned char * info_text);
 short tileoff(const Arg *arg);
+short tabnextwin(const Arg * arg);
 
 int topgap;
 int bottomgap;
