@@ -159,6 +159,7 @@
 #define WS_4 (1U << 4)
 #define WS_5 (1U << 5)
 #define WBAR (1U << 6)
+#define WBENCH (1U << 7)
 #define WBAR_HEIGHT 20
 #define BAR_HIDE_ON (1U << 0)
 #define BAR_HIDE_TOGGLE (1U << 1)

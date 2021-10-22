@@ -427,7 +427,7 @@ short int commo(void)
 	struct MsgPort *mp = CreateMsgPort();
 	static struct DiskObject *diskobj;
 	static unsigned char iconlib[] = "icon.library";
-	static unsigned char diskobjname[] = "dintwm";
+	static unsigned char diskobjname[] = "PROGDIR:dintwm";
 
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 
@@ -672,10 +672,13 @@ void subactionchk(void)
 			// If previous active window is no longer active, refresh bar
 			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 				getactive();
-				awin_comp = active_win;
-				update_wbar();
-				Signal(maintask, mainsig);
-				(void)Wait((subsig));
+				// Don't retile if workbench screen
+				if (((unsigned int)active_win->ExtData & WBENCH) == 0U) {
+					awin_comp = active_win;
+					update_wbar();
+					Signal(maintask, mainsig);
+					(void)Wait((subsig));
+				}
 			}
 
 			if (whash_start != (winhashes())) {

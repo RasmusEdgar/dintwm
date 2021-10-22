@@ -274,6 +274,7 @@ static short skipper(struct Window *w)
 	}
 
 	if (strcmp("Workbench", (const char *)w->Title) == 0) {
+		w->ExtData = (unsigned char *)WBENCH;
 		return SKIP;
 	}
 
@@ -790,6 +791,11 @@ short tabnextwin(const Arg * arg) {
 			if (window->Flags & (unsigned long)WINDOWACTIVE) {
 				if ((unsigned int)window->NextWindow->ExtData & current_ws) {
 					ActivateWindow(window->NextWindow);
+					unlockbasescreen(&ilock, &screen);
+					return TRUE;
+				}
+				if ((unsigned int)window->NextWindow->ExtData & WBENCH) {
+					ActivateWindow(window);
 					unlockbasescreen(&ilock, &screen);
 					return TRUE;
 				}
