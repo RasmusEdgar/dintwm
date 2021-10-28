@@ -236,6 +236,15 @@ static void initdefaults(void)
 	lockbasescreen(&ilock, &screen);
 	sheight = screen->Height;
 	swidth = screen->Width;
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+		if (strcmp("Workbench", (const char *)window->Title) == 0) {
+			window->ExtData = (unsigned char *)WBENCH;
+		}
+		if (!window->ExtData) {
+			window->ExtData = (unsigned char *)current_ws;
+		}
+	}
 	unlockbasescreen(&ilock, &screen);
 }
 
@@ -273,8 +282,9 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
-	if (strcmp("Workbench", (const char *)w->Title) == 0) {
-		w->ExtData = (unsigned char *)WBENCH;
+	//if (strcmp("Workbench", (const char *)w->Title) == 0) {
+	if ((unsigned int)window->ExtData & WBENCH) {
+		//w->ExtData = (unsigned char *)WBENCH;
 		return SKIP;
 	}
 
@@ -782,29 +792,37 @@ short movetows(const Arg * arg) {
 short tabnextwin(const Arg * arg) {
 	(void)arg;
 	lockbasescreen(&ilock, &screen);
-	for (window = screen->FirstWindow; window;
-		window = window->NextWindow) {
-		if ((skip = skipper(window)) == SKIP) {
-			continue;
-		}
+	for (window = screen->FirstWindow; window; window = window->NextWindow) {
 		if ((unsigned int)window->ExtData & current_ws) {
 			if (window->Flags & (unsigned long)WINDOWACTIVE) {
-				if ((unsigned int)window->NextWindow->ExtData & current_ws) {
-					ActivateWindow(window->NextWindow);
+				if (((unsigned int)window->NextWindow->ExtData & current_ws) != 0U &&
+					(window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) == 0UL) {
+					if (window->NextWindow) {
+						ActivateWindow(window->NextWindow);
+					}
 					unlockbasescreen(&ilock, &screen);
 					return TRUE;
 				}
 				if ((unsigned int)window->NextWindow->ExtData & WBENCH) {
-					ActivateWindow(window);
+					ActivateWindow(findfirstwin());
 					unlockbasescreen(&ilock, &screen);
 					return TRUE;
 				}
-				continue;
+				if (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
+					while (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
+						window = window->NextWindow;
+					}
+					if (window->NextWindow) {
+						ActivateWindow(window->NextWindow);
+					}
+					unlockbasescreen(&ilock, &screen);
+					return TRUE;
+				}
 			}
 		}
 	}
-	unlockbasescreen(&ilock, &screen);
 	ActivateWindow(findfirstwin());
+	unlockbasescreen(&ilock, &screen);
 	return TRUE;
 }
 
