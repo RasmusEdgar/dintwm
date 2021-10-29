@@ -282,9 +282,7 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
-	//if (strcmp("Workbench", (const char *)w->Title) == 0) {
 	if ((unsigned int)window->ExtData & WBENCH) {
-		//w->ExtData = (unsigned char *)WBENCH;
 		return SKIP;
 	}
 
