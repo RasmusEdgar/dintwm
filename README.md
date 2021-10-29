@@ -83,6 +83,7 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | POPKEY\_CMD_0..9 | spawns custom commands | rawkey control lcommand 0..9 | CMD_0..9, CONLINE_0..9 |
 | POPKEY\_WS_0..5 | change to virtual workspace | rawkey control lcommand numpad 0..5 | POPKEY_CWS_0..5 |
 | POPKEY\_CWS_0..5 | move active window to virtual workspace | rawkey control shift numpad 0..5 | POPKEY_CWS_0..5 |
+| POPKEY\_TAB\_NEXT | rawkey control lcommand tab | tabs through windows on current workspace | NA |
 | POPKEY\_CXM\_EXIT | rawkey control lcommand q | exits commodity | NA |
 | POPKEY\_TILE\_OFF | rawkey control lcommand o | disables tiling globally | NA |
 | TOPGAP | 0 | sets the top gap of the screen | NA |
