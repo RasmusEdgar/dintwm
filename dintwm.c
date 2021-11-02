@@ -793,23 +793,24 @@ short tabnextwin(const Arg * arg) {
 	for (window = screen->FirstWindow; window; window = window->NextWindow) {
 		if ((unsigned int)window->ExtData & current_ws) {
 			if (window->Flags & (unsigned long)WINDOWACTIVE) {
-				if (((unsigned int)window->NextWindow->ExtData & current_ws) != 0U &&
-					(window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) == 0UL) {
-					if (window->NextWindow) {
-						ActivateWindow(window->NextWindow);
-					}
-					unlockbasescreen(&ilock, &screen);
-					return TRUE;
-				}
 				if ((unsigned int)window->NextWindow->ExtData & WBENCH) {
-					ActivateWindow(findfirstwin());
-					unlockbasescreen(&ilock, &screen);
-					return TRUE;
+					window = window->NextWindow;
+					continue;
 				}
 				if (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
 					while (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
 						window = window->NextWindow;
 					}
+					if (((unsigned int)window->NextWindow->ExtData & WBENCH) == 0U) {
+						ActivateWindow(window->NextWindow);
+					} else {
+						ActivateWindow(findfirstwin());
+					}
+					unlockbasescreen(&ilock, &screen);
+					return TRUE;
+				}
+				if (((unsigned int)window->NextWindow->ExtData & current_ws) != 0U &&
+					(window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) == 0UL) {
 					if (window->NextWindow) {
 						ActivateWindow(window->NextWindow);
 					}

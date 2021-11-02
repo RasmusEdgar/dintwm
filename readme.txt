@@ -79,6 +79,8 @@ Tooltype Options Table
 
   POPKEY_CWS_0..5       move active window to virtual workspace        rawkey control shift numpad 0..5                                                          POPKEY_CWS_0..5
 
+  POPKEY_TAB_NEXT       rawkey control lcommand tab                    tabs through windows on current workspace                                                 NA
+
   POPKEY_CXM_EXIT       rawkey control lcommand q                      exits commodity                                                                           NA
 
   POPKEY_TILE_OFF       rawkey control lcommand o                      disables tiling globally                                                                  NA
@@ -95,9 +97,9 @@ Tooltype Options Table
 
   DEFAULT_TOPGAP        TRUE                                           set automatically calculated gap                                                          NA
 
-  CMD_0..9              NewShell CON:0/0/50/50/Shell/AUTO/CLOSE/WAIT   sets custom commands to spawn, like a shell or a program                                  CONLINE_0..9
+  CMD_0..9              NewShell                                       sets custom commands to spawn, like a shell or a program                                  CONLINE_0..9
 
-  CONLINE_0..9          CON:                                           sets custom conline for the matching CMD_0..9                                             CMD_0..9
+  CONLINE_0..9          CON:0/0/550/350/Dintwm Shell/AUTO/CLOSE/WAIT   sets custom conline for the matching CMD_0..9                                             CMD_0..9
 
   EXCL_WTYPE_0..9       empty                                          excludes windows based on window->Title                                                   deactivates INCL_WTYPE_0..9
 
@@ -253,9 +255,9 @@ TODO
 -   |DONE|Stop commodity with hotkey|DONE|
 -   |DONE|Use github actions to build and package dintwm release|DONE|
 -   |DONE|Make static bar text fields configurable|DONE|
--   Implement dedicated dintwm screen
--   |DONE|Builtin dmenu like launcher|DONE| Will create new tool instead
--   Ensure AROS compatibility (works without bar atm)
+-   |DONE|Implement dedicated dintwm screen|DONE| Dropped
+-   |DONE|Builtin dmenu like launcher|DONE| * See http://aminet.net/package/util/wb/tabexec *
+-   |DONE|Ensure AROS compatibility (works without bar atm)|DONE| Dropped ftb
 
 Note on licensing
 

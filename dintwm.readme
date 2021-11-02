@@ -13,9 +13,18 @@ What is DintWM?
 
 DintWM is a tiling window manager for AmigaOS 3.1.x.
 
+Extensive documentation and examples found here:  
+https://github.com/RasmusEdgar/dintwm
+
 ---------
 Changelog
 ---------
+
+* v0.5
+  - Fix autotiling bug that prevented program launches from wb icons
+  - Add feature to tab through windows on current workspace
+  - Auto select first active window in workspace when changing workspace
+  - Auto select first active window when moving a window to other workspace
 
 * v0.4
   - Make text items in bar configurable
@@ -45,15 +54,6 @@ Changelog
 * v0.1
   - initial release
 
-----------
-Known bugs
-----------
-
-* <=v0.3
-  - Automatic retile is not always triggered when closing windows in current ws
-    after moving windows to other workspaces. Work in the main loop and a
-    better way to keep track windows is needed.
-
 --------
 Features
 --------
@@ -71,6 +71,7 @@ Features
 * All bar colors configurable
 * Dynamic resizing of tiling area
 * Configurable size of tiling area
+* Tab through windows on current workspace
 
 -------------------------
 Installation as commodity
@@ -113,13 +114,6 @@ dintwm -C
 List available options with:
 
 dintwm -h
-
-----
-TODO
-----
-
-* Implement dedicated dintwm screen
-* Ensure AROS compatibility (works without bar)
 
 ------------------------
 Documentation and Source

@@ -92,8 +92,8 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | RIGHTGAP | 0 | sets a right gap | NA |
 | GAP\_CHANGE\_VALUE | 20 | sets the increment/decrement value for gap adjustment | *GAP |
 | DEFAULT\_TOPGAP | TRUE | set automatically calculated gap | NA |
-| CMD\_0..9 | NewShell CON:0/0/50/50/Shell/AUTO/CLOSE/WAIT | sets custom commands to spawn, like a shell or a program | CONLINE\_0..9 |
-| CONLINE\_0..9 | CON: | sets custom conline for the matching CMD\_0..9 | CMD\_0..9 |
+| CMD\_0..9 | NewShell | sets custom commands to spawn, like a shell or a program | CONLINE\_0..9 |
+| CONLINE\_0..9 | CON:0/0/550/350/Dintwm Shell/AUTO/CLOSE/WAIT | sets custom conline for the matching CMD\_0..9 | CMD\_0..9 |
 | EXCL\_WTYPE\_0..9 | empty | excludes windows based on window->Title | deactivates INCL\_WTYPE\_0..9 |
 | INCL\_WTYPE\_0..9 | empty | includes windows based on window->Title | deactivates EXCL\_WTYPE\_0..9 |
 | AUTO | empty | enable auto tiling, all non-filtered new windows will be tiled | AUTO\_INTERVAL\_DELAY |
@@ -219,9 +219,9 @@ Options are:
 - ~~Stop commodity with hotkey~~
 - ~~Use github actions to build and package dintwm release~~
 - ~~Make static bar text fields configurable~~
-- Implement dedicated dintwm screen
-- ~~Builtin dmenu like launcher~~ *Will create new tool instead*
-- Ensure AROS compatibility (works without bar atm)
+- ~~Implement dedicated dintwm screen~~ *Dropped*
+- ~~Builtin dmenu like launcher~~ * See http://aminet.net/package/util/wb/tabexec *
+- ~~Ensure AROS compatibility (works without bar atm)~~ *Dropped ftb*
 
 ## Note on licensing
 
