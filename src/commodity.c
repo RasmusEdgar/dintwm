@@ -1,8 +1,8 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 // Copyright 2021 Rasmus Edgar
-#include "./dintwm.h"
-#include "./cxm_config.h"
+#include "../include/dintwm.h"
+#include "../include/cxm_config.h"
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager";

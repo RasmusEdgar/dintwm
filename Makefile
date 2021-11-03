@@ -3,14 +3,14 @@ define newline
 
 endef
 
-SOURCES = dintwm.c commodity.c
+SOURCES = src/dintwm.c src/commodity.c
 OBJECTS = $(SOURCES:.c=.o)
-CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 -O0 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps
+CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 -O0 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps=obj
 CC = m68k-amigaos-gcc
 CFLAGS =-std=c11 -Ofast -noixemul -Wall -Wextra -s -fomit-frame-pointer
-MAINHEADER = dintwm.h
-CONFHEADER = cxm_config.h
-EXTHEADERS = ketopt.h wbar_config.h
+MAINHEADER = include/dintwm.h
+CONFHEADER = include/cxm_config.h
+EXTHEADERS = include/ketopt.h include/wbar_config.h
 HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
 CPPLINTCMD = cpplint
 CPPLINTOPTS = --linelength 150 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard
@@ -23,14 +23,14 @@ SPLINTARGS = -I $(HOME)/opt/amiga/m68k-amigaos/ndk-include/
 PANDOC = awk -v RS='\\[/*.:.*pancut.*panend)' -v ORS= '1;NR==1{printf "Check demos on: https://github.com/RasmusEdgar/dintwm"}' README.md | pandoc -f markdown -t plain --wrap=none | sed 's/~~/|DONE|/g' > readme.txt
 TARGET = dintwm
 GITVER = $(shell git describe --tags)
-VERCMD = sed -i "s/VERGIT/${GITVER}/g" dintwm.h
-CLRVER = $(shell gawk -i inplace -v RS='//VERCUT.*VERCUT' -v ORS= '1;NR==1{printf "//VERCUT\n#define DINTWM_VERSION \"VERGIT\"\n//VERCUT"}' dintwm.h)
+VERCMD = sed -i "s/VERGIT/${GITVER}/g" include/dintwm.h
+CLRVER = $(shell gawk -i inplace -v RS='//VERCUT.*VERCUT' -v ORS= '1;NR==1{printf "//VERCUT\n#define DINTWM_VERSION \"VERGIT\"\n//VERCUT"}' include/dintwm.h)
 
 ifdef strict
 CFLAGS = $(CFLAGSSTRICT)
 TEMPS = $(SOURCES:.c=.i) $(SOURCES:.c=.s)
 LOGS = $(SOURCES:.c=.log)
-PEXCL = --exclude-path */opt/amiga/* --exclude-path ./ketopt.h
+PEXCL = --exclude-path */opt/amiga/* --exclude-path ./include/ketopt.h
 ifdef misra
 MPLOGFLAG = -d V2511,V2516,V2510 -a MISRA:1,2
 endif
