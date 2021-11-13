@@ -25,6 +25,7 @@ Changelog
   - Add feature to tab through windows on current workspace
   - Auto select first active window in workspace when changing workspace
   - Auto select first active window when moving a window to other workspace
+  - Fix initial barwidth when launching LEFTGAP / RIGHTGAP TT.
 
 * v0.4
   - Make text items in bar configurable
