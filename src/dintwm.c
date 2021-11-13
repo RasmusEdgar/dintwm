@@ -942,6 +942,7 @@ short init_wbar(void) {
 		wbarwtitle.LeftEdge = wbartextwidth(wbarsep_two.LeftEdge, wbarsep_two.IText);
 	}
 
+	wbarcwb();
 	return TRUE;
 }
 
