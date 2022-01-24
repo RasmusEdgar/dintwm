@@ -40,7 +40,6 @@ char TYPE_KEY_CWS_4[] = "POPKEY_CWS_4";
 char TYPE_KEY_CWS_5[] = "POPKEY_CWS_5";
 char TYPE_KEY_CXM_EXIT[] = "POPKEY_CXM_EXIT";
 char TYPE_KEY_TAB_NEXT[] = "POPKEY_TAB_NEXT";
-char TYPE_KEY_TAB_PREV[] = "POPKEY_TAB_PREV";
 char TYPE_TOPGAP[] = "TOPGAP";
 char TYPE_DEFAULT_TOPGAP[] = "DEFAULT_TOPGAP";
 char TYPE_BOTTOMGAP[] = "BOTTOMGAP";
@@ -163,7 +162,6 @@ char KEY_CWS_4[] = "rawkey " MOD1 " " MOD3 " numericpad 4";
 char KEY_CWS_5[] = "rawkey " MOD1 " " MOD3 " numericpad 5";
 char KEY_CXM_EXIT[] = "rawkey " MOD1 " " MOD2 " q";
 char KEY_TAB_NEXT[] = "rawkey " MOD1 " " MOD2 " tab";
-char KEY_TAB_PREV[] = "rawkey " MOD1 " " MOD3 " tab";
 
 short autotile = FALSE;
 

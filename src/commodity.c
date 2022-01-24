@@ -77,7 +77,6 @@ Keys defkeys[] = {
 	{ TYPE_KEY_CWS_4, KEY_CWS_4, KEYTYPE_ID, movetows, { .u = WS_4 } },
 	{ TYPE_KEY_CWS_5, KEY_CWS_5, KEYTYPE_ID, movetows, { .u = WS_5 } },
 	{ TYPE_KEY_TAB_NEXT, KEY_TAB_NEXT, KEYTYPE_ID, tabnextwin, { .i = 0 } },
-	{ TYPE_KEY_TAB_PREV, KEY_TAB_PREV, KEYTYPE_ID, tabprevwin, { .i = 0 } },
 	{ TYPE_KEY_CXM_EXIT, KEY_CXM_EXIT, KEYTYPE_ID, exit_cxm, {.s = FALSE} },
 };
 
