@@ -180,8 +180,10 @@
 #define WTSTRING_INIT_SIZE 256U // Allow 128 windows before realloc of wtstring
 
 #define MOD1 "control"
-#define MOD2 "lcommand"
-#define MOD3 "shift"
+//#define MOD2 "lcommand"
+#define MOD2 "shift"
+#define MOD3 "alt"
+//#define MOD3 "shift"
 
 typedef union {
 	int i;
@@ -213,6 +215,7 @@ void wbarcwb(void);
 short info_window(unsigned char * info_text);
 short tileoff(const Arg *arg);
 short tabnextwin(const Arg * arg);
+short tabprevwin(const Arg * arg);
 
 int topgap;
 int bottomgap;
@@ -326,4 +329,4 @@ Bar_Color bar_color[BAR_LAST_COLOR];
 // timer stuff
 void delete_timer(struct timerequest *);
 struct timerequest *create_timer(ULONG);
-void time_delay(struct timerequest *tr, struct timeval *tv);
+void time_delay(struct timerequest *tr, const struct timeval *tv);

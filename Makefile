@@ -15,7 +15,7 @@ HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS)
 CPPLINTCMD = cpplint
 CPPLINTOPTS = --linelength 150 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard
 CPPCHECKCMD = cppcheck
-CPPCHECKOPTS = --enable=all
+CPPCHECKOPTS = --enable=warning,style,performance,portability,unusedFunction
 FLAWCMD = flawfinder
 FLAWOPTS = -F
 SPLINTCMD = splint

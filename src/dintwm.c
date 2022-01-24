@@ -26,6 +26,8 @@ static short int wbartextwidth(int lei, unsigned char * it);
 static int dintwmrun(int argc, char **argv);
 static void initdefaults(void);
 static struct Window * findfirstwin(void);
+static struct Window * findlastwin(void);
+static struct Window * findprevwin(const struct Window *w);
 
 int main(int argc, char **argv)
 {
@@ -240,6 +242,7 @@ static void initdefaults(void)
 		window = window->NextWindow) {
 		if (strcmp("Workbench", (const char *)window->Title) == 0) {
 			window->ExtData = (unsigned char *)WBENCH;
+			continue;
 		}
 		if (!window->ExtData) {
 			window->ExtData = (unsigned char *)current_ws;
@@ -743,26 +746,49 @@ short changews(const Arg * arg) {
 	moveallwin(BACK);
 	current_ws = arg->u;
 	moveallwin(FRONT);
+	lockbasescreen(&ilock, &screen);
 	ActivateWindow(findfirstwin());
+	unlockbasescreen(&ilock, &screen);
 
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
-struct Window * findfirstwin(void) {
-	lockbasescreen(&ilock, &screen);
+struct Window * findfirstwin(void)
+{
 	for (window = screen->FirstWindow; window;
 		window = window->NextWindow) {
 		if ((skip = skipper(window)) == SKIP) {
 			continue;
 		}
 		if ((unsigned int)window->ExtData & current_ws) {
-			unlockbasescreen(&ilock, &screen);
 			return window;
 		}
 	}
-	unlockbasescreen(&ilock, &screen);
 	return window;
 }
+
+struct Window * findlastwin(void)
+{
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+	}
+	return window;
+}
+
+struct Window * findprevwin(const struct Window *w)
+{
+	for (window = screen->FirstWindow; window;
+		window = window->NextWindow) {
+		if (window->NextWindow == w) {
+			return window;
+		}
+		if (window == w) {
+			return findprevwin(findlastwin());
+		}
+	}
+	return findfirstwin();
+}
+
 
 short movetows(const Arg * arg) {
 	if (vws_on == FALSE) {
@@ -791,36 +817,70 @@ short tabnextwin(const Arg * arg) {
 	(void)arg;
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window; window = window->NextWindow) {
-		if ((unsigned int)window->ExtData & current_ws) {
-			if (window->Flags & (unsigned long)WINDOWACTIVE) {
-				if ((unsigned int)window->NextWindow->ExtData & WBENCH) {
-					window = window->NextWindow;
-					continue;
-				}
-				if (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
-					while (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
-						window = window->NextWindow;
-					}
-					if (((unsigned int)window->NextWindow->ExtData & WBENCH) == 0U) {
-						ActivateWindow(window->NextWindow);
-					} else {
-						ActivateWindow(findfirstwin());
-					}
-					unlockbasescreen(&ilock, &screen);
-					return TRUE;
-				}
-				if (((unsigned int)window->NextWindow->ExtData & current_ws) != 0U &&
-					(window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) == 0UL) {
-					if (window->NextWindow) {
-						ActivateWindow(window->NextWindow);
-					}
-					unlockbasescreen(&ilock, &screen);
-					return TRUE;
-				}
+		if (window->Flags & (unsigned long)WINDOWACTIVE) {
+			if (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
+				window = window->NextWindow;
+			}
+			if ((unsigned int)window->NextWindow->ExtData & current_ws) {
+				ActivateWindow(window->NextWindow);
+				unlockbasescreen(&ilock, &screen);
+				return TRUE;
 			}
 		}
 	}
 	ActivateWindow(findfirstwin());
+	unlockbasescreen(&ilock, &screen);
+	return TRUE;
+}
+
+short tabprevwin(const Arg * arg) {
+	(void)arg;
+	lockbasescreen(&ilock, &screen);
+	for (window = screen->FirstWindow; window; window = window->NextWindow) {
+		if (window->Flags & (unsigned long)WINDOWACTIVE) {
+			struct Window *pw = findprevwin(window);
+			/*if ((unsigned int)pw->ExtData & current_ws) {
+				if ((unsigned int)pw->ExtData & WBENCH) {
+					//ActivateWindow(findfirstwin());
+					printf("wbench found\n");
+					pw = findfirstwin();
+				}
+				if (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
+					printf("bless found\n");
+					pw = findprevwin(pw);
+					continue;
+				}
+				ActivateWindow(pw);
+			} else {*/
+				if (window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) {
+				//if (pw->Flags & (unsigned long)WFLG_BORDERLESS) {
+					//ActivateWindow(findprevwin(pw));
+					pw = findprevwin(pw);
+					printf("Yo\n");
+					//unlockbasescreen(&ilock, &screen);
+					//return TRUE;
+				}
+				if ((unsigned int)pw->ExtData & WBENCH) {
+					//ActivateWindow(findfirstwin());
+					pw = findprevwin(pw);
+					printf("Mo\n");
+					//unlockbasescreen(&ilock, &screen);
+					//return TRUE;
+				}
+			        if (pw == findlastwin()) {
+					printf("Lo\n");
+					pw = findprevwin(pw);
+				}
+				if ((unsigned int)pw->ExtData & current_ws) {
+					ActivateWindow(pw);
+				} else {
+					continue;
+				}
+			//}
+			//unlockbasescreen(&ilock, &screen);
+			//return TRUE;
+		}
+	}
 	unlockbasescreen(&ilock, &screen);
 	return TRUE;
 }
