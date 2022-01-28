@@ -20,7 +20,7 @@ FLAWCMD = flawfinder
 FLAWOPTS = -F
 SPLINTCMD = splint
 SPLINTARGS = -I $(HOME)/opt/amiga/m68k-amigaos/ndk-include/
-PANDOC = awk -v RS='\\[/*.:.*pancut.*panend)' -v ORS= '1;NR==1{printf "Check demos on: https://github.com/RasmusEdgar/dintwm"}' README.md | pandoc -f markdown -t plain --wrap=none | sed 's/~~/|DONE|/g' > readme.txt
+PANDOC = awk -v RS='\\[/*.:.*pancut.*panend)' -v ORS= '1;NR==1{printf "Check demos on: https://github.com/RasmusEdgar/dintwm"}' README.md | pandoc -f markdown-smart -t plain --wrap=none | sed 's/~~/|DONE|/g' > readme.txt
 TARGET = dintwm
 GITVER = $(shell git describe --tags)
 VERCMD = sed -i "s/VERGIT/${GITVER}/g" include/dintwm.h

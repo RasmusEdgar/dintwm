@@ -1,6 +1,6 @@
 dintwm
 
-Tiling window “manager” for AmigaOS 3.1.x.
+Tiling window "manager" for AmigaOS 3.1.x.
 
 NOTE Dintwm is under rather heavy development, it is a hobby project and breakage may occur.
 
@@ -9,7 +9,7 @@ Building from source
 Install crosscompiler:
 https://github.com/bebbo/amiga-gcc
 
-Cross-compilation on Linux for AmigaOS (requires bebbo’s m68k-amigaos-gcc fork)
+Cross-compilation on Linux for AmigaOS (requires bebbo's m68k-amigaos-gcc fork)
 
     make all
 
@@ -71,7 +71,7 @@ Tooltype Options Table
 
   POPKEY_INCALLGAPS     rawkey control lcommand numeric_pad +          increase all gaps while running                                                           GAP_CHANGE_VALUE
 
-  POPKEY_DECALLGAPS     rawkey control lcommand numeric_pad –          (double dash to escape special function of dash) decrease all gaps while running          GAP_CHANGE_VALUE
+  POPKEY_DECALLGAPS     rawkey control lcommand numeric_pad --         (double dash to escape special function of dash) decrease all gaps while running          GAP_CHANGE_VALUE
 
   POPKEY_CMD_0..9       spawns custom commands                         rawkey control lcommand 0..9                                                              CMD_0..9, CONLINE_0..9
 
@@ -193,7 +193,7 @@ Default ToolTypes
 The following tooltypes are enabled in info file by default:
 
 -   AUTO tiling is enabled
--   VWS_ON i.e. virtual workspaces are enabled
+-   VWS_ON i.e. virtual workspaces are enabled
 -   BAR is enabled
 -   DONOTWAIT is enabled to remove nag dialog box on some systems
 -   CMD_0 is set to Newshell by default <ctrl lcommand 0>

@@ -943,6 +943,9 @@ static short int wbartextwidth(int lei, unsigned char * it)
 }
 
 short update_wbar(void) {
+	if (bar_on == FALSE) {
+		return TRUE;
+	}
 	barbdata[0] = 1;
 	barbdata[1] = 1;
 	barbdata[2] = (short)((swidth - (leftgap + rightgap)) - 1);
@@ -971,6 +974,9 @@ short update_wbar(void) {
 }
 
 void wbarcwb(void) {
+	if (bar_on == FALSE) {
+		return;
+	}
 	struct IntuiMessage *msg;
 	lockbasescreen(&ilock, &screen);
 	cwb(wbw, leftgap, sheight - bottomgap, swidth - (leftgap + rightgap), wbarheight);
