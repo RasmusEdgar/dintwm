@@ -198,6 +198,12 @@ The following tooltypes are enabled in info file by default:
 -   DONOTWAIT is enabled to remove nag dialog box on some systems
 -   CMD_0 is set to Newshell by default <ctrl lcommand 0>
 
+Known problems and workarounds:
+
+MagicMenu
+
+MagicMenu with "Non Blocking" enabled in combination with DintWM will dead lock/hang workbench. To use DintWM with MagicMenu, please disable "Non Blocking" in MagicMenu prefs.
+
 Running dintwm from CLI
 
 Again Dintwm will ignore the workbench window, backdropped windows and gimmezerozero windows.
