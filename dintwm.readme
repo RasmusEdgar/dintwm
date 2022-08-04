@@ -20,6 +20,11 @@ https://github.com/RasmusEdgar/dintwm
 Changelog
 ---------
 
+* v0.6
+  - Fixed bug launching Dintwm from workbench introduced in v0.5
+  - Fixed bug when running without BAR TT enabled
+  - Add documentation on MagicMenu "Non Blocking" incompatibility
+
 * v0.5
   - Fix autotiling bug that prevented program launches from wb icons
   - Add feature to tab through windows on current workspace

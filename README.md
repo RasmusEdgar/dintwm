@@ -5,6 +5,48 @@ Tiling window "manager" for AmigaOS 3.1.x.
 **NOTE**
 Dintwm is under rather heavy development, it is a hobby project and breakage may occur.
 
+## Changelog
+
+* v0.6
+  - Fixed bug launching Dintwm from workbench introduced in v0.5
+  - Fixed bug when running without BAR TT enabled
+  - Add documentation on MagicMenu "Non Blocking" incompatibility
+
+* v0.5
+  - Fix autotiling bug that prevented program launches from wb icons
+  - Add feature to tab through windows on current workspace
+  - Auto select first active window in workspace when changing workspace
+  - Auto select first active window when moving a window to other workspace
+  - Fix initial barwidth when launching LEFTGAP / RIGHTGAP TT.
+
+* v0.4
+  - Make text items in bar configurable
+  - Make bar color items behave internally as text items
+  - Really fix off by one memleak bug
+  - Set better defaults for docmd (conline and newshell)
+  - Create hash of window title snips to keep track of them
+  - Much better window change tracking
+  - Window checking handled in subtask
+  - Closing windows always triggers retile
+  - Much lower CPU foot print
+  - Fix bug with tile mode in bar
+  - fbaserel no longer prodcues working binary, dropped
+
+* v0.3 DUD RELEASE BUGS FOUND
+
+* v0.2
+  - Add TT VWS_ON to enable virtual workspaces
+  - Add INFO_OFF TT to disable info boxes
+  - Disable tiling with POPKEY_TILE_OFF
+  - Ignore all WS shifting business when vws's are off
+  - Fix bug with text not fitting in info windows
+  - Quit if backdropped window is detected and vws's are on
+  - Don't show workspaces on bar if vws's are off
+  - Add version option to cli
+
+* v0.1
+  - initial release
+
 ## Building from source
 
 Install crosscompiler:  
