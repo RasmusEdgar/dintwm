@@ -8,8 +8,8 @@ OBJECTS = $(SOURCES:.c=.o)
 CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 -O0 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps=obj
 CC = m68k-amigaos-gcc
 CFLAGS =-std=c11 -Ofast -noixemul -Wall -Wextra -s -fomit-frame-pointer
-MAINHEADER = include/dintwm.h
-CONFHEADER = include/cxm_config.h
+MAINHEADER = include/dintwm.h include/dintwm_shared.h
+CONFHEADER = include/commodity.h
 EXTHEADERS = include/ketopt.h include/wbar_config.h
 HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
 CPPLINTCMD = cpplint
@@ -32,7 +32,7 @@ TEMPS = $(SOURCES:.c=.i) $(SOURCES:.c=.s)
 LOGS = $(SOURCES:.c=.log)
 PEXCL = --exclude-path */opt/amiga/* --exclude-path ./include/ketopt.h
 ifdef misra
-MPLOGFLAG = -d V2511,V2516,V2510 -a MISRA:1,2
+MPLOGFLAG = -d V2511,V2516,V2510,V2600,V2611 -a MISRA:1,2
 endif
 endif
 

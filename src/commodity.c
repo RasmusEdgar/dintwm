@@ -1,40 +1,50 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 // Copyright 2021 Rasmus Edgar
-#include "../include/dintwm.h"
-#include "../include/cxm_config.h"
+#include "../include/dintwm_shared.h"
+#include "../include/commodity.h"
 
 static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager";
 static unsigned char COMMODITY_DESC[] = "To change hotkeys edit tooltypes";
 
-static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
-static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
-static void free_opts(void);
-static short alloc_bar_item(unsigned char **b, const char * s);
-
-static struct Library *iconbase;
 int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
-short info_on = TRUE;
-void subactionchk(void);
-static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str);
-unsigned long winhashes(void);
-unsigned long whash_start;
-static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src);
-short alloc_wtstring(void);
+static short info_on = TRUE;
 
-long mainsignum = -1;
-long subsignum = -1;
-unsigned long mainsig, wakeupsigs, subsig, subwake;
-struct Task *maintask = NULL, *subtask = NULL;
-unsigned char subactionchkname[] = "CXM_window_state_checker";
+static long mainsignum = -1;
+static long subsignum = -1;
+static unsigned long mainsig, wakeupsigs, subsig;
+static struct Task *maintask = NULL, *subtask = NULL;
+static unsigned char subactionchkname[] = "CXM_window_state_checker";
 static short first_run = TRUE;
 static struct Window *awin_comp;
-short running = TRUE;
-unsigned char *wtstring;
-unsigned int wtincrementer = 1;
-static void cleanup(void);
+static short running = TRUE;
+static unsigned char *wtstring;
+static size_t wtincrementer = 1;
+static short autotile = FALSE;
+
+static char KEY_TILE[] = KEY_TILE_TXT, KEY_HGRID[] = KEY_HGRID_TXT,
+	KEY_SPIRAL[] = KEY_SPIRAL_TXT, KEY_DWINDLE[] = KEY_DWINDLE_TXT,
+	KEY_SWITCHF[] = KEY_SWITCHF_TXT, KEY_SWITCHB[] = KEY_SWITCHB_TXT,
+	KEY_INCTOPGAP[] = KEY_INCTOPGAP_TXT, KEY_INCBOTTOMGAP[] = KEY_INCBOTTOMGAP_TXT,
+	KEY_INCLEFTGAP[] = KEY_INCLEFTGAP_TXT, KEY_INCRIGHTGAP[] = KEY_INCRIGHTGAP_TXT,
+	KEY_DECTOPGAP[] = KEY_DECTOPGAP_TXT, KEY_DECBOTTOMGAP[] = KEY_DECBOTTOMGAP_TXT,
+	KEY_DECLEFTGAP[] = KEY_DECLEFTGAP_TXT, KEY_DECRIGHTGAP[] = KEY_DECRIGHTGAP_TXT,
+	KEY_INCALLGAPS[] = KEY_INCALLGAPS_TXT, KEY_DECALLGAPS[] = KEY_DECALLGAPS_TXT,
+	KEY_TILE_OFF[] = KEY_TILE_OFF_TXT, KEY_CMD_0[] = KEY_CMD_0_TXT,
+	KEY_CMD_1[] = KEY_CMD_1_TXT, KEY_CMD_2[] = KEY_CMD_2_TXT,
+	KEY_CMD_3[] = KEY_CMD_3_TXT, KEY_CMD_4[] = KEY_CMD_4_TXT,
+	KEY_CMD_5[] = KEY_CMD_5_TXT, KEY_CMD_6[] = KEY_CMD_6_TXT,
+	KEY_CMD_7[] = KEY_CMD_7_TXT, KEY_CMD_8[] = KEY_CMD_8_TXT,
+	KEY_CMD_9[] = KEY_CMD_9_TXT, KEY_WS_0[] = KEY_WS_0_TXT,
+	KEY_WS_1[] = KEY_WS_1_TXT, KEY_WS_2[] = KEY_WS_2_TXT,
+	KEY_WS_3[] = KEY_WS_3_TXT, KEY_WS_4[] = KEY_WS_4_TXT,
+	KEY_WS_5[] = KEY_WS_5_TXT, KEY_CWS_0[] = KEY_CWS_0_TXT,
+	KEY_CWS_1[] = KEY_CWS_1_TXT, KEY_CWS_2[] = KEY_CWS_2_TXT,
+	KEY_CWS_3[] = KEY_CWS_3_TXT, KEY_CWS_4[] = KEY_CWS_4_TXT,
+	KEY_CWS_5[] = KEY_CWS_5_TXT, KEY_CXM_EXIT[] = KEY_CXM_EXIT_TXT,
+	KEY_TAB_NEXT[] = KEY_TAB_NEXT_TXT;
 
 Keys defkeys[] = {
 	{ TYPE_TILE, KEY_TILE, KEYTYPE_ID, tile, {0} },
@@ -194,7 +204,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
         keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
 
 	for (size_t i = 0; i < optarrsize ; ++i) {
-       		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
+       		char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (const unsigned char *)defopts[i].optname);
 
 		if ((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
 			if (defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
@@ -381,11 +391,11 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 		return rc;
 	}
 
-	if (exclude_wtype) {
+	if (exclude_wtype != 0) {
 		qsort(excls->strings, WTYPE_MAX, sizeof(*excls->strings), cstring_cmp);
 	}
 
-	if (include_wtype) {
+	if (include_wtype != 0) {
 		qsort(incls->strings, WTYPE_MAX, sizeof(*incls->strings), cstring_cmp);
 	}
 
@@ -393,7 +403,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 
 	if (keys != NULL) {
 		for (size_t i = 0; i < keyarrsize ; ++i) {
-			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (unsigned char *)defkeys[i].optname);
+			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (const unsigned char *)defkeys[i].optname);
 
 			if (keys[i].rawcombo == NULL) {
 				keys[i].rawcombo = defkeys[i].defaultval;
@@ -401,7 +411,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 
 			if (keys[i].rawcombo != NULL) {
 				CxObj *filter;
-				if ((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)))
+				if ((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)) != NULL)
 				{
 					AttachCxObj(broker, filter);
 
@@ -425,9 +435,9 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 short int commo(void)
 {
 	struct MsgPort *mp = CreateMsgPort();
-	static struct DiskObject *diskobj;
-	static unsigned char iconlib[] = "icon.library";
-	static unsigned char diskobjname[] = "PROGDIR:dintwm";
+	struct DiskObject *diskobj;
+	unsigned char iconlib[] = "icon.library";
+	unsigned char diskobjname[] = "PROGDIR:dintwm";
 
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 
@@ -455,7 +465,7 @@ short int commo(void)
 	subsig = 1UL << (unsigned long)subsignum;
 	maintask = FindTask(NULL);
 
-	if (mp)
+	if (mp != NULL)
 	{
 		CxObj *broker;
 
@@ -463,7 +473,11 @@ short int commo(void)
 		broker = CxBroker(&MyBroker, NULL);
 
 		if (broker == NULL) {
-			running = FALSE;
+			FreeSignal(mainsignum);
+			FreeSignal(subsignum);
+			DeleteCxObjAll(broker);
+			DeleteMsgPort(mp);
+			return EXIT_FAILURE;
 		}
 
 		if (running == TRUE && (attachtooltypes(broker, mp, diskobj) == TRUE))
@@ -472,14 +486,12 @@ short int commo(void)
 			CloseLibrary(iconbase);
 			FreeDiskObject(diskobj);
 
-
 			if (ActivateCxObj(broker, 1) != 0) {
 				DeleteMsgPort(mp);
-				return 1;
+				running = FALSE;
 			}
 
-
-			if (bar_on) {
+			if (bar_on == TRUE) {
 				if (wbarheight == 0) {
 					wbarheight = WBAR_HEIGHT;
 				}
@@ -500,7 +512,8 @@ short int commo(void)
 				(void)countwindows(1);
 				getactive();
 				if (backdropped == TRUE) {
-					if (info_on) {
+					if (info_on == TRUE) {
+						unsigned char bdwarn[] = BDWARN_TXT;
 						info_window(bdwarn);
 					}
 					running = FALSE;
@@ -510,24 +523,24 @@ short int commo(void)
 			// Muting GCC warning here. Following official Amiga CreateTask example
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wpedantic"
-			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L);
+			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L); // -V2590
 			#pragma GCC diagnostic pop
-			if(!subtask) {
+			if(subtask == NULL) {
 				running = FALSE;
 			}
 
-			if (running) {
+			if (running == TRUE) {
 				running = alloc_wtstring();
 			}
 			//Main Loop
-			while (running)
+			while (running == TRUE)
 			{
 				running = alloc_wtstring();
 				whash_start = winhashes();
 
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
 
-				if(wakeupsigs & mainsig) {
+				if((wakeupsigs & mainsig) != 0UL) {
 					if (tile_off == FALSE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						update_wbar();
@@ -535,7 +548,7 @@ short int commo(void)
 					Signal(subtask, subsig);
 				}
 
-				while ((msg = (void *)GetMsg(mp)))
+				while ((msg = (void *)GetMsg(mp)) != NULL)
 				{
 					long id = CxMsgID(msg);
 					unsigned long type = CxMsgType(msg);
@@ -547,7 +560,8 @@ short int commo(void)
 						switch (id)
 						{
 							case CXCMD_UNIQUE:
-								if(info_on) {
+								if(info_on == TRUE) {
+									unsigned char uqwarn[] = UQWARN_TXT;
 									info_window(uqwarn);
 								}
 								running = FALSE;
@@ -581,7 +595,7 @@ short int commo(void)
 
 			DeleteCxObjAll(broker);
 
-			while ((msg = (void *)GetMsg(mp))) {
+			while ((msg = (void *)GetMsg(mp)) != NULL) {
 				ReplyMsg((struct Message *)msg); //-V2545
 			}
 		}
@@ -597,9 +611,9 @@ static short alloc_opts(char *t, Ostore *s, size_t i, int subtract)
 {
 	int cxint = defopts[i].cxint - subtract;
 
-	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH)) * sizeof(unsigned char));
+	s->strings[cxint] = malloc((strnlen(t, TT_MAX_LENGTH)+1U) * sizeof(unsigned char));
 
-	if (s->strings[cxint]) {
+	if (s->strings[cxint] != NULL) {
 		(void)snprintf((char *)s->strings[cxint], TT_MAX_LENGTH, "%s", t);
 		return(TRUE);
 	} else {
@@ -612,19 +626,19 @@ static void free_opts(void)
 	int i;
 
 	for (i = 0; i < CMD_MAX; ++i) {
-		if (cons->strings[i]) {
+		if (cons->strings[i] != NULL) {
 			free(cons->strings[i]);
 		}
-		if (cmds->strings[i]) {
+		if (cmds->strings[i] != NULL) {
 			free(cmds->strings[i]);
 		}
 	}
 
 	for (i = 0; i < WTYPE_MAX; ++i) {
-		if (excls->strings[i]) {
+		if (excls->strings[i] != NULL) {
 			free(excls->strings[i]);
 		}
-		if (incls->strings[i]) {
+		if (incls->strings[i] != NULL) {
 			free(incls->strings[i]);
 		}
 	}
@@ -642,7 +656,7 @@ static short alloc_bar_item(unsigned char **b, const char * s)
 	return TRUE;
 }
 
-void subactionchk(void)
+static void subactionchk(void)
 {
 	struct timeval currentval;
 	struct timerequest *tr;
@@ -654,13 +668,13 @@ void subactionchk(void)
 	currentval.tv_secs = 0UL;
 	currentval.tv_micro = auto_interval;
 
-	if (first_run) {
+	if (first_run == TRUE) {
 		Signal(maintask, mainsig);
 		first_run = FALSE;
 		(void)Wait((subsig));
 	}
 
-	while(running) {
+	while(running == TRUE) {
 		time_delay(tr, &currentval);
 		if (tile_off == FALSE && autotile == TRUE) {
 			if (awin_comp == NULL || awin_comp != active_win) {
@@ -752,7 +766,7 @@ void delete_timer(struct timerequest *tr) {
 	}
 }
 
-short alloc_wtstring(void)
+static short alloc_wtstring(void)
 {
 	if (wtstring == NULL) {
 		// Use calloc to skip nul terminator later
@@ -779,7 +793,7 @@ short alloc_wtstring(void)
 	return TRUE;
 }
 
-unsigned long winhashes(void)
+static unsigned long winhashes(void)
 {
 	unsigned char *d = wtstring;
 	struct Window *w;
@@ -799,7 +813,7 @@ static inline __attribute__((always_inline)) unsigned long hash(unsigned char *s
 	unsigned long hash = 5381;
 	int c;
 
-	while ((c = (int)*str++)) {
+	while ((c = (int)*str++) == 0) {
 		hash = ((hash << 5UL) + hash) + (unsigned long)c; /* hash * 33 + c */
 	}
 
@@ -808,7 +822,7 @@ static inline __attribute__((always_inline)) unsigned long hash(unsigned char *s
 
 static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src)
 {
-	if (src) {
+	if (src != NULL) {
 		*dest++ = *src++;
 		*dest++ = *src++;
 		return dest;
@@ -835,15 +849,13 @@ static void cleanup(void)
 	current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
 
 	//lockbasescreen(&ilock, &screen);
-	for (struct Window *window = screen->FirstWindow; window;
+	for (struct Window *window = screen->FirstWindow; window != NULL;
 	     window = window->NextWindow) {
-		if (window->ExtData) {
-			window->ExtData = NULL;
-		}
+		window->ExtData = NULL;
 	}
 	//unlockbasescreen(&ilock, &screen);
 
-	if (bar_on) {
+	if (bar_on == TRUE) {
 		CloseWindow(wbw);
 		for (int i = 0; i < BAR_LAST_TEXT; ++i) {
 			free(&bar_text[i].text);

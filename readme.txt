@@ -317,3 +317,9 @@ Note on licensing
 Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included.
 
 Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/X11 license.
+
+SAST Tools
+
+PVS-Studio - static analyzer for C, C++, C#, and Java code.
+
+Other analyzers used are:
