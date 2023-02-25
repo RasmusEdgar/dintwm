@@ -282,4 +282,8 @@ Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/
 [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=github&utm_medium=organic&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
 
 Other analyzers used are:
+[splint](https://splint.org/)
+[flawfinder](https://github.com/david-a-wheeler/flawfinder)
+[cppcheck](https://cppcheck.sourceforge.io/)
 
+Check out the Makefile on how this project uses them.
