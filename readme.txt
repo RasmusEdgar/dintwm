@@ -322,4 +322,6 @@ SAST Tools
 
 PVS-Studio - static analyzer for C, C++, C#, and Java code.
 
-Other analyzers used are:
+Other analyzers used are: splint flawfinder cppcheck
+
+Check out the Makefile on how this project uses them.
