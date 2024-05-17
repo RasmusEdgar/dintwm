@@ -7,7 +7,6 @@ static int skip = 0;
 static const int nmaster = 1;
 static int layout_start = LAYOUT_START;
 static int *layout_number = &layout_start;
-static int nolock = 0;
 short tile_off = FALSE;
 
 // Bar definitions
@@ -18,8 +17,10 @@ Bar_Color bar_color[BAR_LAST_COLOR];
 int wbarheight = 0;
 short bar_on = FALSE;
 short vws_on = FALSE;
-unsigned int current_ws = 0U;
+//unsigned int current_ws = 0U;
+enum ws_num current_ws;
 static short barbdata[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+size_t winfo_size = DIVISOR - 1;
 
 int main(int argc, char **argv)
 {
@@ -39,7 +40,7 @@ static int dintwmrun(int argc, char **argv)
 	int dint_opt_state = NOTSET;
 	static int dint_fail_state = EXIT_SUCCESS;
 	static int dint_exit_state = EXIT_SUCCESS;
-	int not_known;
+	int not_known = 0;
 
 	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:CdghstV", 0)) >= 0) {
 		switch (c) {
@@ -211,8 +212,12 @@ static int dintwmrun(int argc, char **argv)
 static void initdefaults(void)
 {
 	fact = TILE_FACT_DEF;
-	current_ws |= WS_0;
+	current_ws = WS_0;
 	backdropped = FALSE;
+
+        if ((winfo = (Winfo *)calloc(winfo_size, sizeof(Winfo))) == NULL) {
+                exit(EXIT_FAILURE);
+        }
 
 	(void)memset(bar_text, nil, sizeof(bar_text));
 	for (int i = 0; i < BAR_LAST_COLOR; ++i) {
@@ -224,13 +229,16 @@ static void initdefaults(void)
 	swidth = screen->Width;
 	for (window = screen->FirstWindow; window != NULL;
 		window = window->NextWindow) {
+		int index = modululator((unsigned long)window);
+		winfo[index].wptr = window;
 		if (strcmp("Workbench", (const char *)window->Title) == 0) {
-			window->ExtData = (unsigned char *)WBENCH;
+			winfo[index].wbwin = TRUE;
+			winfo[index].workspace = WS_WB;
 			continue;
+		} else {
+			winfo[index].wbwin = FALSE;
 		}
-		if (!window->ExtData) {
-			window->ExtData = (unsigned char *)current_ws;
-		}
+		winfo[index].workspace = current_ws;
 	}
 	unlockbasescreen(&ilock, &screen);
 }
@@ -254,8 +262,10 @@ static short printusage(void)
 	return EXIT_SUCCESS;
 }
 
-static short skipper(struct Window *w)
+static short skipper(const struct Window *w)
 {
+	int index = modululator((unsigned long)window);
+
 	if ((w->Flags & (unsigned long)WFLG_BACKDROP) != 0UL) {
 		backdropped = TRUE;
 		return SKIP;
@@ -269,16 +279,18 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
-	if (((unsigned int)window->ExtData & WBENCH) != 0U) {
+	if (winfo[index].wbwin == TRUE) {
 		return SKIP;
 	}
 
-	if (!w->ExtData) {
+	/*if (!w->ExtData) {
 		w->ExtData = (unsigned char *)current_ws;
-	}
+	}*/
+	/*if (winfo[index].workspace == NULL) {
+		winfo[index].workspace = current_ws;
+	}*/
 
-
-	if (((unsigned int)w->ExtData & current_ws) != 0U) {
+	if (winfo[index].workspace == current_ws) {
 		if (include_wtype != 0 && exclude_wtype == 0) {
 			if (bsearch
 		    	(&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
@@ -322,7 +334,7 @@ short tile(const Arg * arg)
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
-	wincount = countwindows(nolock);
+	wincount = countwindows(NOLOCK, NOASSIGN);
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
@@ -364,6 +376,7 @@ short hgrid(const Arg * arg)
 {
 	(void)arg;
 
+	printf("hgrid\n");
 	int wincount, wnr, ntop = 0, nbottom = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
@@ -372,7 +385,7 @@ short hgrid(const Arg * arg)
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
-	wincount = countwindows(nolock);
+	wincount = countwindows(NOLOCK, NOASSIGN);
 
 	if (wincount == 0) {
 		unlockbasescreen(&ilock, &screen);
@@ -423,7 +436,7 @@ short fibonacci(const Arg * arg)
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
-	wincount = countwindows(nolock);
+	wincount = countwindows(NOLOCK, NOASSIGN);
 
 	wy = topgap;
 	wx = leftgap;
@@ -490,6 +503,8 @@ short switcher(const Arg * arg)
 		*layout_number = *current_layout;
 	}
 
+	printf("Arg %d\n", arg->i);
+
 	if (arg->i != 0) {
 		(*layout_number)++;
 		if (*layout_number > TILE_FUNC_LIMIT) {
@@ -498,6 +513,7 @@ short switcher(const Arg * arg)
 		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].
 						    arg);
 	} else {
+		printf("abe\n");
 		(*layout_number)--;
 		if (*layout_number < 0) {
 			*layout_number = TILE_FUNC_LIMIT;
@@ -510,7 +526,7 @@ short switcher(const Arg * arg)
 	return rc;
 }
 
-int countwindows(int lock)
+int countwindows(int lock, int assign_winfo)
 {
 	int wincount;
 	if (lock != 0) {
@@ -524,6 +540,11 @@ int countwindows(int lock)
 		if ((skip = skipper(window)) == SKIP) {
 			wincount--;
 			continue;
+		}
+		if (assign_winfo == ASSIGN) {
+			int index = modululator((unsigned long)window);
+			winfo[index].wptr = window;
+			awin_index = index;
 		}
 	}
 	if (lock != 0) {
@@ -539,6 +560,7 @@ void getactive(void)
 	     window = window->NextWindow) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
 			active_win = window;
+			awin_index = modululator((unsigned long)window);
 			break;
 		}
 	}
@@ -723,7 +745,8 @@ short changews(const Arg * arg) {
 		return TRUE;
 	}
 
-	if ((current_ws & arg->u) != 0U) {
+	//if ((current_ws & arg->u) != 0U) {
+	if (current_ws == arg->u) {
 		return TRUE;
 	}
 
@@ -744,7 +767,9 @@ static struct Window * findfirstwin(void)
 		if ((skip = skipper(window)) == SKIP) {
 			continue;
 		}
-		if (((unsigned int)window->ExtData & current_ws) != 0U) {
+		int index = modululator((unsigned long)window);
+		//if (((unsigned int)window->ExtData & current_ws) != 0U) {
+		if (winfo[index].workspace == current_ws) {
 			return window;
 		}
 	}
@@ -782,7 +807,13 @@ short tabnextwin(const Arg * arg) {
 			if ((window->NextWindow->Flags & (unsigned long)WFLG_BORDERLESS) != 0UL) {
 				window = window->NextWindow;
 			}
-			if (((unsigned int)window->NextWindow->ExtData & current_ws) != 0U) {
+			int index = modululator((unsigned long)window->NextWindow);
+			if (winfo[index].workspace == WS_WB) {
+				ActivateWindow(findfirstwin());
+				unlockbasescreen(&ilock, &screen);
+				return TRUE;
+			}
+			if (winfo[index].workspace == current_ws) {
 				ActivateWindow(window->NextWindow);
 				unlockbasescreen(&ilock, &screen);
 				return TRUE;
@@ -983,7 +1014,8 @@ static inline void mapws(void)
 		return;
 	}
 
-	if ((current_ws & WS_0) != 0U) {
+	//if ((current_ws & WS_0) != 0U) {
+	if (current_ws == WS_0) {
 		wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
 		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
@@ -993,7 +1025,8 @@ static inline void mapws(void)
 		wstext_zero.FrontPen = *bar_color[fp_cur].color;
 		wstext_zero.BackPen = *bar_color[bp_cur].color;
 	}
-	if ((current_ws & WS_1) != 0U) {
+	//if ((current_ws & WS_1) != 0U) {
+	if (current_ws == WS_1) {
 		wstext_zero.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
 		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
@@ -1003,7 +1036,8 @@ static inline void mapws(void)
 		wstext_one.FrontPen = *bar_color[fp_cur].color;
 		wstext_one.BackPen = *bar_color[bp_cur].color;
 	}
-	if ((current_ws & WS_2) != 0U) {
+	//if ((current_ws & WS_2) != 0U) {
+	if (current_ws == WS_2) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_three.FrontPen =
 		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
@@ -1013,7 +1047,8 @@ static inline void mapws(void)
 		wstext_two.FrontPen = *bar_color[fp_cur].color;
 		wstext_two.BackPen = *bar_color[bp_cur].color;
 	}
-	if ((current_ws & WS_3) != 0U) {
+	//if ((current_ws & WS_3) != 0U) {
+	if (current_ws == WS_3) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
 		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
@@ -1023,7 +1058,8 @@ static inline void mapws(void)
 		wstext_three.FrontPen = *bar_color[fp_cur].color;
 		wstext_three.BackPen = *bar_color[bp_cur].color;
 	}
-	if ((current_ws & WS_4) != 0U) {
+	//if ((current_ws & WS_4) != 0U) {
+	if (current_ws == WS_4) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
 		wstext_three.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
 
@@ -1033,7 +1069,8 @@ static inline void mapws(void)
 		wstext_four.FrontPen = *bar_color[fp_cur].color;
 		wstext_four.BackPen = *bar_color[bp_cur].color;
 	}
-	if ((current_ws & WS_5) != 0U) {
+	//if ((current_ws & WS_5) != 0U) {
+	if (current_ws == WS_5) {
 		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
 		wstext_three.FrontPen = wstext_four.FrontPen = *bar_color[fp_ws].color;
 
@@ -1152,4 +1189,9 @@ short tileoff(const Arg *arg)
 	(void)arg;
 	tile_off = tile_off == FALSE ? TRUE : FALSE;
 	return TRUE;
+}
+
+int modululator(unsigned long w)
+{
+        return (int)w % DIVISOR;
 }

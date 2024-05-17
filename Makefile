@@ -31,9 +31,6 @@ CFLAGS = $(CFLAGSSTRICT)
 TEMPS = $(SOURCES:.c=.i) $(SOURCES:.c=.s)
 LOGS = $(SOURCES:.c=.log)
 PEXCL = --exclude-path */opt/amiga/* --exclude-path ./include/ketopt.h
-ifdef misra
-MPLOGFLAG = -d V2511,V2516,V2510,V2600,V2611 -a MISRA:1,2
-endif
 endif
 
 .PHONY: setver
@@ -48,11 +45,6 @@ ifdef strict
 	$(CPPCHECKCMD) $(CPPCHECKOPTS) $(HEADERS) $(SOURCES)
 	$(FLAWCMD) $(FLAWOPTS) $(HEADERS) $(SOURCES)
 	$(SPLINTCMD) $(SOURCES) $(SPLINTARGS)
-	$(foreach elem,$(SOURCES),pvs-studio --cfg PVS-Studio.cfg $(PEXCL) --source-file $(elem) --i-file $(elem:.c=.i) --output-file $(elem:.c=.log)${newline})
-	$(foreach elem,$(SOURCES),plog-converter $(MPLOGFLAG) -t csv $(elem:.c=.log) | grep 'Filtered' ${newline})
-ifdef misra
-	$(foreach elem,$(SOURCES),plog-converter -t csv $(elem:.c=.log) | grep 'Filtered' ${newline})
-endif
 endif
 
 

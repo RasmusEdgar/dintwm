@@ -11,7 +11,7 @@
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static unsigned long ilock;
 static short printusage(void);
-static short skipper(struct Window *w);
+static short skipper(const struct Window *w);
 static void moveallwin(int m);
 static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);

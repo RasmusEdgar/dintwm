@@ -167,16 +167,12 @@
 #define UQWARN_TXT "Commodity is already running. Quitting."
 
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
-static short alloc_opts(char *tt_optvalue, Ostore *s, size_t i, int subtract);
+static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
 static short alloc_bar_item(unsigned char **b, const char * s);
 static void cleanup(void);
 
 static struct Library *iconbase;
 static void subactionchk(void);
-static inline __attribute__((always_inline)) unsigned long hash(unsigned char *str);
-static unsigned long winhashes(void);
-static unsigned long whash_start;
-static inline __attribute__((always_inline)) unsigned char* twocat(unsigned char* dest, unsigned char* src);
-static short alloc_wtstring(void);
+static int winnum_start;
 long unsigned int auto_interval;
