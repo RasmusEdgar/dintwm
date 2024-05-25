@@ -208,8 +208,6 @@ static struct NewBroker MyBroker =
         0
 };
 
-//size_t winfo_size = DIVISOR - 1;
-
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
 	short rc = TRUE;
@@ -224,7 +222,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
         keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
 
 	for (size_t i = 0; i < optarrsize ; ++i) {
-       		const char *tt_optvalue = (char *)FindToolType((CONST_STRPTR *)(*diskobj).do_ToolTypes, (CONST_STRPTR)defopts[i].optname);
+       		const char *tt_optvalue = (char *)FindToolType(diskobj->do_ToolTypes, (const unsigned char *)defopts[i].optname);
 
 		if ((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
 			if (defopts[i].cxint >= EXCL_WTYPE_ID_0 && defopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
@@ -423,14 +421,13 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 
 	if (keys != NULL) {
 		for (size_t i = 0; i < keyarrsize ; ++i) {
-			keys[i].rawcombo = (char *)FindToolType((CONST_STRPTR *)(*diskobj).do_ToolTypes, (CONST_STRPTR)defopts[i].optname);
+			keys[i].rawcombo = (char *)FindToolType(diskobj->do_ToolTypes, (const unsigned char *)defkeys[i].optname);
 
 			if (keys[i].rawcombo == NULL) {
 				keys[i].rawcombo = defkeys[i].defaultval;
 			}
 
 			if (keys[i].rawcombo != NULL) {
-				printf("Assigning nonnull: %s\n", keys[i].rawcombo);
 				CxObj *filter;
 				if ((filter = HotKey((const unsigned char *)keys[i].rawcombo, port, (long int)i)) != NULL)
 				{
@@ -530,7 +527,8 @@ short int commo(void)
 			}
 
 			if (vws_on == TRUE) {
-				(void)countwindows(LOCK, 1);
+				//(void)countwindows(LOCK, 1);
+				(void)countwindows(LOCK);
 				getactive();
 				if (backdropped == TRUE) {
 					if (info_on == TRUE) {
@@ -553,7 +551,8 @@ short int commo(void)
 			//Main Loop
 			while (running == TRUE)
 			{
-				winnum_start = countwindows(NOLOCK, ASSIGN);
+				//winnum_start = countwindows(NOLOCK, ASSIGN);
+				winnum_start = countwindows(NOLOCK);
 
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
 
@@ -565,8 +564,8 @@ short int commo(void)
 					if (tile_off == FALSE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						update_wbar();
-						winnum_start = countwindows(NOLOCK, NOASSIGN);
-						printf("triggering\n");
+						//winnum_start = countwindows(NOLOCK, NOASSIGN);
+						winnum_start = countwindows(NOLOCK);
 					}
 					Signal(subtask, subsig);
 				}
@@ -699,7 +698,8 @@ static void subactionchk(void)
 
 	while(running == TRUE) {
 		time_delay(tr, &currentval);
-		int wincnt = countwindows(NOLOCK, ASSIGN);
+		//int wincnt = countwindows(NOLOCK, ASSIGN);
+		int wincnt = countwindows(NOLOCK);
 		if (tile_off == FALSE && autotile == TRUE) {
 			if (winnum_start != wincnt) {
 				Signal(maintask, mainsig);
@@ -804,25 +804,11 @@ static void cleanup(void)
 
 	free_opts();
 
-	//current_ws &= ~(WS_0|WS_1|WS_2|WS_3|WS_4|WS_5);
-
-	//lockbasescreen(&ilock, &screen);
-	for (struct Window *window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow) {
-		window->ExtData = NULL;
-	}
-	//unlockbasescreen(&ilock, &screen);
-
 	if (bar_on == TRUE) {
 		CloseWindow(wbw);
 		for (int i = 0; i < BAR_LAST_TEXT; ++i) {
 			free(&bar_text[i].text);
 		}
 	}
-	/*for (struct Window *window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow) {
-		int index = modululator((unsigned long)window);
-		printf("WS value %u for ptr %p\n", winfo[index].workspace, (void *)winfo[index].wptr);
-	}*/
 	free(winfo);
 }
