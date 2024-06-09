@@ -195,6 +195,7 @@ static int dintwmrun(int argc, char **argv)
 		default:
 			dint_exit_state =
 		    		defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
+			clean_winfo();
 			break;
 		}
 	}
@@ -1203,4 +1204,9 @@ short tileoff(const Arg *arg)
 int modululator(unsigned long w)
 {
         return (int)w % DIVISOR;
+}
+
+void clean_winfo(void)
+{
+	free(winfo);
 }

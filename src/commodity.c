@@ -539,6 +539,9 @@ short int commo(void)
 				}
 			}
 
+			// Initial tile
+			running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+
 			// Muting GCC warning here. Following official Amiga CreateTask example
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wpedantic"
@@ -810,5 +813,5 @@ static void cleanup(void)
 			free(&bar_text[i].text);
 		}
 	}
-	free(winfo);
+	clean_winfo();
 }

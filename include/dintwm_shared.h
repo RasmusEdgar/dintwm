@@ -148,14 +148,6 @@
 #define TT_MAX_LENGTH 128 // Tooltype Max Length
 #define GAP_INC_OFFSET 300 // substract from screen width or height using dynamic gaps
 #define TILE_FACT_DEF 550 // Default mfact value
-/*#define WS_0 (1U << 0)
-#define WS_1 (1U << 1)
-#define WS_2 (1U << 2)
-#define WS_3 (1U << 3)
-#define WS_4 (1U << 4)
-#define WS_5 (1U << 5)
-#define WBAR (1U << 6)
-#define WBENCH (1U << 7)*/
 #define WBAR_HEIGHT 20
 #define BAR_HIDE_ON (1U << 0)
 #define BAR_HIDE_TOGGLE (1U << 1)
@@ -213,7 +205,8 @@ short spiral(const Arg *arg);
 short dwindle(const Arg *arg);
 short switcher(const Arg *arg);
 short changegaps(const Arg *arg);
-int countwindows(int lock, int assign_winfo);
+//int countwindows(int lock, int assign_winfo);
+int countwindows(int lock);
 void getactive(void);
 int cstring_cmp(const void *a, const void *b);
 short docmd(const Arg *arg);
@@ -229,6 +222,7 @@ short info_window(unsigned char * info_text);
 short tileoff(const Arg *arg);
 short tabnextwin(const Arg * arg);
 int modululator(unsigned long w);
+void clean_winfo(void);
 
 extern int topgap;
 extern int bottomgap;
@@ -346,7 +340,7 @@ typedef struct {
 	short wbwin;
         //unsigned int workspace;
         enum ws_num workspace;
-        unsigned int skip;
+        short skip;
         struct Window *wptr;
 } Winfo;
 
