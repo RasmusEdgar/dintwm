@@ -14,6 +14,9 @@
 #include <clib/alib_protos.h>
 #include <stdio.h>
 #include <devices/timer.h>
+#ifdef FORTIFY
+#include "../fortify.h"
+#endif
 
 #define MIN(A, B)               ((A) < (B) ? (A) : (B))
 
@@ -108,6 +111,7 @@
 #define DEF_BAR_TEXT_WS_THREE "W3"
 #define DEF_BAR_TEXT_WS_FOUR "W4"
 #define DEF_BAR_TEXT_WS_FIVE "W5"
+#define DEF_BAR_TEXT_WS_WB "WB"
 
 #define DEF_BAR_TEXT_MODE_TILE "Tile"
 #define DEF_BAR_TEXT_MODE_GRID "Grid"
@@ -321,15 +325,15 @@ enum bar_colors {
 };
 
 typedef struct {
-	unsigned char * text;
+	unsigned char *text;
 } Bar_Text;
 
 typedef struct {
 	unsigned char color[2];
 } Bar_Color;
 
-extern Bar_Text bar_text[BAR_LAST_TEXT];
-extern Bar_Color bar_color[BAR_LAST_COLOR];
+Bar_Text *bar_text;
+Bar_Color bar_color[BAR_LAST_COLOR];
 
 // timer stuff
 void delete_timer(struct timerequest *tr);
@@ -345,3 +349,6 @@ typedef struct {
 } Winfo;
 
 Winfo *winfo;
+
+extern int malloc_count;
+extern int free_count;

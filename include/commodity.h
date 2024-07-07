@@ -169,7 +169,7 @@
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
-static short alloc_bar_item(unsigned char **b, const char * s);
+static short alloc_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
 static void cleanup(void);
 
 static struct Library *iconbase;

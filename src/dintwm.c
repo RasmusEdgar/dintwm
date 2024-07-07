@@ -8,16 +8,22 @@ short tile_off = FALSE;
 // Bar definitions
 unsigned int hidewbar = 0U;
 unsigned char nil = (unsigned char)'\0';
-Bar_Text bar_text[BAR_LAST_TEXT];
-Bar_Color bar_color[BAR_LAST_COLOR];
+//Bar_Text *bar_text;
+//Bar_Color bar_color[BAR_LAST_COLOR];
 int wbarheight = 0;
 short bar_on = FALSE;
 short vws_on = FALSE;
 enum ws_num current_ws;
+int malloc_count = 0;
+int free_count = 0;
 
 int main(int argc, char **argv)
 {
 	static int dint_exit_state = EXIT_SUCCESS;
+
+	#ifdef FORTIFY
+	Fortify_EnterScope();
+	#endif
 
 	initdefaults();
 
@@ -214,7 +220,6 @@ static void initdefaults(void)
                 exit(EXIT_FAILURE);
         }
 
-	(void)memset(bar_text, nil, sizeof(bar_text));
 	for (int i = 0; i < BAR_LAST_COLOR; ++i) {
 		bar_color[i].color[0] = nil;
 	}
@@ -287,11 +292,6 @@ static short skipper(struct Window *w)
 		return SKIP;
 	}
 
-	/*if(winfo[index].wptr == NULL) {
-		winfo[index].wptr = w;
-		winfo[index].workspace = current_ws;
-	}*/
-
 	if (winfo[index].wbwin == TRUE) {
 		winfo[index].skip = TRUE;
 		return SKIP;
@@ -345,7 +345,6 @@ short tile(const Arg * arg)
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
-	//wincount = countwindows(NOLOCK, NOASSIGN);
 	wincount = countwindows(NOLOCK);
 
 	if (wincount == 0) {
@@ -396,7 +395,6 @@ short hgrid(const Arg * arg)
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
-	//wincount = countwindows(NOLOCK, NOASSIGN);
 	wincount = countwindows(NOLOCK);
 
 	if (wincount == 0) {
@@ -448,7 +446,6 @@ short fibonacci(const Arg * arg)
 	sh = sheight - (bottomgap + topgap);
 	sw = swidth - (rightgap + leftgap);
 
-	//wincount = countwindows(NOLOCK, NOASSIGN);
 	wincount = countwindows(NOLOCK);
 
 	wy = topgap;
@@ -539,7 +536,6 @@ short switcher(const Arg * arg)
 	return rc;
 }
 
-//int countwindows(int lock, int assign_winfo)
 int countwindows(int lock)
 {
 	int wincount;
@@ -555,10 +551,8 @@ int countwindows(int lock)
 			wincount--;
 			continue;
 		}
-		//if (assign_winfo == ASSIGN) {
-			int index = modululator((unsigned long)window);
-			awin_index = index;
-		//}
+		int index = modululator((unsigned long)window);
+		awin_index = index;
 	}
 	if (lock != 0) {
 		unlockbasescreen(&ilock, &screen);
@@ -803,8 +797,8 @@ short movetows(const Arg * arg) {
 			WindowToBack(window);
 		}
 	}
-	unlockbasescreen(&ilock, &screen);
 	ActivateWindow(findfirstwin());
+	unlockbasescreen(&ilock, &screen);
 	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
@@ -834,13 +828,12 @@ short tabnextwin(const Arg * arg) {
 	return TRUE;
 }
 
-static inline unsigned char * padwbartext(unsigned char * s)
+static unsigned char * padwbartext(Bar_Text *b, enum bar_texts x)
 {
-	unsigned char * tmp = s;
-	(void)snprintf((char *)s, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
-	return s;
+        const unsigned char * tmp = b[x].text;
+        (void)snprintf((char *)b[x].text, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
+        return b[x].text;
 }
-
 
 short init_wbar(void) {
 	struct TagItem tagitem[7];
@@ -872,41 +865,41 @@ short init_wbar(void) {
 
 	if (vws_on != 0) {
 		wstext_five = wbartext;
-		wstext_five.IText = padwbartext(bar_text[ws_five].text);
+		wstext_five.IText = padwbartext(bar_text, ws_five);
 
 		wstext_four = wbartext;
-		wstext_four.IText = padwbartext(bar_text[ws_four].text);
+		wstext_four.IText = padwbartext(bar_text, ws_four);
 
 		wstext_three = wbartext;
-		wstext_three.IText = padwbartext(bar_text[ws_three].text);
+		wstext_three.IText = padwbartext(bar_text, ws_three);
 
 		wstext_two = wbartext;
-		wstext_two.IText = padwbartext(bar_text[ws_two].text);
+		wstext_two.IText = padwbartext(bar_text, ws_two);
 
 		wstext_one = wbartext;
-		wstext_one.IText = padwbartext(bar_text[ws_one].text);
+		wstext_one.IText = padwbartext(bar_text, ws_one);
 
 		wstext_zero = wbartext;
-		wstext_zero.IText = padwbartext(bar_text[ws_zero].text);
+		wstext_zero.IText = padwbartext(bar_text, ws_zero);
 	} else {
 		wstext_zero = wbartext;
-		wstext_zero.IText = padwbartext(bar_text[ws_wb].text);
+		wstext_zero.IText = padwbartext(bar_text, ws_wb);
 	}
 
 	wbarsep_one = wbartext;
-	wbarsep_one.IText = padwbartext(bar_text[sep_one].text);
+	wbarsep_one.IText = padwbartext(bar_text, sep_one);
 	wbarsep_one.FrontPen = *bar_color[fp_sep_one].color;
 	wbarsep_one.BackPen = *bar_color[bp_sep_one].color;
 
 	wbarsep_two = wbartext;
-	wbarsep_two.IText = padwbartext(bar_text[sep_two].text);
+	wbarsep_two.IText = padwbartext(bar_text, sep_two);
 	wbarsep_two.FrontPen = *bar_color[fp_sep_two].color;
 	wbarsep_two.BackPen = *bar_color[bp_sep_two].color;
 
-	bar_text[mode_tile].text = padwbartext(bar_text[mode_tile].text);
-	bar_text[mode_grid].text = padwbartext(bar_text[mode_grid].text);
-	bar_text[mode_dwindle].text = padwbartext(bar_text[mode_dwindle].text);
-	bar_text[mode_spiral].text = padwbartext(bar_text[mode_spiral].text);
+	bar_text[mode_tile].text = padwbartext(bar_text, mode_tile);
+	bar_text[mode_grid].text = padwbartext(bar_text, mode_grid);
+	bar_text[mode_dwindle].text = padwbartext(bar_text, mode_dwindle);
+	bar_text[mode_spiral].text = padwbartext(bar_text, mode_spiral);
 
 	wbarmodetext = wbartext;
 	wbarmodetext.IText = bar_text[mode_tile].text;
@@ -1209,4 +1202,9 @@ int modululator(unsigned long w)
 void clean_winfo(void)
 {
 	free(winfo);
+	free_count++;
+	#ifdef FORTIFY
+	Fortify_LeaveScope();
+	Fortify_OutputStatistics();
+	#endif
 }

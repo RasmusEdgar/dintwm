@@ -2,6 +2,7 @@
 #include <dos/dostags.h>
 #include "../include/ketopt.h"
 #include "../include/wbar_config.h"
+#include "../fortify.h"
 
 //VERCUT
 #define DINTWM_VERSION "VERGIT"
@@ -31,7 +32,7 @@ struct Window *active_win;
 // Bar declarations
 static inline void mapws(void);
 static inline unsigned char * maptm(void);
-static inline unsigned char * padwbartext(unsigned char * s);
+static unsigned char * padwbartext(Bar_Text *b, enum bar_texts x);
 static short int wbartextwidth(int lei, unsigned char * it);
 struct Window *wbw;
 long int *current_layout;
