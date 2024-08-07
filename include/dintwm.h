@@ -2,7 +2,9 @@
 #include <dos/dostags.h>
 #include "../include/ketopt.h"
 #include "../include/wbar_config.h"
+#ifdef FORTIFY
 #include "../fortify.h"
+#endif
 
 //VERCUT
 #define DINTWM_VERSION "VERGIT"

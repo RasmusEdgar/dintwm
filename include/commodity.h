@@ -138,28 +138,28 @@
 #define KEY_INCALLGAPS_TXT "rawkey " MOD1 " " MOD2 " numericpad +"
 #define KEY_DECALLGAPS_TXT "rawkey " MOD1 " " MOD2 " numericpad --"
 #define KEY_TILE_OFF_TXT "rawkey " MOD1 " " MOD2 " o"
-#define KEY_CMD_0_TXT "rawkey " MOD1 " " MOD2 " j"
+#define KEY_CMD_0_TXT "rawkey " MOD1 " " MOD2 " 0"
 #define KEY_CMD_1_TXT "rawkey " MOD1 " " MOD2 " 1"
 #define KEY_CMD_2_TXT "rawkey " MOD1 " " MOD2 " 2"
 #define KEY_CMD_3_TXT "rawkey " MOD1 " " MOD2 " 3"
 #define KEY_CMD_4_TXT "rawkey " MOD1 " " MOD2 " 4"
-#define KEY_CMD_5_TXT "rawkey " MOD1 " " MOD2 " k"
+#define KEY_CMD_5_TXT "rawkey " MOD1 " " MOD2 " 5"
 #define KEY_CMD_6_TXT "rawkey " MOD1 " " MOD2 " 6"
 #define KEY_CMD_7_TXT "rawkey " MOD1 " " MOD2 " 7"
 #define KEY_CMD_8_TXT "rawkey " MOD1 " " MOD2 " 8"
 #define KEY_CMD_9_TXT "rawkey " MOD1 " " MOD2 " 9"
-#define KEY_WS_0_TXT "rawkey " MOD1 " " MOD2 " 0"
+#define KEY_WS_0_TXT "rawkey " MOD1 " " MOD2 " numericpad 0"
 #define KEY_WS_1_TXT "rawkey " MOD1 " " MOD2 " numericpad 1"
 #define KEY_WS_2_TXT "rawkey " MOD1 " " MOD2 " numericpad 2"
 #define KEY_WS_3_TXT "rawkey " MOD1 " " MOD2 " numericpad 3"
 #define KEY_WS_4_TXT "rawkey " MOD1 " " MOD2 " numericpad 4"
-#define KEY_WS_5_TXT "rawkey " MOD1 " " MOD2 " 5"
-#define KEY_CWS_0_TXT "rawkey " MOD1 " " MOD3 " 0"
+#define KEY_WS_5_TXT "rawkey " MOD1 " " MOD2 " numericpad 5"
+#define KEY_CWS_0_TXT "rawkey " MOD1 " " MOD3 " numericpad 0"
 #define KEY_CWS_1_TXT "rawkey " MOD1 " " MOD3 " numericpad 1"
 #define KEY_CWS_2_TXT "rawkey " MOD1 " " MOD3 " numericpad 2"
 #define KEY_CWS_3_TXT "rawkey " MOD1 " " MOD3 " numericpad 3"
 #define KEY_CWS_4_TXT "rawkey " MOD1 " " MOD3 " numericpad 4"
-#define KEY_CWS_5_TXT "rawkey " MOD1 " " MOD3 " 5"
+#define KEY_CWS_5_TXT "rawkey " MOD1 " " MOD3 " numericpad 5"
 #define KEY_CXM_EXIT_TXT "rawkey " MOD1 " " MOD2 " q"
 #define KEY_TAB_NEXT_TXT "rawkey " MOD1 " " MOD2 " tab"
 
@@ -169,7 +169,7 @@
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
-static short alloc_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
+static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
 static void cleanup(void);
 
 static struct Library *iconbase;

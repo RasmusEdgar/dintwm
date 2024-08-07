@@ -8,14 +8,10 @@ short tile_off = FALSE;
 // Bar definitions
 unsigned int hidewbar = 0U;
 unsigned char nil = (unsigned char)'\0';
-//Bar_Text *bar_text;
-//Bar_Color bar_color[BAR_LAST_COLOR];
 int wbarheight = 0;
 short bar_on = FALSE;
 short vws_on = FALSE;
 enum ws_num current_ws;
-int malloc_count = 0;
-int free_count = 0;
 
 int main(int argc, char **argv)
 {
@@ -28,6 +24,11 @@ int main(int argc, char **argv)
 	initdefaults();
 
 	dint_exit_state = dintwmrun(argc, argv);
+
+	#ifdef FORTIFY
+	Fortify_LeaveScope();
+	Fortify_OutputStatistics();
+	#endif
 
 	return dint_exit_state;
 }
@@ -602,16 +603,15 @@ short docmd(const Arg * arg)
 	}
 
 	if ((file = Open(conline, MODE_NEWFILE)) != 0L) {
-		// Will not fix MISRA warnings from amiga NDK
-		stags[0].ti_Tag = SYS_Input; //-V2544 //-V2568
+		stags[0].ti_Tag = SYS_Input;
 		stags[0].ti_Data = (long unsigned int)file;
-		stags[1].ti_Tag = SYS_Output; //-V2544 //-V2568
-		stags[1].ti_Data = 0; //-V2568
-		stags[2].ti_Tag = SYS_Asynch; //-V2544 //-V2568
-		stags[2].ti_Data = TRUE; //-V2568
-		stags[3].ti_Tag = SYS_UserShell; //-V2544 //-V2568
-		stags[3].ti_Data = TRUE; //-V2568
-		stags[4].ti_Tag = TAG_DONE; //-V2568
+		stags[1].ti_Tag = SYS_Output;
+		stags[1].ti_Data = 0;
+		stags[2].ti_Tag = SYS_Asynch;
+		stags[2].ti_Data = TRUE;
+		stags[3].ti_Tag = SYS_UserShell;
+		stags[3].ti_Data = TRUE;
+		stags[4].ti_Tag = TAG_DONE;
 
 		if ((SystemTagList(cmd, stags)) == -1) {
 			unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
@@ -838,19 +838,19 @@ static unsigned char * padwbartext(Bar_Text *b, enum bar_texts x)
 short init_wbar(void) {
 	struct TagItem tagitem[7];
 
-	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
+	tagitem[0].ti_Tag = WA_Width;
 	tagitem[0].ti_Data = (unsigned long)swidth - ((unsigned long)leftgap + (unsigned long)rightgap);
-	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
+	tagitem[1].ti_Tag = WA_Height;
 	tagitem[1].ti_Data = (unsigned long)wbarheight;
-	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
+	tagitem[2].ti_Tag = WA_Top;
 	tagitem[2].ti_Data = ((unsigned long)sheight - (unsigned long)bottomgap);
-	tagitem[3].ti_Tag = WA_Borderless; //-V2544 //-V2568
-	tagitem[3].ti_Data = 1; //-V2568
-	tagitem[4].ti_Tag = WA_SmartRefresh; //-V2544 //-V2568
-	tagitem[4].ti_Data = 1; //-V2568
-	tagitem[5].ti_Tag = WA_IDCMP; //-V2544 //-V2568
-	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW|IDCMP_CHANGEWINDOW; //-V2544 //-V2568
-	tagitem[6].ti_Tag = TAG_DONE; //-V2544 //-V2568
+	tagitem[3].ti_Tag = WA_Borderless;
+	tagitem[3].ti_Data = 1;
+	tagitem[4].ti_Tag = WA_SmartRefresh;
+	tagitem[4].ti_Data = 1;
+	tagitem[5].ti_Tag = WA_IDCMP;
+	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW|IDCMP_CHANGEWINDOW;
+	tagitem[6].ti_Tag = TAG_DONE;
 
 	lockbasescreen(&ilock, &screen);
 	wbw = OpenWindowTagList(NULL, tagitem);
@@ -1005,7 +1005,7 @@ void wbarcwb(void) {
 	(void)WaitPort(wbw->UserPort);
 	while ((msg = (struct IntuiMessage *)GetMsg(wbw->UserPort)) != NULL) {
 		if (msg->Class == (unsigned long)IDCMP_SIZEVERIFY) {
-			ReplyMsg((struct Message *)msg);  //-V2545
+			ReplyMsg((struct Message *)msg);
 		}
 	}
 }
@@ -1115,30 +1115,30 @@ short info_window(unsigned char * info_text)
 		.TopEdge = 0,
 		.LeftEdge = 0,
 		.ITextFont = NULL,
-		.DrawMode = JAM2, //-V2568
-		.FrontPen = 1, //-V2568
-		.BackPen = 2, //-V2568
+		.DrawMode = JAM2,
+		.FrontPen = 1,
+		.BackPen = 2,
 		.IText = info_text,
 		.NextText = NULL
 	};
 
-	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
-	tagitem[0].ti_Data = 100; //-V2544 //-V2568
-	tagitem[1].ti_Tag = WA_Height; //-V2544 //-V2568
-	tagitem[1].ti_Data = 50; //-V2544 //-V2568
-	tagitem[2].ti_Tag = WA_Top; //-V2544 //-V2568
+	tagitem[0].ti_Tag = WA_Width;
+	tagitem[0].ti_Data = 100;
+	tagitem[1].ti_Tag = WA_Height;
+	tagitem[1].ti_Data = 50;
+	tagitem[2].ti_Tag = WA_Top;
 	tagitem[2].ti_Data = (unsigned long)((unsigned long)sheight / 2UL);
-	tagitem[3].ti_Tag = WA_SimpleRefresh; //-V2544 //-V2568
-	tagitem[3].ti_Data = 1; //-V2568
-	tagitem[4].ti_Tag = WA_IDCMP; //-V2544 //-V2568
-	tagitem[4].ti_Data = IDCMP_CLOSEWINDOW; //-V2568
-	tagitem[5].ti_Tag = WA_Flags; //-V2544 //-V2568
-	tagitem[5].ti_Data = WFLG_SIZEGADGET|WFLG_DRAGBAR|WFLG_DEPTHGADGET|WFLG_CLOSEGADGET|WFLG_ACTIVATE; //-V2544 //-V2568
-	tagitem[6].ti_Tag = WA_Title; //-V2544 //-V2568
-	tagitem[6].ti_Data = (unsigned long)"Dintwm Info"; //-V2568
-	tagitem[7].ti_Tag = WA_Left; //-V2544 //-V2568
-	tagitem[7].ti_Data = (unsigned long)(((unsigned long)swidth / 2UL) - 150UL); //-V2568
-	tagitem[8].ti_Tag = TAG_DONE; //-V2544 //-V2568
+	tagitem[3].ti_Tag = WA_SimpleRefresh;
+	tagitem[3].ti_Data = 1;
+	tagitem[4].ti_Tag = WA_IDCMP;
+	tagitem[4].ti_Data = IDCMP_CLOSEWINDOW;
+	tagitem[5].ti_Tag = WA_Flags;
+	tagitem[5].ti_Data = WFLG_SIZEGADGET|WFLG_DRAGBAR|WFLG_DEPTHGADGET|WFLG_CLOSEGADGET|WFLG_ACTIVATE;
+	tagitem[6].ti_Tag = WA_Title;
+	tagitem[6].ti_Data = (unsigned long)"Dintwm Info";
+	tagitem[7].ti_Tag = WA_Left;
+	tagitem[7].ti_Data = (unsigned long)(((unsigned long)swidth / 2UL) - 150UL);
+	tagitem[8].ti_Tag = TAG_DONE;
 
 	lockbasescreen(&ilock, &screen);
 
@@ -1150,10 +1150,10 @@ short info_window(unsigned char * info_text)
 	}
 	info_text_length = TextLength(twin->RPort, info_text, strnlen((const char *)info_text, TT_MAX_LENGTH));
 	tleft = (unsigned long)info_text_length + (unsigned long)twin->BorderLeft + (unsigned long)twin->BorderRight;
-	tagitem[0].ti_Tag = WA_Width; //-V2544 //-V2568
-	tagitem[0].ti_Data = tleft; //-V2544 //-V2568
-	tagitem[7].ti_Tag = WA_Left; //-V2544 //-V2568
-	tagitem[7].ti_Data = (unsigned long)((unsigned long)swidth / 2UL) - (unsigned long)((unsigned long)tleft / 2UL); //-V2568
+	tagitem[0].ti_Tag = WA_Width;
+	tagitem[0].ti_Data = tleft;
+	tagitem[7].ti_Tag = WA_Left;
+	tagitem[7].ti_Data = (unsigned long)((unsigned long)swidth / 2UL) - (unsigned long)((unsigned long)tleft / 2UL);
 	CloseWindow(twin);
 	// End hack
 
@@ -1178,7 +1178,7 @@ short info_window(unsigned char * info_text)
 		struct IntuiMessage *msg;
 		(void)Wait(1UL << iwin->UserPort->mp_SigBit);
 		msg = (struct IntuiMessage *)GetMsg(iwin->UserPort);
-		ReplyMsg((struct Message *)msg); //-V2545
+		ReplyMsg((struct Message *)msg);
 		if (msg->Class == (unsigned long)IDCMP_CLOSEWINDOW) {
 			CloseWindow(iwin);
 			closewin = TRUE;
@@ -1202,9 +1202,4 @@ int modululator(unsigned long w)
 void clean_winfo(void)
 {
 	free(winfo);
-	free_count++;
-	#ifdef FORTIFY
-	Fortify_LeaveScope();
-	Fortify_OutputStatistics();
-	#endif
 }

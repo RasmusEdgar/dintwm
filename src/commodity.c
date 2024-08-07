@@ -202,7 +202,7 @@ static struct NewBroker MyBroker =
         COMMODITY_NAME,
         COMMODITY_TITLE,
         COMMODITY_DESC,
-        NBU_UNIQUE | NBU_NOTIFY, //-V2544
+        NBU_UNIQUE | NBU_NOTIFY,
         0,
         0,
         0,
@@ -245,7 +245,6 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
         }
 
 	for (size_t i = 0; i < optarrsize ; ++i) {
-       		//UBYTE *tt_optvalueu = FindToolType(diskobj->do_ToolTypes, (unsigned char *)defopts[i].optname);
        		const char *tt_optvalue = (char *)FindToolType((const unsigned char **)diskobj->do_ToolTypes, (const unsigned char *)defopts[i].optname);
 
 		if ((tt_optvalue) && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
@@ -337,43 +336,43 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 					hidewbar |= BAR_HIDE_ON;
 					break;
 				case BAR_TEXT_WS0_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, ws_zero, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, ws_zero, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS1_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, ws_one, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, ws_one, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS2_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, ws_two, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, ws_two, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS3_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, ws_three, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, ws_three, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS4_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, ws_four, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, ws_four, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_WS5_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, ws_five, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, ws_five, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_TILE_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, mode_tile, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, mode_tile, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_GRID_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, mode_grid, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, mode_grid, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_DWINDLE_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, mode_dwindle, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, mode_dwindle, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SPIRAL_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, mode_spiral, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, mode_spiral, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SEP_1_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, sep_one, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, sep_one, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SEP_2_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, sep_two, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, sep_two, tt_optvalue) : FALSE;
 					break;
 				case BAR_TEXT_SPACE_ID:
-					rc = rc == TRUE ? alloc_bar_item(bar_text, space, tt_optvalue) : FALSE;
+					rc = rc == TRUE ? assign_bar_item(bar_text, space, tt_optvalue) : FALSE;
 					break;
 				case AUTO_ID:
 					autotile = TRUE;
@@ -402,7 +401,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 			if (bar_text[i].text[0] != nil) {
 				continue;
 			}
-                        if ((alloc_bar_item(bar_text, i, bar_default_text[i]) == FALSE)) {
+                        if ((assign_bar_item(bar_text, i, bar_default_text[i]) == FALSE)) {
                                 return FALSE;
                         }
                 }
@@ -438,7 +437,6 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	keys = malloc(sizeof(*keys) * keyarrsize);
 
 	if (keys != NULL) {
-		malloc_count++;
 		for (size_t i = 0; i < keyarrsize ; ++i) {
 			keys[i].rawcombo = (char *)FindToolType((const unsigned char **)diskobj->do_ToolTypes, (const unsigned char *)defkeys[i].optname);
 
@@ -466,7 +464,6 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	}
 
 	free(keys);
-	free_count++;
 	return rc;
 }
 
@@ -476,7 +473,6 @@ short int commo(void)
 	struct DiskObject *diskobj;
 	unsigned char iconlib[] = "icon.library";
 	unsigned char diskobjname[] = "PROGDIR:dintwm";
-	malloc_count++;
 
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 
@@ -494,13 +490,11 @@ short int commo(void)
 		DeleteMsgPort(mp);
 		return EXIT_FAILURE;
 	}
-	malloc_count++;
 
 	if ((subsignum = AllocSignal(-1)) == -1L) {
 		DeleteMsgPort(mp);
 		return EXIT_FAILURE;
 	}
-	malloc_count++;
 
 	mainsig = 1UL << (unsigned long)mainsignum;
 	subsig = 1UL << (unsigned long)subsignum;
@@ -512,7 +506,6 @@ short int commo(void)
 
 		MyBroker.nb_Port = mp;
 		broker = CxBroker(&MyBroker, NULL);
-		malloc_count++;
 
 		if (broker == NULL) {
 			FreeSignal(mainsignum);
@@ -551,7 +544,6 @@ short int commo(void)
 			}
 
 			if (vws_on == TRUE) {
-				//(void)countwindows(LOCK, 1);
 				(void)countwindows(LOCK);
 				getactive();
 				if (backdropped == TRUE) {
@@ -570,7 +562,6 @@ short int commo(void)
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wpedantic"
 			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L); // -V2590
-			malloc_count++;
 			#pragma GCC diagnostic pop
 			if(subtask == NULL) {
 				running = FALSE;
@@ -579,7 +570,6 @@ short int commo(void)
 			//Main Loop
 			while (running == TRUE)
 			{
-				//winnum_start = countwindows(NOLOCK, ASSIGN);
 				winnum_start = countwindows(NOLOCK);
 
 				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
@@ -592,7 +582,6 @@ short int commo(void)
 					if (tile_off == FALSE) {
 						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
 						update_wbar();
-						//winnum_start = countwindows(NOLOCK, NOASSIGN);
 						winnum_start = countwindows(NOLOCK);
 					}
 					Signal(subtask, subsig);
@@ -603,9 +592,9 @@ short int commo(void)
 					long id = CxMsgID(msg);
 					unsigned long type = CxMsgType(msg);
 
-					ReplyMsg((struct Message *)msg); //-V2545
+					ReplyMsg((struct Message *)msg);
 
-					if (type == (unsigned long)CXM_COMMAND) //-V2544
+					if (type == (unsigned long)CXM_COMMAND)
 					{
 						switch (id)
 						{
@@ -630,7 +619,7 @@ short int commo(void)
 								// Do nothing
 								break;
 						}
-					} else if (type == (unsigned long)CXM_IEVENT) { //-V2544
+					} else if (type == (unsigned long)CXM_IEVENT) {
 						if (id <= (TILE_FUNC_LIMIT)) {
 							*current_layout = id;
 						}
@@ -648,14 +637,12 @@ short int commo(void)
 			}
 
 			DeleteCxObjAll(broker);
-			free_count++;
 
 			while ((msg = (void *)GetMsg(mp)) != NULL) {
-				ReplyMsg((struct Message *)msg); //-V2545
+				ReplyMsg((struct Message *)msg);
 			}
 		}
 		DeleteMsgPort(mp);
-		free_count++;
 	}
 
 	cleanup();
@@ -704,13 +691,12 @@ static void free_opts(void)
 	}
 }
 
-static short alloc_bar_item(Bar_Text *b, enum bar_texts x, const char *c)
+static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c)
 {
         int res = snprintf((char *)b[x].text, TT_MAX_LENGTH, "%s", c);
         if (res < 0) {
                 return FALSE;
         }
-
         return TRUE;
 }
 
@@ -766,7 +752,6 @@ static void subactionchk(void)
 
 			if (running == FALSE) {
 				delete_timer(tr);
-				free_count++;
 				Signal(maintask, mainsig);
 				(void)Wait(0L);
 			}
@@ -785,28 +770,25 @@ struct timerequest *create_timer(unsigned long unit)
 	timerport = CreatePort(0, 0);
 
 	if (timerport == NULL) {
-		return (NULL);
+		return NULL;
 	}
 
 	TimerIO =
-	    (struct timerequest *)CreateExtIO(timerport, //-V2545
+	    (struct timerequest *)CreateExtIO(timerport,
 					      sizeof(struct timerequest));
-	malloc_count++;
-
 	if (TimerIO == NULL) {
 		DeletePort(timerport);	/* Delete message port */
-		return (NULL);
+		return NULL;
 	}
 
-	error = OpenDevice(tdevice, unit, (struct IORequest *)TimerIO, 0L); //-V2545
+	error = OpenDevice(tdevice, unit, (struct IORequest *)TimerIO, 0L);
 
 	if ((int)error != 0) {
 		delete_timer(TimerIO);
-		free_count++;
-		return (NULL);
+		return NULL;
 	}
 
-	return (TimerIO);
+	return TimerIO;
 }
 
 void time_delay(struct timerequest *tr, const struct timeval *tv) {
@@ -817,7 +799,7 @@ void time_delay(struct timerequest *tr, const struct timeval *tv) {
 	tr->tr_time = *tv;
 
 	/* post request to the timer -- will go to sleep till done */
-	(void)DoIO((struct IORequest *)tr); //-V2545
+	(void)DoIO((struct IORequest *)tr);
 }
 
 void delete_timer(struct timerequest *tr) {
@@ -833,8 +815,8 @@ void delete_timer(struct timerequest *tr) {
 			AbortIO((struct IORequest *)tr);    /* Ask device to abort any pending requests */
 		}
 		(void)WaitIO((struct IORequest *)tr);         /* Clean up */
-		CloseDevice((struct IORequest *)tr); //-V2545
-		DeleteExtIO((struct IORequest *)tr); //-V2545
+		CloseDevice((struct IORequest *)tr);
+		DeleteExtIO((struct IORequest *)tr);
 	}
 }
 

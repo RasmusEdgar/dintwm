@@ -169,8 +169,6 @@
 #define DEF_BAR_BP_SEP_TWO_COL 3U // Default bar title backpen color
 #define DEF_BAR_BG_COL 3U // Default bar bg color
 
-#define WTSTRING_INIT_SIZE 256U // Allow 128 windows before realloc of wtstring
-
 #define MOD1 "control"
 #define MOD2 "lcommand"
 #define MOD3 "shift"
@@ -209,7 +207,6 @@ short spiral(const Arg *arg);
 short dwindle(const Arg *arg);
 short switcher(const Arg *arg);
 short changegaps(const Arg *arg);
-//int countwindows(int lock, int assign_winfo);
 int countwindows(int lock);
 void getactive(void);
 int cstring_cmp(const void *a, const void *b);
@@ -236,7 +233,6 @@ extern long int *current_layout;
 extern int exclude_wtype;
 extern int include_wtype;
 extern long unsigned int auto_interval;
-//extern unsigned int current_ws;
 extern short backdropped;
 extern short tile_off;
 extern struct Window *wbw;
@@ -342,13 +338,9 @@ void time_delay(struct timerequest *tr, const struct timeval *tv);
 
 typedef struct {
 	short wbwin;
-        //unsigned int workspace;
         enum ws_num workspace;
         short skip;
         struct Window *wptr;
 } Winfo;
 
 Winfo *winfo;
-
-extern int malloc_count;
-extern int free_count;

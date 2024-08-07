@@ -15,9 +15,9 @@ static struct IntuiText wbartext =
 	.TopEdge = 4,
 	.LeftEdge = 0,
 	.ITextFont = NULL,
-	.DrawMode = JAM2, //-V2568
-	.FrontPen = 0, //-V2568
-	.BackPen = 0, //-V2568
+	.DrawMode = JAM2,
+	.FrontPen = 0,
+	.BackPen = 0,
 	.IText = NULL,
 	.NextText = NULL
 };
@@ -37,9 +37,9 @@ static struct Border barb =
 {
 	.TopEdge = 0,
 	.LeftEdge = 0,
-	.FrontPen = 1, //-V2568
-	.BackPen = 0, //-V2568
-	.DrawMode = JAM1, //-V2568
+	.FrontPen = 1,
+	.BackPen = 0,
+	.DrawMode = JAM1,
 	.NextBorder = NULL,
 	.XY = NULL,
 	.Count = 5

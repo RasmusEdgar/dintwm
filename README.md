@@ -279,11 +279,28 @@ Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/
 
 ## SAST Tools
 
-[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=github&utm_medium=organic&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
-
-Other analyzers used are:
+Static analyzers used are:
 [splint](https://splint.org/)
 [flawfinder](https://github.com/david-a-wheeler/flawfinder)
 [cppcheck](https://cppcheck.sourceforge.io/)
 
 Check out the Makefile on how this project uses them.
+
+## Memleak checker
+
+This part I find difficult to check for when compiling for a m68k target (no valgrind).
+
+Settled on [fortify](http://aminet.net/package/dev/c/fortify22) which helped me identify a memory leak.
+
+It can be enabled by building the source with:  
+```
+wget http://aminet.net/dev/c/fortify22.lha
+lha x fortify22.lha -w=/tmp
+cp /tmp/FORTIFY.CXX fortify.c
+cp /tmp/UFORTIFY.H ufortify.h
+cp /tmp/FORTIFY.H fortify.h
+make strict=true fortify=true all
+rm {uf,f}ortify*
+```
+
+When running the dintwm binary on AmigaOS, some memory allocation statistics will be displayed hopefully showing no memory leaks.

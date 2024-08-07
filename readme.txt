@@ -320,8 +320,24 @@ Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/
 
 SAST Tools
 
-PVS-Studio - static analyzer for C, C++, C#, and Java code.
-
-Other analyzers used are: splint flawfinder cppcheck
+Static analyzers used are: splint flawfinder cppcheck
 
 Check out the Makefile on how this project uses them.
+
+Memleak checker
+
+This part I find difficult to check for when compiling for a m68k target (no valgrind).
+
+Settled on fortify which helped me identify a memory leak.
+
+It can be enabled by building the source with:
+
+    wget http://aminet.net/dev/c/fortify22.lha
+    lha x fortify22.lha -w=/tmp
+    cp /tmp/FORTIFY.CXX fortify.c
+    cp /tmp/UFORTIFY.H ufortify.h
+    cp /tmp/FORTIFY.H fortify.h
+    make strict=true fortify=true all
+    rm {uf,f}ortify*
+
+When running the dintwm binary on AmigaOS, some memory allocation statistics will be displayed hopefully showing no memory leaks.
