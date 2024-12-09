@@ -2,9 +2,21 @@ dintwm
 
 Tiling window "manager" for AmigaOS 3.1.x.
 
-NOTE Dintwm is under rather heavy development, it is a hobby project and breakage may occur.
+NOTE
+Dintwm is a hobby project.
 
 Changelog
+
+-   v1.1
+
+    -   Make window handling proper by not manipulating bits in windows not owned by dintwm
+        -   Keep track of windows in ptr to index LUT instead
+    -   Fix memory leak in commodity code
+    -   Cleanup of code
+
+-   v1.0-rc1
+
+    -   Interim release candidate
 
 -   v0.6
 

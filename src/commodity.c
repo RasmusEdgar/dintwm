@@ -22,6 +22,12 @@ static struct Window *awin_comp;
 static short running = TRUE;
 static short autotile = FALSE;
 //static const char *bar_default_text[BAR_LAST_TEXT];
+struct Cmo {
+	struct MsgPort *mp;
+	struct Library *iconbase;
+	struct DiskObject *diskobj;
+};
+void init_cmo(struct Cmo *cmo);
 
 static char KEY_TILE[] = KEY_TILE_TXT,
 	KEY_HGRID[] = KEY_HGRID_TXT,
@@ -467,32 +473,49 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	return rc;
 }
 
-short int commo(void)
+void init_cmo(struct Cmo *cmo)
 {
-	struct MsgPort *mp = CreateMsgPort();
-	struct DiskObject *diskobj;
 	unsigned char iconlib[] = "icon.library";
 	unsigned char diskobjname[] = "PROGDIR:dintwm";
+	//struct Cmo *cmo;
+	cmo->mp = CreateMsgPort();
+	cmo->iconbase = OpenLibrary(iconlib, 37);
+	cmo->diskobj = GetDiskObject(diskobjname);
+	return;
+}
+
+short int commo(void)
+{
+	struct Cmo cmo;
+	init_cmo(&cmo);
+
+	if (cmo.mp == NULL) {
+		printf("mp fail\n");
+		DeleteMsgPort(cmo.mp);
+		return EXIT_FAILURE;
+	}
+
+	if (cmo.iconbase == NULL) {
+		printf("ib fail\n");
+		DeleteMsgPort(cmo.mp);
+		return EXIT_FAILURE;
+	}
+
+	if (cmo.diskobj == NULL) {
+		printf("do fail\n");
+		DeleteMsgPort(cmo.mp);
+		return EXIT_FAILURE;
+	}
 
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 
-	if (!(iconbase = OpenLibrary(iconlib, 37))) {
-		DeleteMsgPort(mp);
-		return EXIT_FAILURE;
-	}
-
-	if ((diskobj = GetDiskObject(diskobjname)) == NULL) {
-		DeleteMsgPort(mp);
-		return EXIT_FAILURE;
-	}
-
 	if ((mainsignum = AllocSignal(-1)) == -1L) {
-		DeleteMsgPort(mp);
+		DeleteMsgPort(cmo.mp);
 		return EXIT_FAILURE;
 	}
 
 	if ((subsignum = AllocSignal(-1)) == -1L) {
-		DeleteMsgPort(mp);
+		DeleteMsgPort(cmo.mp);
 		return EXIT_FAILURE;
 	}
 
@@ -500,150 +523,156 @@ short int commo(void)
 	subsig = 1UL << (unsigned long)subsignum;
 	maintask = FindTask(NULL);
 
-	if (mp != NULL)
-	{
-		CxObj *broker;
+	CxObj *broker;
 
-		MyBroker.nb_Port = mp;
-		broker = CxBroker(&MyBroker, NULL);
+	MyBroker.nb_Port = cmo.mp;
+	broker = CxBroker(&MyBroker, NULL);
 
-		if (broker == NULL) {
-			FreeSignal(mainsignum);
-			FreeSignal(subsignum);
-			DeleteCxObjAll(broker);
-			DeleteMsgPort(mp);
-			return EXIT_FAILURE;
-		}
-
-		if (running == TRUE && (attachtooltypes(broker, mp, diskobj) == TRUE))
-		{
-			CxMsg *msg;
-			CloseLibrary(iconbase);
-			FreeDiskObject(diskobj);
-
-			if (ActivateCxObj(broker, 1) != 0) {
-				DeleteMsgPort(mp);
-				running = FALSE;
-			}
-
-			if (bar_on == TRUE) {
-				if (wbarheight == 0) {
-					wbarheight = WBAR_HEIGHT;
-				}
-				sheight = sheight - wbarheight;
-
-				if (!wbw) {
-					running = init_wbar();
-				}
-
-				if (running == TRUE && wbw) {
-					getactive();
-					awin_comp = active_win;
-					update_wbar();
-				}
-			}
-
-			if (vws_on == TRUE) {
-				(void)countwindows(LOCK);
-				getactive();
-				if (backdropped == TRUE) {
-					if (info_on == TRUE) {
-						unsigned char bdwarn[] = BDWARN_TXT;
-						info_window(bdwarn);
-					}
-					running = FALSE;
-				}
-			}
-
-			// Initial tile
-			running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
-
-			// Muting GCC warning here. Following official Amiga CreateTask example
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wpedantic"
-			subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L); // -V2590
-			#pragma GCC diagnostic pop
-			if(subtask == NULL) {
-				running = FALSE;
-			}
-
-			//Main Loop
-			while (running == TRUE)
-			{
-				winnum_start = countwindows(NOLOCK);
-
-				wakeupsigs = Wait((mainsig) | (1UL << mp->mp_SigBit));
-
-				if((wakeupsigs & mainsig) != 0UL) {
-					if (winfo[awin_index].wbwin == TRUE) {
-						Signal(subtask, subsig);
-						continue;
-					}
-					if (tile_off == FALSE) {
-						running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
-						update_wbar();
-						winnum_start = countwindows(NOLOCK);
-					}
-					Signal(subtask, subsig);
-				}
-
-				while ((msg = (void *)GetMsg(mp)) != NULL)
-				{
-					long id = CxMsgID(msg);
-					unsigned long type = CxMsgType(msg);
-
-					ReplyMsg((struct Message *)msg);
-
-					if (type == (unsigned long)CXM_COMMAND)
-					{
-						switch (id)
-						{
-							case CXCMD_UNIQUE:
-								if(info_on == TRUE) {
-									unsigned char uqwarn[] = UQWARN_TXT;
-									info_window(uqwarn);
-								}
-								running = FALSE;
-								break;
-							case CXCMD_DISABLE:
-							case CXCMD_ENABLE:
-								break;
-							case CXCMD_KILL:
-								running = FALSE;
-								break;
-							case CXCMD_APPEAR:
-								break;
-							case CXCMD_DISAPPEAR:
-								break;
-							default:
-								// Do nothing
-								break;
-						}
-					} else if (type == (unsigned long)CXM_IEVENT) {
-						if (id <= (TILE_FUNC_LIMIT)) {
-							*current_layout = id;
-						}
-						running = defkeys[id].func(&defkeys[id].arg);
-						if (running == FALSE) {
-							Signal(subtask, subsig);
-							(void)Wait((mainsig) | (1UL << mp->mp_SigBit));
-						}
-						if (bar_on == TRUE && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
-							wbarcwb();
-							update_wbar();
-						}
-					}
-				}
-			}
-
-			DeleteCxObjAll(broker);
-
-			while ((msg = (void *)GetMsg(mp)) != NULL) {
-				ReplyMsg((struct Message *)msg);
-			}
-		}
-		DeleteMsgPort(mp);
+	if (broker == NULL) {
+		FreeSignal(mainsignum);
+		FreeSignal(subsignum);
+		CloseLibrary(cmo.iconbase);
+		FreeDiskObject(cmo.diskobj);
+		DeleteCxObjAll(broker);
+		DeleteMsgPort(cmo.mp);
+		return EXIT_FAILURE;
 	}
+
+	if (running == TRUE && (attachtooltypes(broker, cmo.mp, cmo.diskobj) == TRUE))
+	{
+		CxMsg *msg;
+		CloseLibrary(cmo.iconbase);
+		FreeDiskObject(cmo.diskobj);
+
+		if (ActivateCxObj(broker, 1) != 0) {
+			DeleteMsgPort(cmo.mp);
+			running = FALSE;
+		}
+
+		// Muting GCC warning here. Following official Amiga CreateTask example
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wpedantic"
+		subtask = CreateTask(subactionchkname, 0L, (void *)subactionchk, 2048L);
+		#pragma GCC diagnostic pop
+		if(subtask == NULL) {
+			running = FALSE;
+		}
+
+		if (vws_on == TRUE) {
+			(void)countwindows(LOCK);
+			getactive();
+			if (backdropped == TRUE) {
+				if (info_on == TRUE) {
+					info_window(warn_messages[BDWARN]);
+				}
+				DeleteMsgPort(cmo.mp);
+				DeleteCxObjAll(broker);
+
+				while ((msg = (void *)GetMsg(cmo.mp)) != NULL) {
+					ReplyMsg((struct Message *)msg);
+				}
+				bar_on = FALSE;
+				cleanup();
+				return EXIT_FAILURE;
+			}
+		}
+
+		if (bar_on == TRUE && running == TRUE) {
+			if (wbarheight == 0) {
+				wbarheight = WBAR_HEIGHT;
+			}
+			sheight = sheight - wbarheight;
+
+			if (!wbw) {
+				running = init_wbar();
+			}
+
+			if (running == TRUE && wbw) {
+				getactive();
+				awin_comp = active_win;
+				update_wbar();
+			}
+		}
+
+		// Initial tile
+		running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+
+		//Main Loop
+		while (running == TRUE)
+		{
+			winnum_start = countwindows(NOLOCK);
+
+			wakeupsigs = Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
+
+			if((wakeupsigs & mainsig) != 0UL) {
+				if (winfo[awin_index].wbwin == TRUE) {
+					Signal(subtask, subsig);
+					continue;
+				}
+				if (tile_off == FALSE) {
+					running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+					update_wbar();
+					winnum_start = countwindows(NOLOCK);
+				}
+				Signal(subtask, subsig);
+			}
+
+			while ((msg = (void *)GetMsg(cmo.mp)) != NULL)
+			{
+				long id = CxMsgID(msg);
+				unsigned long type = CxMsgType(msg);
+
+				ReplyMsg((struct Message *)msg);
+
+				if (type == (unsigned long)CXM_COMMAND)
+				{
+					switch (id)
+					{
+						case CXCMD_UNIQUE:
+							if(info_on == TRUE) {
+								info_window(warn_messages[UQWARN]);
+							}
+							running = FALSE;
+							break;
+						case CXCMD_DISABLE:
+						case CXCMD_ENABLE:
+							break;
+						case CXCMD_KILL:
+							running = FALSE;
+							break;
+						case CXCMD_APPEAR:
+							break;
+						case CXCMD_DISAPPEAR:
+							break;
+						default:
+							// Do nothing
+							break;
+						}
+				} else if (type == (unsigned long)CXM_IEVENT) {
+					if (id <= (TILE_FUNC_LIMIT)) {
+						*current_layout = id;
+					}
+					running = defkeys[id].func(&defkeys[id].arg);
+					if (running == FALSE) {
+						Signal(subtask, subsig);
+						(void)Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
+					}
+					if (bar_on == TRUE && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
+						wbarcwb();
+						update_wbar();
+					}
+				}
+			}
+		}
+
+		DeleteCxObjAll(broker);
+
+		while ((msg = (void *)GetMsg(cmo.mp)) != NULL) {
+			ReplyMsg((struct Message *)msg);
+		}
+	}
+
+	DeleteMsgPort(cmo.mp);
 
 	cleanup();
 
@@ -722,6 +751,11 @@ static void subactionchk(void)
 	while(running == TRUE) {
 		time_delay(tr, &currentval);
 		int wincnt = countwindows(NOLOCK);
+		if (wincnt > (DIVISOR - 2)) {
+			running = FALSE;
+			info_window(warn_messages[WIWARN]);
+			continue;
+		}
 		if (tile_off == FALSE && autotile == TRUE) {
 			if (winnum_start != wincnt) {
 				Signal(maintask, mainsig);

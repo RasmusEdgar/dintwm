@@ -163,8 +163,17 @@
 #define KEY_CXM_EXIT_TXT "rawkey " MOD1 " " MOD2 " q"
 #define KEY_TAB_NEXT_TXT "rawkey " MOD1 " " MOD2 " tab"
 
-#define BDWARN_TXT "Virtual WSs are incompatible with backdropped WB. Unbackdrop WB or remove TT VWS_ON. Quitting."
-#define UQWARN_TXT "Commodity is already running. Quitting."
+//#define BDWARN_TXT "Virtual WSs are incompatible with backdropped WB. Unbackdrop WB or remove TT VWS_ON. Quitting."
+#define BDWARN 0
+#define UQWARN 1
+#define WIWARN 2
+//#define UQWARN_TXT "Commodity is already running. Quitting."
+
+const char *warn_messages[] = {
+	"Virtual WSs are incompatible with backdropped WB. Unbackdrop WB or remove TT VWS_ON. Quitting.",
+	"Commodity is already running. Quitting.",
+	"Dintwm only supports up to 1023 windows. Dintwm applauds the effort!"
+};
 
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
@@ -172,7 +181,7 @@ static void free_opts(void);
 static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
 static void cleanup(void);
 
-static struct Library *iconbase;
+//static struct Library *iconbase;
 static void subactionchk(void);
 static int winnum_start;
 long unsigned int auto_interval;

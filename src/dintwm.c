@@ -614,7 +614,7 @@ short docmd(const Arg * arg)
 		stags[4].ti_Tag = TAG_DONE;
 
 		if ((SystemTagList(cmd, stags)) == -1) {
-			unsigned char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
+			const char dcwarn[] = "Custom CMD/CONLINE is not correct. Quitting";
 			info_window(dcwarn);
 			return FALSE;
 		}
@@ -988,8 +988,8 @@ short update_wbar(void) {
 	barb.XY = barbdata;
 
 	SetRast(wbw->RPort, *bar_color[bg].color);
-	DrawBorder(wbw->RPort, &barb, 0, 0);
 	PrintIText(wbw->RPort, &wstext_zero, 4, 0);
+	DrawBorder(wbw->RPort, &barb, 0, 0);
 
 	return TRUE;
 }
@@ -1103,7 +1103,7 @@ static inline unsigned char * maptm(void)
 	return bar_text[err].text;
 }
 
-short info_window(unsigned char * info_text)
+short info_window(const char *info_text)
 {
 	struct TagItem tagitem[9];
 	struct Window *iwin, *twin;
@@ -1118,7 +1118,7 @@ short info_window(unsigned char * info_text)
 		.DrawMode = JAM2,
 		.FrontPen = 1,
 		.BackPen = 2,
-		.IText = info_text,
+		.IText = (unsigned char *)info_text,
 		.NextText = NULL
 	};
 
@@ -1148,7 +1148,7 @@ short info_window(unsigned char * info_text)
 		unlockbasescreen(&ilock, &screen);
 		return FALSE;
 	}
-	info_text_length = TextLength(twin->RPort, info_text, strnlen((const char *)info_text, TT_MAX_LENGTH));
+	info_text_length = TextLength(twin->RPort, (unsigned char *)info_text, strnlen((const char *)info_text, TT_MAX_LENGTH));
 	tleft = (unsigned long)info_text_length + (unsigned long)twin->BorderLeft + (unsigned long)twin->BorderRight;
 	tagitem[0].ti_Tag = WA_Width;
 	tagitem[0].ti_Data = tleft;

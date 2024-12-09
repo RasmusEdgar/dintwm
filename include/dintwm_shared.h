@@ -219,7 +219,7 @@ short movetows(const Arg *arg);
 short init_wbar(void);
 short update_wbar(void);
 void wbarcwb(void);
-short info_window(unsigned char * info_text);
+short info_window(const char *info_text);
 short tileoff(const Arg *arg);
 short tabnextwin(const Arg * arg);
 int modululator(unsigned long w);
