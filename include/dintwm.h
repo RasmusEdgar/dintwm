@@ -1,6 +1,6 @@
 // Copyright 2021 Rasmus Edgar
 #include <dos/dostags.h>
-#include "../include/ketopt.h"
+#include <getopt.h>
 #include "../include/wbar_config.h"
 #ifdef FORTIFY
 #include "../fortify.h"

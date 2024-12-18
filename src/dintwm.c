@@ -1,4 +1,4 @@
-// Copyright 2021 Rasmus Edgar
+// Copyright 2024 Rasmus Edgar
 #include "../include/dintwm_shared.h"
 #include "../include/dintwm.h"
 
@@ -37,54 +37,53 @@ int main(int argc, char **argv)
 
 static int dintwmrun(int argc, char **argv)
 {
-	ketopt_t opt = KETOPT_INIT;
-	int c;
+	int c = 0;
 	int dint_opt_state = NOTSET;
 	static int dint_fail_state = EXIT_SUCCESS;
 	static int dint_exit_state = EXIT_SUCCESS;
 	int not_known = 0;
 
-	while ((c = ketopt(&opt, argc, argv, 1, "uU:B:L:R:CdghstV", 0)) >= 0) {
+	while ((c = getopt(argc, argv, "uU:B:L:R:CdghstV")) >= 0) { /* Flawfinder: ignore */
 		switch (c) {
 		case 'u':
 			topgap = calcgap();
 			break;
 		case 'U':
-			if (*opt.arg == '-') {
+			if (*optarg == '-') {
 				dint_fail_state = MISSING;
 				break;
 			}
-			topgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			topgap = (int)strtol(optarg, (char **)NULL, 10);
 			if (topgap > sheight || topgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
 			break;
 		case 'B':
-			if (*opt.arg == '-') {
+			if (*optarg == '-') {
 				dint_fail_state = MISSING;
 				break;
 			}
-			bottomgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			bottomgap = (int)strtol(optarg, (char **)NULL, 10);
 			if (bottomgap > sheight || bottomgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
 			break;
 		case 'L':
-			if (*opt.arg == '-') {
+			if (*optarg == '-') {
 				dint_fail_state = MISSING;
 				break;
 			}
-			leftgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			leftgap = (int)strtol(optarg, (char **)NULL, 10);
 			if (leftgap > swidth || leftgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
 			break;
 		case 'R':
-			if (*opt.arg == '-') {
+			if (*optarg == '-') {
 				dint_fail_state = MISSING;
 				break;
 			}
-			rightgap = (int)strtol(opt.arg, (char **)NULL, 10);
+			rightgap = (int)strtol(optarg, (char **)NULL, 10);
 			if (rightgap > swidth || rightgap < 0) {
 				dint_fail_state = GAP_ERR;
 			}
@@ -143,7 +142,7 @@ static int dintwmrun(int argc, char **argv)
 			break;
 		case '?':
 			dint_fail_state = UNKNOWN;
-			not_known = opt.opt;
+			not_known = optopt;
 			break;
 		default:
 			// Do nothing
@@ -153,7 +152,7 @@ static int dintwmrun(int argc, char **argv)
 
 	switch (dint_fail_state) {
 	case DOUBLE_OPTION_ERR:
-		printf("Do not use -%c with other option.\n", opt.opt);
+		printf("Do not use -%c with other option.\n", optopt);
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	case GAP_ERR:
@@ -161,7 +160,7 @@ static int dintwmrun(int argc, char **argv)
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	case UNKNOWN:
-		if (opt.opt != 0) {
+		if (optopt != 0) {
 			printf("unknown opt: -%c\n", not_known);
 		} else {
 			printf("unknown opt: -%c\n", ':');
@@ -169,12 +168,12 @@ static int dintwmrun(int argc, char **argv)
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	case MISSING:
-		if (opt.opt != 0) {
-			printf("missing arg: -%c\n", opt.opt);
+		if (optopt != 0) {
+			printf("missing arg: -%c\n", optopt);
 		} else {
 			printf("missing arg: -%c\n", ':');
 		}
-		printf("missing arg: -%c\n", opt.opt != 0 ? opt.opt : (int)':');
+		printf("missing arg: -%c\n", optopt != 0 ? optopt : (int)':');
 		dint_exit_state = EXIT_FAILURE;
 		break;
 	default:

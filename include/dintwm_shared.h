@@ -22,7 +22,6 @@
 
 #define KEYTYPE_ID 1 // Keytype id
 #define OPTTYPE_ID 2 // Opttype id
-#define K_CGAP_ID 301 // longopts ketopts id
 #define	TOPGAP_ID 400 // topgap type identifier
 #define	DEFAULT_TOPGAP_ID 401 // default topgap identifier
 #define BOTTOMGAP_ID 402 // bottomgap type identifier

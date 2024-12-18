@@ -12,6 +12,7 @@ Dintwm is a hobby project.
       - Keep track of windows in ptr to index LUT instead
   - Fix memory leak in commodity code
   - Cleanup of code
+  - Remove ketopt dependency
 
 * v1.0-rc1
   - Interim release candidate
@@ -284,8 +285,6 @@ Options are:
 
 Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included. 
 
-Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/X11 license.
-
 ## SAST Tools
 
 Static analyzers used are:
@@ -297,7 +296,7 @@ Check out the Makefile on how this project uses them.
 
 ## Memleak checker
 
-This part I find difficult to check for when compiling for a m68k target (no valgrind).
+This part I find difficult to check for, when compiling for a m68k target (no valgrind).
 
 Settled on [fortify](http://aminet.net/package/dev/c/fortify22) which helped me identify a memory leak.
 

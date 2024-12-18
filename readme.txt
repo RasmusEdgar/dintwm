@@ -13,6 +13,7 @@ Changelog
         -   Keep track of windows in ptr to index LUT instead
     -   Fix memory leak in commodity code
     -   Cleanup of code
+    -   Remove ketopt dependency
 
 -   v1.0-rc1
 
@@ -328,8 +329,6 @@ Note on licensing
 
 Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included.
 
-Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/X11 license.
-
 SAST Tools
 
 Static analyzers used are: splint flawfinder cppcheck
@@ -338,7 +337,7 @@ Check out the Makefile on how this project uses them.
 
 Memleak checker
 
-This part I find difficult to check for when compiling for a m68k target (no valgrind).
+This part I find difficult to check for, when compiling for a m68k target (no valgrind).
 
 Settled on fortify which helped me identify a memory leak.
 
