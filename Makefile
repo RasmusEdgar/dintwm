@@ -16,8 +16,8 @@ CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 $(FTFYFLAG)-O2 -Wall -Wextra -Wformat=2 
 CC = m68k-amigaos-gcc
 CFLAGS =-std=c11 -Ofast -Wall -Wextra -s -fomit-frame-pointer -noixemul
 MAINHEADER = include/dintwm.h include/dintwm_shared.h
-CONFHEADER = include/commodity.h
-EXTHEADERS = include/ketopt.h include/wbar_config.h $(FTFYHDRS)
+CONFHEADER = include/commodity.h include/key_txts.h include/key_defs.h include/opt_defs.h
+EXTHEADERS = include/wbar_config.h $(FTFYHDRS)
 HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
 CPPLINTCMD = cpplint
 CPPLINTOPTS = --linelength 150 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard $(FTFYLINTEXCL)

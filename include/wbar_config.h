@@ -1,4 +1,4 @@
-// Copyright 2021 Rasmus Edgar
+// Copyright 2024 Rasmus Edgar
 
 static struct TextExtent teinit =
 {

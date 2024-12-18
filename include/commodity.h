@@ -201,8 +201,24 @@ static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtra
 static void free_opts(void);
 static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
 static void cleanup(struct Cmo *cmo);
+static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i);
 
-//static struct Library *iconbase;
 static void subactionchk(void);
 static int winnum_start;
 long unsigned int auto_interval;
+
+int fact = TILE_FACT_DEF;
+int gap_change_value = GAP_CHANGE_VALUE_DEF;
+static short info_on = TRUE;
+
+static unsigned long mainsig, wakeupsigs, subsig;
+static struct Task *maintask = NULL, *subtask = NULL;
+static short first_run = TRUE;
+static struct Window *awin_comp;
+static short running = TRUE;
+static short autotile = FALSE;
+
+Ostore cmds[] = {0};
+Ostore cons[] = {0};
+Ostore incls[] = {0};
+Ostore excls[] = {0};

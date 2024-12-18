@@ -17,9 +17,9 @@ int main(int argc, char **argv)
 {
 	static int dint_exit_state = EXIT_SUCCESS;
 
-	#ifdef FORTIFY
+#ifdef FORTIFY
 	Fortify_EnterScope();
-	#endif
+#endif
 
 	initdefaults();
 
@@ -27,10 +27,10 @@ int main(int argc, char **argv)
 
 	free(winfo);
 
-	#ifdef FORTIFY
+#ifdef FORTIFY
 	Fortify_LeaveScope();
 	Fortify_OutputStatistics();
-	#endif
+#endif
 
 	return dint_exit_state;
 }
@@ -43,7 +43,7 @@ static int dintwmrun(int argc, char **argv)
 	static int dint_exit_state = EXIT_SUCCESS;
 	int not_known = 0;
 
-	while ((c = getopt(argc, argv, "uU:B:L:R:CdghstV")) >= 0) { /* Flawfinder: ignore */
+	while ((c = getopt(argc, argv, "uU:B:L:R:CdghstV")) >= 0) {	/* Flawfinder: ignore */
 		switch (c) {
 		case 'u':
 			topgap = calcgap();
@@ -201,8 +201,7 @@ static int dintwmrun(int argc, char **argv)
 			dint_exit_state = TRUE;
 			break;
 		default:
-			dint_exit_state =
-		    		defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
+			dint_exit_state = defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
 			break;
 		}
 	}
@@ -217,9 +216,9 @@ static void initdefaults(void)
 	backdropped = FALSE;
 	size_t winfo_size = DIVISOR - 1;
 
-        if ((winfo = (Winfo *)calloc(winfo_size, sizeof(Winfo))) == NULL) {
-                exit(EXIT_FAILURE);
-        }
+	if ((winfo = (Winfo *) calloc(winfo_size, sizeof(Winfo))) == NULL) {
+		exit(EXIT_FAILURE);
+	}
 
 	for (int i = 0; i < BAR_LAST_COLOR; ++i) {
 		bar_color[i].color[0] = nil;
@@ -228,8 +227,7 @@ static void initdefaults(void)
 	lockbasescreen(&ilock, &screen);
 	sheight = screen->Height;
 	swidth = screen->Width;
-	for (window = screen->FirstWindow; window != NULL;
-		window = window->NextWindow) {
+	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
 		int index = modululator((unsigned long)window);
 		winfo[index].wptr = window;
 		if (strcmp("Workbench", (const char *)window->Title) == 0) {
@@ -247,18 +245,16 @@ static void initdefaults(void)
 static short printusage(void)
 {
 	printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-		"Options:",
-		"-d: Fibonacci dwindle",
-		"-g: Horizontal grid",
-		"-t: Tile with left master",
-		"-s: Fibonacci spiral",
-		"-V: Show version",
-		"<other arg> -u: Add workbench bar gap",
-		"<other arg> -U<int>: Add custom top gap",
-		"<other arg> -B<int>: Add custom bottom gap",
-		"<other arg> -L<int>: Add custom left gap",
-		"<other arg> -R<int>: Add custom right gap",
-		"-h: This message");
+	       "Options:",
+	       "-d: Fibonacci dwindle",
+	       "-g: Horizontal grid",
+	       "-t: Tile with left master",
+	       "-s: Fibonacci spiral",
+	       "-V: Show version",
+	       "<other arg> -u: Add workbench bar gap",
+	       "<other arg> -U<int>: Add custom top gap",
+	       "<other arg> -B<int>: Add custom bottom gap", "<other arg> -L<int>: Add custom left gap", "<other arg> -R<int>: Add custom right gap",
+	       "-h: This message");
 
 	return EXIT_SUCCESS;
 }
@@ -267,7 +263,7 @@ static short skipper(struct Window *w)
 {
 	int index = modululator((unsigned long)w);
 
-	if(winfo[index].wptr == NULL) {
+	if (winfo[index].wptr == NULL) {
 		winfo[index].wptr = w;
 		winfo[index].workspace = current_ws;
 	}
@@ -300,9 +296,7 @@ static short skipper(struct Window *w)
 
 	if (winfo[index].workspace == current_ws) {
 		if (include_wtype != 0 && exclude_wtype == 0) {
-			if (bsearch
-		    	(&w->Title, incls->strings, WTYPE_MAX, sizeof(char *),
-		     	cstring_cmp) != NULL) {
+			if (bsearch(&w->Title, incls->strings, WTYPE_MAX, sizeof(char *), cstring_cmp) != NULL) {
 				return NOSKIP;
 			} else {
 				winfo[index].skip = TRUE;
@@ -311,9 +305,7 @@ static short skipper(struct Window *w)
 		}
 
 		if (exclude_wtype != 0 && include_wtype == 0) {
-			if (bsearch
-		    	(&w->Title, excls->strings, WTYPE_MAX, sizeof(char *),
-		     	cstring_cmp) != NULL) {
+			if (bsearch(&w->Title, excls->strings, WTYPE_MAX, sizeof(char *), cstring_cmp) != NULL) {
 				winfo[index].skip = TRUE;
 				return SKIP;
 			}
@@ -328,12 +320,11 @@ static short skipper(struct Window *w)
 
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh)
 {
-	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww,
-			(short int)wh);
+	ChangeWindowBox(w, (short int)wx, (short int)wy, (short int)ww, (short int)wh);
 	WindowToFront(w);
 }
 
-short tile(const Arg * arg)
+short tile(const Arg *arg)
 {
 	(void)arg;
 	static const int nmaster = 1;
@@ -359,8 +350,7 @@ short tile(const Arg * arg)
 		mwinwidth = sw;
 	}
 
-	for (wnr = 0, window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow, wnr++) {
+	for (wnr = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
 		if (skipper(window) == SKIP) {
 			wnr--;
 			continue;
@@ -384,7 +374,7 @@ short tile(const Arg * arg)
 	return TRUE;
 }
 
-short hgrid(const Arg * arg)
+short hgrid(const Arg *arg)
 {
 	(void)arg;
 
@@ -403,8 +393,7 @@ short hgrid(const Arg * arg)
 		return TRUE;
 	}
 
-	for (wnr = 0, window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow, wnr++) {
+	for (wnr = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
 		if (skipper(window) == SKIP) {
 			wnr--;
 			continue;
@@ -437,7 +426,7 @@ short hgrid(const Arg * arg)
 	return TRUE;
 }
 
-short fibonacci(const Arg * arg)
+short fibonacci(const Arg *arg)
 {
 	int wnr, wincount;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
@@ -454,8 +443,7 @@ short fibonacci(const Arg * arg)
 	ww = sw;
 	wh = sh;
 
-	for (wnr = 0, window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow, wnr++) {
+	for (wnr = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
 		if (skipper(window) == SKIP) {
 			wnr--;
 			continue;
@@ -506,7 +494,7 @@ short fibonacci(const Arg * arg)
 	return TRUE;
 }
 
-short switcher(const Arg * arg)
+short switcher(const Arg *arg)
 {
 	static int layout_start = LAYOUT_START;
 	static int *layout_number = &layout_start;
@@ -522,15 +510,13 @@ short switcher(const Arg * arg)
 		if (*layout_number > TILE_FUNC_LIMIT) {
 			*layout_number = 0;
 		}
-		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].
-						    arg);
+		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
 	} else {
 		(*layout_number)--;
 		if (*layout_number < 0) {
 			*layout_number = TILE_FUNC_LIMIT;
 		}
-		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].
-						    arg);
+		rc = defkeys[(*layout_number)].func(&defkeys[(*layout_number)].arg);
 	}
 	*current_layout = *layout_number;
 
@@ -543,8 +529,7 @@ int countwindows(int lock)
 	if (lock != 0) {
 		lockbasescreen(&ilock, &screen);
 	}
-	for (wincount = 0, window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow, wincount++) {
+	for (wincount = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wincount++) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
 			active_win = window;
 		}
@@ -564,8 +549,7 @@ int countwindows(int lock)
 void getactive(void)
 {
 	lockbasescreen(&ilock, &screen);
-	for (window = screen->FirstWindow; window != NULL;
-	     window = window->NextWindow) {
+	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
 			active_win = window;
 			awin_index = modululator((unsigned long)window);
@@ -575,7 +559,7 @@ void getactive(void)
 	unlockbasescreen(&ilock, &screen);
 }
 
-short docmd(const Arg * arg)
+short docmd(const Arg *arg)
 {
 	int cmdid = arg->i - (int)CMD_ID_0;
 	struct TagItem stags[5];
@@ -583,21 +567,17 @@ short docmd(const Arg * arg)
 	unsigned char conline[TT_MAX_LENGTH];
 	unsigned char cmd[TT_MAX_LENGTH];
 
-	size_t conlen =
-	    strnlen((const char *)cons->strings[cmdid], TT_MAX_LENGTH);
-	size_t cmdlen =
-	    strnlen((const char *)cmds->strings[cmdid], TT_MAX_LENGTH);
+	size_t conlen = strnlen((const char *)cons->strings[cmdid], TT_MAX_LENGTH);
+	size_t cmdlen = strnlen((const char *)cmds->strings[cmdid], TT_MAX_LENGTH);
 
 	if (conlen != 0U) {
-		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s",
-			       cons->strings[cmdid]);
+		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s", cons->strings[cmdid]);
 	} else {
 		(void)snprintf((char *)conline, TT_MAX_LENGTH, "%s", DEFCON);
 	}
 
 	if (cmdlen != 0U) {
-		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s",
-			       cmds->strings[cmdid]);
+		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", cmds->strings[cmdid]);
 	} else {
 		(void)snprintf((char *)cmd, TT_MAX_LENGTH, "%s", DEFCMD);
 	}
@@ -636,7 +616,7 @@ int calcgap(void)
 
 short changegaps(const Arg *arg)
 {
-	switch(arg->i) {
+	switch (arg->i) {
 	case TOPGAP_ID:
 		topgap += topgap <= ((sheight - GAP_INC_OFFSET) / 2) ? gap_change_value : 0;
 		break;
@@ -678,7 +658,7 @@ short changegaps(const Arg *arg)
 		break;
 	}
 
-	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+	return (defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
 static void lockbasescreen(unsigned long *il, struct Screen **s)
@@ -693,7 +673,7 @@ static void unlockbasescreen(unsigned long *il, struct Screen **s)
 	UnlockIBase(*il);
 }
 
-short exit_cxm(const Arg * arg)
+short exit_cxm(const Arg *arg)
 {
 	return arg->s;
 }
@@ -717,11 +697,11 @@ size_t strnlen(const char *s, size_t maxlen)
 	return len;
 }
 
-static void moveallwin(int m) {
+static void moveallwin(int m)
+{
 	int countw = 0;
 	lockbasescreen(&ilock, &screen);
-	for (window = screen->FirstWindow; window != NULL;
-		window = window->NextWindow) {
+	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
 		if (skipper(window) == SKIP) {
 			continue;
 		}
@@ -745,8 +725,8 @@ static void moveallwin(int m) {
 	unlockbasescreen(&ilock, &screen);
 }
 
-
-short changews(const Arg * arg) {
+short changews(const Arg *arg)
+{
 	if (vws_on == FALSE) {
 		return TRUE;
 	}
@@ -762,13 +742,12 @@ short changews(const Arg * arg) {
 	ActivateWindow(findfirstwin());
 	unlockbasescreen(&ilock, &screen);
 
-	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+	return (defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
-static struct Window * findfirstwin(void)
+static struct Window *findfirstwin(void)
 {
-	for (window = screen->FirstWindow; window != NULL;
-		window = window->NextWindow) {
+	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
 		if (skipper(window) == SKIP) {
 			continue;
 		}
@@ -780,14 +759,14 @@ static struct Window * findfirstwin(void)
 	return window;
 }
 
-short movetows(const Arg * arg) {
+short movetows(const Arg *arg)
+{
 	if (vws_on == FALSE) {
 		return TRUE;
 	}
 
 	lockbasescreen(&ilock, &screen);
-	for (window = screen->FirstWindow; window != NULL;
-		window = window->NextWindow) {
+	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
 		if (skipper(window) == SKIP) {
 			continue;
 		}
@@ -799,10 +778,11 @@ short movetows(const Arg * arg) {
 	}
 	ActivateWindow(findfirstwin());
 	unlockbasescreen(&ilock, &screen);
-	return(defkeys[*current_layout].func(&defkeys[*current_layout].arg));
+	return (defkeys[*current_layout].func(&defkeys[*current_layout].arg));
 }
 
-short tabnextwin(const Arg * arg) {
+short tabnextwin(const Arg *arg)
+{
 	(void)arg;
 	lockbasescreen(&ilock, &screen);
 	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
@@ -828,14 +808,15 @@ short tabnextwin(const Arg * arg) {
 	return TRUE;
 }
 
-static unsigned char * padwbartext(Bar_Text *b, enum bar_texts x)
+static unsigned char *padwbartext(Bar_Text *b, enum bar_texts x)
 {
-        const unsigned char * tmp = b[x].text;
-        (void)snprintf((char *)b[x].text, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
-        return b[x].text;
+	const unsigned char *tmp = b[x].text;
+	(void)snprintf((char *)b[x].text, TT_MAX_LENGTH * 2, "%s%s", tmp, bar_text[space].text);
+	return b[x].text;
 }
 
-short init_wbar(void) {
+short init_wbar(void)
+{
 	struct TagItem tagitem[7];
 
 	tagitem[0].ti_Tag = WA_Width;
@@ -849,7 +830,7 @@ short init_wbar(void) {
 	tagitem[4].ti_Tag = WA_SmartRefresh;
 	tagitem[4].ti_Data = 1;
 	tagitem[5].ti_Tag = WA_IDCMP;
-	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW|IDCMP_CHANGEWINDOW;
+	tagitem[5].ti_Data = IDCMP_REFRESHWINDOW | IDCMP_CHANGEWINDOW;
 	tagitem[6].ti_Tag = TAG_DONE;
 
 	lockbasescreen(&ilock, &screen);
@@ -948,7 +929,7 @@ short init_wbar(void) {
 	return TRUE;
 }
 
-static short int wbartextwidth(int lei, unsigned char * it)
+static short int wbartextwidth(int lei, unsigned char *it)
 {
 	struct TextExtent *barte = &teinit;
 	short int le = (short int)lei;
@@ -958,20 +939,21 @@ static short int wbartextwidth(int lei, unsigned char * it)
 			return FALSE;
 		}
 	}
-	return (short int)(le+(short int)barte->te_Width);
+	return (short int)(le + (short int)barte->te_Width);
 }
 
-short update_wbar(void) {
+short update_wbar(void)
+{
 	if (bar_on == FALSE) {
 		return TRUE;
 	}
-	static short barbdata[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static short barbdata[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	barbdata[0] = 1;
 	barbdata[1] = 1;
 	barbdata[2] = (short)((swidth - (leftgap + rightgap)) - 1);
 	barbdata[3] = 1;
-	barbdata[4] = (short)((swidth - (leftgap + rightgap)) -  1);
+	barbdata[4] = (short)((swidth - (leftgap + rightgap)) - 1);
 	barbdata[5] = (short)(wbarheight - 1);
 	barbdata[6] = 1;
 	barbdata[7] = (short)(wbarheight - 1);
@@ -994,7 +976,8 @@ short update_wbar(void) {
 	return TRUE;
 }
 
-void wbarcwb(void) {
+void wbarcwb(void)
+{
 	if (bar_on == FALSE) {
 		return;
 	}
@@ -1019,73 +1002,68 @@ static inline void mapws(void)
 	}
 
 	if (current_ws == WS_0) {
-		wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
+		wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen = wstext_four.FrontPen = wstext_five.FrontPen =
+		    *bar_color[fp_ws].color;
 
-		wstext_one.BackPen = wstext_two.BackPen = wstext_three.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
+		wstext_one.BackPen = wstext_two.BackPen = wstext_three.BackPen = wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
 		wstext_zero.FrontPen = *bar_color[fp_cur].color;
 		wstext_zero.BackPen = *bar_color[bp_cur].color;
 	}
 
 	if (current_ws == WS_1) {
-		wstext_zero.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
+		wstext_zero.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen = wstext_four.FrontPen = wstext_five.FrontPen =
+		    *bar_color[fp_ws].color;
 
-		wstext_zero.BackPen = wstext_two.BackPen = wstext_three.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;;
+		wstext_zero.BackPen = wstext_two.BackPen = wstext_three.BackPen = wstext_four.BackPen = wstext_five.BackPen =
+		    *bar_color[bp_ws].color;;
 
 		wstext_one.FrontPen = *bar_color[fp_cur].color;
 		wstext_one.BackPen = *bar_color[bp_cur].color;
 	}
 
 	if (current_ws == WS_2) {
-		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_three.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_three.FrontPen = wstext_four.FrontPen = wstext_five.FrontPen =
+		    *bar_color[fp_ws].color;
 
-		wstext_zero.BackPen = wstext_one.BackPen = wstext_three.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_three.BackPen = wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
 		wstext_two.FrontPen = *bar_color[fp_cur].color;
 		wstext_two.BackPen = *bar_color[bp_cur].color;
 	}
 
 	if (current_ws == WS_3) {
-		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
-		wstext_four.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen = wstext_four.FrontPen = wstext_five.FrontPen =
+		    *bar_color[fp_ws].color;
 
-		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
-		wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen = wstext_four.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
 		wstext_three.FrontPen = *bar_color[fp_cur].color;
 		wstext_three.BackPen = *bar_color[bp_cur].color;
 	}
 
 	if (current_ws == WS_4) {
-		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
-		wstext_three.FrontPen = wstext_five.FrontPen = *bar_color[fp_ws].color;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen = wstext_five.FrontPen =
+		    *bar_color[fp_ws].color;
 
-		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
-		wstext_three.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen = wstext_three.BackPen = wstext_five.BackPen = *bar_color[bp_ws].color;
 
 		wstext_four.FrontPen = *bar_color[fp_cur].color;
 		wstext_four.BackPen = *bar_color[bp_cur].color;
 	}
 
 	if (current_ws == WS_5) {
-		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen =
-		wstext_three.FrontPen = wstext_four.FrontPen = *bar_color[fp_ws].color;
+		wstext_zero.FrontPen = wstext_one.FrontPen = wstext_two.FrontPen = wstext_three.FrontPen = wstext_four.FrontPen =
+		    *bar_color[fp_ws].color;
 
-		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen =
-		wstext_three.BackPen = wstext_four.BackPen = *bar_color[bp_ws].color;
+		wstext_zero.BackPen = wstext_one.BackPen = wstext_two.BackPen = wstext_three.BackPen = wstext_four.BackPen = *bar_color[bp_ws].color;
 
 		wstext_five.FrontPen = *bar_color[fp_cur].color;
 		wstext_five.BackPen = *bar_color[bp_cur].color;
 	}
 }
 
-static inline unsigned char * maptm(void)
+static inline unsigned char *maptm(void)
 {
 	if (*current_layout == 0) {
 		return bar_text[mode_tile].text;
@@ -1110,8 +1088,7 @@ short info_window(const char *info_text)
 	short closewin = FALSE;
 	short info_text_length;
 	unsigned long l, t, w, h, tleft;
-	struct IntuiText iitext =
-	{
+	struct IntuiText iitext = {
 		.TopEdge = 0,
 		.LeftEdge = 0,
 		.ITextFont = NULL,
@@ -1133,7 +1110,7 @@ short info_window(const char *info_text)
 	tagitem[4].ti_Tag = WA_IDCMP;
 	tagitem[4].ti_Data = IDCMP_CLOSEWINDOW;
 	tagitem[5].ti_Tag = WA_Flags;
-	tagitem[5].ti_Data = WFLG_SIZEGADGET|WFLG_DRAGBAR|WFLG_DEPTHGADGET|WFLG_CLOSEGADGET|WFLG_ACTIVATE;
+	tagitem[5].ti_Data = WFLG_SIZEGADGET | WFLG_DRAGBAR | WFLG_DEPTHGADGET | WFLG_CLOSEGADGET | WFLG_ACTIVATE;
 	tagitem[6].ti_Tag = WA_Title;
 	tagitem[6].ti_Data = (unsigned long)"Dintwm Info";
 	tagitem[7].ti_Tag = WA_Left;
@@ -1196,5 +1173,5 @@ short tileoff(const Arg *arg)
 
 int modululator(unsigned long w)
 {
-        return (int)w % DIVISOR;
+	return (int)w % DIVISOR;
 }
