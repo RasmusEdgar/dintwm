@@ -12,8 +12,6 @@ int fact = TILE_FACT_DEF;
 int gap_change_value = GAP_CHANGE_VALUE_DEF;
 static short info_on = TRUE;
 
-static long mainsignum = -1;
-static long subsignum = -1;
 static unsigned long mainsig, wakeupsigs, subsig;
 static struct Task *maintask = NULL, *subtask = NULL;
 static unsigned char subactionchkname[] = "CXM_window_state_checker";
@@ -21,13 +19,6 @@ static short first_run = TRUE;
 static struct Window *awin_comp;
 static short running = TRUE;
 static short autotile = FALSE;
-//static const char *bar_default_text[BAR_LAST_TEXT];
-struct Cmo {
-	struct MsgPort *mp;
-	struct Library *iconbase;
-	struct DiskObject *diskobj;
-};
-void init_cmo(struct Cmo *cmo);
 
 static char KEY_TILE[] = KEY_TILE_TXT,
 	KEY_HGRID[] = KEY_HGRID_TXT,
@@ -477,10 +468,54 @@ void init_cmo(struct Cmo *cmo)
 {
 	unsigned char iconlib[] = "icon.library";
 	unsigned char diskobjname[] = "PROGDIR:dintwm";
-	//struct Cmo *cmo;
+	enum {
+		mpfail,
+		iconfail,
+		dobjfail,
+		brokerfail,
+		msigfail,
+		ssigfail,
+		attfail,
+		acxofail
+	};
+	cmo->mp = NULL;
 	cmo->mp = CreateMsgPort();
+	if (cmo->mp == NULL) {
+		cmo->failarr[mpfail] = -1;
+	}
+	cmo->iconbase = NULL;
 	cmo->iconbase = OpenLibrary(iconlib, 37);
+	if (cmo->iconbase == NULL) {
+		cmo->failarr[iconfail] = -1;
+	}
+	cmo->diskobj = NULL;
 	cmo->diskobj = GetDiskObject(diskobjname);
+	if (cmo->diskobj == NULL) {
+		cmo->failarr[dobjfail] = -1;
+	}
+	MyBroker.nb_Port = cmo->mp;
+	cmo->broker = NULL;
+	cmo->broker = CxBroker(&MyBroker, NULL);
+	if (cmo->broker == NULL) {
+		cmo->failarr[brokerfail] = -1;
+	}
+	cmo->mainsignum = -1;
+	cmo->mainsignum = AllocSignal(-1);
+	if (cmo->mainsignum == -1L) {
+		cmo->failarr[msigfail] = -1;
+	}
+	cmo->subsignum = -1;
+	cmo->subsignum = AllocSignal(-1);
+	if (cmo->subsignum == -1L) {
+		cmo->failarr[ssigfail] = -1;
+	}
+	if ((attachtooltypes(cmo->broker, cmo->mp, cmo->diskobj)) != TRUE) {
+		cmo->failarr[attfail] = -1;
+	}
+	if ((ActivateCxObj(cmo->broker, 1)) != 0) {
+		cmo->failarr[acxofail] = -1;
+	}
+
 	return;
 }
 
@@ -488,66 +523,34 @@ short int commo(void)
 {
 	struct Cmo cmo;
 	init_cmo(&cmo);
-
-	if (cmo.mp == NULL) {
-		printf("mp fail\n");
-		DeleteMsgPort(cmo.mp);
-		return EXIT_FAILURE;
-	}
-
-	if (cmo.iconbase == NULL) {
-		printf("ib fail\n");
-		DeleteMsgPort(cmo.mp);
-		return EXIT_FAILURE;
-	}
-
-	if (cmo.diskobj == NULL) {
-		printf("do fail\n");
-		DeleteMsgPort(cmo.mp);
-		return EXIT_FAILURE;
-	}
-
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
+	size_t cmo_arr_length = sizeof(cmo.failarr) / sizeof(cmo.failarr[0]);
+	//printf("%s\n", cmo_fail_msgs[7]);
 
-	if ((mainsignum = AllocSignal(-1)) == -1L) {
-		DeleteMsgPort(cmo.mp);
-		return EXIT_FAILURE;
+	for (size_t i = 0; i < cmo_arr_length; i++) {
+		if (cmo.failarr[i] == -1) {
+			info_window(cmo_fail_msgs[i]);
+			cleanup(&cmo);
+			return EXIT_FAILURE;
+		}
 	}
 
-	if ((subsignum = AllocSignal(-1)) == -1L) {
-		DeleteMsgPort(cmo.mp);
-		return EXIT_FAILURE;
-	}
-
-	mainsig = 1UL << (unsigned long)mainsignum;
-	subsig = 1UL << (unsigned long)subsignum;
+	mainsig = 1UL << (unsigned long)cmo.mainsignum;
+	subsig = 1UL << (unsigned long)cmo.subsignum;
 	maintask = FindTask(NULL);
 
-	CxObj *broker;
-
-	MyBroker.nb_Port = cmo.mp;
-	broker = CxBroker(&MyBroker, NULL);
-
-	if (broker == NULL) {
-		FreeSignal(mainsignum);
-		FreeSignal(subsignum);
-		CloseLibrary(cmo.iconbase);
-		FreeDiskObject(cmo.diskobj);
-		DeleteCxObjAll(broker);
-		DeleteMsgPort(cmo.mp);
-		return EXIT_FAILURE;
-	}
-
-	if (running == TRUE && (attachtooltypes(broker, cmo.mp, cmo.diskobj) == TRUE))
+	if (running == TRUE)
 	{
 		CxMsg *msg;
 		CloseLibrary(cmo.iconbase);
+		cmo.iconbase = NULL;
 		FreeDiskObject(cmo.diskobj);
+		cmo.diskobj = NULL;
 
-		if (ActivateCxObj(broker, 1) != 0) {
-			DeleteMsgPort(cmo.mp);
-			running = FALSE;
-		}
+		/*if (ActivateCxObj(cmo.broker, 1) != 0) {
+			cleanup(&cmo);
+			return EXIT_FAILURE;
+		}*/
 
 		// Muting GCC warning here. Following official Amiga CreateTask example
 		#pragma GCC diagnostic push
@@ -565,14 +568,8 @@ short int commo(void)
 				if (info_on == TRUE) {
 					info_window(warn_messages[BDWARN]);
 				}
-				DeleteMsgPort(cmo.mp);
-				DeleteCxObjAll(broker);
-
-				while ((msg = (void *)GetMsg(cmo.mp)) != NULL) {
-					ReplyMsg((struct Message *)msg);
-				}
 				bar_on = FALSE;
-				cleanup();
+				cleanup(&cmo);
 				return EXIT_FAILURE;
 			}
 		}
@@ -664,17 +661,9 @@ short int commo(void)
 				}
 			}
 		}
-
-		DeleteCxObjAll(broker);
-
-		while ((msg = (void *)GetMsg(cmo.mp)) != NULL) {
-			ReplyMsg((struct Message *)msg);
-		}
 	}
 
-	DeleteMsgPort(cmo.mp);
-
-	cleanup();
+	cleanup(&cmo);
 
 	return EXIT_SUCCESS;
 }
@@ -854,22 +843,47 @@ void delete_timer(struct timerequest *tr) {
 	}
 }
 
-static void cleanup(void)
+static void cleanup(struct Cmo *cmo)
 {
-	Forbid();
-	DeleteTask(subtask);
-	Permit();
-	FreeSignal(mainsignum);
-	FreeSignal(subsignum);
+	if (cmo->mp != NULL) {
+		CxMsg *msg;
+		while ((msg = (void *)GetMsg(cmo->mp)) != NULL) {
+			ReplyMsg((struct Message *)msg);
+		}
+		DeleteMsgPort(cmo->mp);
+	}
+
+	if (subtask != NULL) {
+		Forbid();
+		DeleteTask(subtask);
+		Permit();
+	}
+
+	if (cmo->mainsignum != -1L) {
+		FreeSignal(cmo->mainsignum);
+	}
+	if (cmo->subsignum != -1L) {
+		FreeSignal(cmo->subsignum);
+	}
+	if (cmo->iconbase != NULL) {
+		CloseLibrary(cmo->iconbase);
+	}
+	if (cmo->diskobj != NULL) {
+		FreeDiskObject(cmo->diskobj);
+	}
+	if (cmo->broker != NULL) {
+		DeleteCxObjAll(cmo->broker);
+	}
 
 	free_opts();
 
 	if (bar_on == TRUE) {
-		CloseWindow(wbw);
+		if (wbw != NULL) {
+			CloseWindow(wbw);
+		}
         	for (int i = 0; i < BAR_LAST_TEXT; i++) {
                 	free(bar_text[i].text);
         	}
         	free(bar_text);
 	}
-	clean_winfo();
 }

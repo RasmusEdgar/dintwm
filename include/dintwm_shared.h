@@ -223,7 +223,6 @@ short info_window(const char *info_text);
 short tileoff(const Arg *arg);
 short tabnextwin(const Arg * arg);
 int modululator(unsigned long w);
-void clean_winfo(void);
 
 extern int topgap;
 extern int bottomgap;

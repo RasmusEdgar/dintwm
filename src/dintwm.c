@@ -25,6 +25,8 @@ int main(int argc, char **argv)
 
 	dint_exit_state = dintwmrun(argc, argv);
 
+	free(winfo);
+
 	#ifdef FORTIFY
 	Fortify_LeaveScope();
 	Fortify_OutputStatistics();
@@ -202,7 +204,6 @@ static int dintwmrun(int argc, char **argv)
 		default:
 			dint_exit_state =
 		    		defkeys[dint_opt_state].func(&defkeys[dint_opt_state].arg);
-			clean_winfo();
 			break;
 		}
 	}
@@ -1197,9 +1198,4 @@ short tileoff(const Arg *arg)
 int modululator(unsigned long w)
 {
         return (int)w % DIVISOR;
-}
-
-void clean_winfo(void)
-{
-	free(winfo);
 }

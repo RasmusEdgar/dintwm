@@ -175,11 +175,32 @@ const char *warn_messages[] = {
 	"Dintwm only supports up to 1023 windows. Dintwm applauds the effort!"
 };
 
+struct Cmo {
+	struct MsgPort *mp;
+	struct Library *iconbase;
+	struct DiskObject *diskobj;
+	CxObj *broker;
+	long mainsignum;
+	long subsignum;
+	int failarr[8];
+};
+void init_cmo(struct Cmo *cmo);
+const char *cmo_fail_msgs[] = {
+	"Message port allocation failed. Exiting.",
+	"Iconbase allocation failed. Exiting.",
+	"Diskobject allocatoin failed. Exiting.",
+	"Broker allocation failed. Exitng.",
+	"Main signal allocation failed. Exiting.",
+	"Sub signal allocation failed. Exiting.",
+	"Activating CxObj failed. Exiting.",
+	"Attaching tooltypes failed. Exiting."
+};
+
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
 static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
 static void free_opts(void);
 static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
-static void cleanup(void);
+static void cleanup(struct Cmo *cmo);
 
 //static struct Library *iconbase;
 static void subactionchk(void);

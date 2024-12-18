@@ -36,7 +36,7 @@ static inline void mapws(void);
 static inline unsigned char * maptm(void);
 static unsigned char * padwbartext(Bar_Text *b, enum bar_texts x);
 static short int wbartextwidth(int lei, unsigned char * it);
-struct Window *wbw;
+struct Window *wbw = NULL;
 long int *current_layout;
 
 // Global tiling variables declaration
