@@ -44,7 +44,10 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	for (size_t i = 0; i < optarrsize; ++i) {
 		const char *tt_optvalue =
 		    (char *)FindToolType((const unsigned char **)diskobj->do_ToolTypes, (const unsigned char *)defopts[i].optname);
-		rc = apply_options(defopts, tt_optvalue, i);
+		size_t tt_length = strnlen(tt_optvalue, TT_MAX_LENGTH);
+		if (tt_optvalue && tt_length < (size_t)TT_MAX_LENGTH) {
+			rc = apply_options(defopts, tt_optvalue, i);
+		}
 		if (rc == FALSE) {
 			break;
 		}
@@ -150,152 +153,149 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 {
 	short rc = TRUE;
-	if ((tt_optvalue)
-	    && ((strnlen(tt_optvalue, TT_MAX_LENGTH) < (size_t)TT_MAX_LENGTH))) {
-		if (dopts[i].cxint >= EXCL_WTYPE_ID_0 && dopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
-			rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
-			if (exclude_wtype == 0) {
-				exclude_wtype = 1;
-			}
+	if (dopts[i].cxint >= EXCL_WTYPE_ID_0 && dopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
+		rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
+		if (exclude_wtype == 0) {
+			exclude_wtype = 1;
 		}
+	}
 
-		if (dopts[i].cxint >= INCL_WTYPE_ID_0 && dopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
-			rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0);
-			if (include_wtype == 0) {
-				include_wtype = 1;
-			}
+	if (dopts[i].cxint >= INCL_WTYPE_ID_0 && dopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
+		rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0);
+		if (include_wtype == 0) {
+			include_wtype = 1;
 		}
+	}
 
-		if (dopts[i].cxint >= CONLINE_ID_0 && dopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
-			rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0);
-		}
+	if (dopts[i].cxint >= CONLINE_ID_0 && dopts[i].cxint <= (CMD_MAX + CONLINE_ID_0)) {
+		rc = alloc_opts(tt_optvalue, cons, i, CONLINE_ID_0);
+	}
 
-		if (dopts[i].cxint >= CMD_ID_0 && dopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
-			rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0);
-		}
+	if (dopts[i].cxint >= CMD_ID_0 && dopts[i].cxint <= (CMD_MAX + CMD_ID_0)) {
+		rc = alloc_opts(tt_optvalue, cmds, i, CMD_ID_0);
+	}
 
-		switch (dopts[i].cxint) {
-		case TOPGAP_ID:
-			topgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case DEFAULT_TOPGAP_ID:
-			topgap = calcgap();
-			break;
-		case BOTTOMGAP_ID:
-			bottomgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case LEFTGAP_ID:
-			leftgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case RIGHTGAP_ID:
-			rightgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case GAP_CHANGE_VALUE_ID:
-			gap_change_value = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_ID:
-			bar_on = TRUE;
-			break;
-		case BAR_BG_COL_ID:
-			bar_color[bg].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_FPW_COL_ID:
-			bar_color[fp_ws].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_BPW_COL_ID:
-			bar_color[bp_ws].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_FPCURW_COL_ID:
-			bar_color[fp_cur].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_BPCURW_COL_ID:
-			bar_color[bp_cur].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_FPTM_COL_ID:
-			bar_color[fp_tm].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_BPTM_COL_ID:
-			bar_color[bp_tm].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_FPTI_COL_ID:
-			bar_color[fp_ti].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_BPTI_COL_ID:
-			bar_color[bp_ti].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_FPSEP_ONE_COL_ID:
-			bar_color[fp_sep_one].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_BPSEP_ONE_COL_ID:
-			bar_color[bp_sep_one].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_FPSEP_TWO_COL_ID:
-			bar_color[fp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_BPSEP_TWO_COL_ID:
-			bar_color[bp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case BAR_HIDE_EMPTY_ID:
-			hidewbar |= BAR_HIDE_ON;
-			break;
-		case BAR_TEXT_WS0_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, ws_zero, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_WS1_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, ws_one, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_WS2_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, ws_two, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_WS3_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, ws_three, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_WS4_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, ws_four, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_WS5_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, ws_five, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_TILE_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, mode_tile, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_GRID_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, mode_grid, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_DWINDLE_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, mode_dwindle, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_SPIRAL_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, mode_spiral, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_SEP_1_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, sep_one, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_SEP_2_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, sep_two, tt_optvalue) : FALSE;
-			break;
-		case BAR_TEXT_SPACE_ID:
-			rc = rc == TRUE ? assign_bar_item(bar_text, space, tt_optvalue) : FALSE;
-			break;
-		case AUTO_ID:
-			autotile = TRUE;
-			break;
-		case AUTO_INTERVAL_DELAY_ID:
-			auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case TILE_FACT_ID:
-			fact = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
-			break;
-		case INFO_OFF_ID:
-			info_on = FALSE;
-			break;
-		case VWS_ON_ID:
-			vws_on = TRUE;
-			break;
-		default:
-			// Do nothing
-			break;
-		}
+	switch (dopts[i].cxint) {
+	case TOPGAP_ID:
+		topgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case DEFAULT_TOPGAP_ID:
+		topgap = calcgap();
+		break;
+	case BOTTOMGAP_ID:
+		bottomgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case LEFTGAP_ID:
+		leftgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case RIGHTGAP_ID:
+		rightgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case GAP_CHANGE_VALUE_ID:
+		gap_change_value = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_ID:
+		bar_on = TRUE;
+		break;
+	case BAR_BG_COL_ID:
+		bar_color[bg].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_FPW_COL_ID:
+		bar_color[fp_ws].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_BPW_COL_ID:
+		bar_color[bp_ws].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_FPCURW_COL_ID:
+		bar_color[fp_cur].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_BPCURW_COL_ID:
+		bar_color[bp_cur].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_FPTM_COL_ID:
+		bar_color[fp_tm].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_BPTM_COL_ID:
+		bar_color[bp_tm].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_FPTI_COL_ID:
+		bar_color[fp_ti].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_BPTI_COL_ID:
+		bar_color[bp_ti].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_FPSEP_ONE_COL_ID:
+		bar_color[fp_sep_one].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_BPSEP_ONE_COL_ID:
+		bar_color[bp_sep_one].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_FPSEP_TWO_COL_ID:
+		bar_color[fp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_BPSEP_TWO_COL_ID:
+		bar_color[bp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case BAR_HIDE_EMPTY_ID:
+		hidewbar |= BAR_HIDE_ON;
+		break;
+	case BAR_TEXT_WS0_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, ws_zero, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_WS1_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, ws_one, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_WS2_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, ws_two, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_WS3_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, ws_three, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_WS4_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, ws_four, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_WS5_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, ws_five, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_TILE_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, mode_tile, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_GRID_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, mode_grid, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_DWINDLE_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, mode_dwindle, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_SPIRAL_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, mode_spiral, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_SEP_1_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, sep_one, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_SEP_2_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, sep_two, tt_optvalue) : FALSE;
+		break;
+	case BAR_TEXT_SPACE_ID:
+		rc = rc == TRUE ? assign_bar_item(bar_text, space, tt_optvalue) : FALSE;
+		break;
+	case AUTO_ID:
+		autotile = TRUE;
+		break;
+	case AUTO_INTERVAL_DELAY_ID:
+		auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case TILE_FACT_ID:
+		fact = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		break;
+	case INFO_OFF_ID:
+		info_on = FALSE;
+		break;
+	case VWS_ON_ID:
+		vws_on = TRUE;
+		break;
+	default:
+		// Do nothing
+		break;
 	}
 	return rc;
 }
@@ -372,7 +372,7 @@ void init_cmo(struct Cmo *cmo)
 
 short int commo(void)
 {
-	struct Cmo cmo;
+	struct Cmo cmo = {0, 0, 0, 0, 0, 0, 0};
 	init_cmo(&cmo);
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 	size_t cmo_arr_length = sizeof(cmo.failarr) / sizeof(cmo.failarr[0]);
