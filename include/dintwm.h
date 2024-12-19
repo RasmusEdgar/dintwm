@@ -10,7 +10,6 @@
 #define DINTWM_VERSION "VERGIT"
 //VERCUT
 
-
 static void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 static unsigned long ilock;
 static short printusage(void);
@@ -20,7 +19,7 @@ static void lockbasescreen(unsigned long *il, struct Screen **s);
 static void unlockbasescreen(unsigned long *il, struct Screen **s);
 static int dintwmrun(int argc, char **argv);
 static void initdefaults(void);
-static struct Window * findfirstwin(void);
+static struct Window *findfirstwin(void);
 
 // Screen
 struct Screen *screen;
@@ -33,9 +32,9 @@ struct Window *active_win;
 
 // Bar declarations
 static inline void mapws(void);
-static inline unsigned char * maptm(void);
-static unsigned char * padwbartext(Bar_Text *b, enum bar_texts x);
-static short int wbartextwidth(int lei, unsigned char * it);
+static inline unsigned char *maptm(void);
+static unsigned char *padwbartext(Bar_Text * b, enum bar_texts x);
+static short int wbartextwidth(int lei, unsigned char *it);
 struct Window *wbw = NULL;
 long int *current_layout;
 

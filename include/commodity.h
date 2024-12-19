@@ -196,10 +196,10 @@ const char *cmo_fail_msgs[] = {
 	"Attaching tooltypes failed. Exiting."
 };
 
-static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
-static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
+static short attachtooltypes(CxObj * broker, struct MsgPort *port, struct DiskObject *diskobj);
+static short alloc_opts(const char *tt_optvalue, Ostore * s, size_t i, int subtract);
 static void free_opts(void);
-static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
+static short assign_bar_item(Bar_Text * b, enum bar_texts x, const char *c);
 static void cleanup(struct Cmo *cmo);
 static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i);
 
@@ -218,7 +218,7 @@ static struct Window *awin_comp;
 static short running = TRUE;
 static short autotile = FALSE;
 
-Ostore cmds[] = {0};
-Ostore cons[] = {0};
-Ostore incls[] = {0};
-Ostore excls[] = {0};
+Ostore cmds[] = { 0 };
+Ostore cons[] = { 0 };
+Ostore incls[] = { 0 };
+Ostore excls[] = { 0 };

@@ -372,7 +372,7 @@ void init_cmo(struct Cmo *cmo)
 
 short int commo(void)
 {
-	struct Cmo cmo = {0, 0, 0, 0, 0, 0, 0};
+	struct Cmo cmo = { 0, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 }};
 	init_cmo(&cmo);
 	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 	size_t cmo_arr_length = sizeof(cmo.failarr) / sizeof(cmo.failarr[0]);
