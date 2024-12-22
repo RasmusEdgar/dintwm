@@ -10,7 +10,7 @@ Changelog
 -   v1.1
 
     -   Make window handling proper by not manipulating bits in windows not owned by dintwm
-        -   Keep track of windows in ptr to index LUT instead
+        -   Keep track of windows in ptr indexed LUT instead
     -   Fix memory leak in commodity code
     -   Cleanup of code
     -   Remove ketopt dependency

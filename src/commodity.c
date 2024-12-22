@@ -431,7 +431,7 @@ short int commo(void)
 
 			if (running == TRUE && wbw) {
 				getactive();
-				awin_comp = active_win;
+				awin_comp =  window_active(AW_GET, 0UL);
 				update_wbar();
 			}
 		}
@@ -445,7 +445,8 @@ short int commo(void)
 			wakeupsigs = Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
 
 			if ((wakeupsigs & mainsig) != 0UL) {
-				if (winfo[awin_index].wbwin == TRUE) {
+				//struct Window *wb = window_active(AW_GET, 0UL);
+				if ((window_get_wbwin(window_active(AW_GET, 0UL))) == TRUE) {
 					Signal(subtask, subsig);
 					continue;
 				}
@@ -590,9 +591,9 @@ static void subactionchk(void)
 				(void)Wait((subsig));
 			}
 
-			if (awin_comp == NULL || awin_comp != active_win || (awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
+			if (awin_comp == NULL || awin_comp != (window_active(AW_GET, 0UL)) || (awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 				getactive();
-				awin_comp = active_win;
+				awin_comp = window_active(AW_GET, 0UL);
 				update_wbar();
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
@@ -601,8 +602,9 @@ static void subactionchk(void)
 			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 				getactive();
 				// Don't retile if workbench screen
-				if (winfo[awin_index].wbwin == TRUE) {
-					awin_comp = active_win;
+				//struct Window *wb = window_active(AW_GET, 0UL);
+				if ((window_get_wbwin(window_active(AW_GET, 0UL))) == TRUE) {
+					awin_comp = window_active(AW_GET, 0UL);
 					update_wbar();
 					Signal(maintask, mainsig);
 					(void)Wait((subsig));

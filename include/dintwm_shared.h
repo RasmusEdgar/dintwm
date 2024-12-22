@@ -178,6 +178,11 @@
 #define ASSIGN 1
 #define DIVISOR 1025
 
+#define WS_SET 0
+#define WS_GET 1
+#define AW_SET 0
+#define AW_GET 1
+
 typedef union {
 	int i;
 	unsigned int u;
@@ -221,7 +226,7 @@ void wbarcwb(void);
 short info_window(const char *info_text);
 short tileoff(const Arg * arg);
 short tabnextwin(const Arg * arg);
-int modululator(unsigned long w);
+//int modululator(unsigned long w);
 
 extern int topgap;
 extern int bottomgap;
@@ -237,8 +242,6 @@ extern struct Window *wbw;
 extern int sheight;
 extern int swidth;
 extern struct Screen *screen;
-extern struct Window *active_win;
-int awin_index;
 extern unsigned char nil;
 
 // Wbar specific vars
@@ -341,3 +344,32 @@ typedef struct {
 } Winfo;
 
 Winfo *winfo;
+
+/*extern int window_alloc_lut(void);
+extern void window_free_lut(void);
+extern int window_index(unsigned long w);
+extern void window_set_wptr(struct Window *w);
+extern struct Window* window_get_wptr(unsigned long w);
+extern short window_check_wptr(struct Window *w);
+extern void window_set_wbwin(unsigned long w, short toggle);
+extern short window_get_wbwin(unsigned long w);
+extern void window_set_ws_num(unsigned long w, int ws);
+extern int window_get_ws_num(unsigned long w);
+extern int window_current_ws(int action, int ws);
+extern void window_set_skip(unsigned long w);
+extern short window_get_skip(unsigned long w);
+extern struct Window * window_active(int action, unsigned long w);*/
+
+int window_alloc_lut(void);
+void window_free_lut(void);
+int window_index(struct Window *w);
+void window_set_wptr(struct Window *w);
+short window_check_wptr(struct Window *w);
+void window_set_wbwin(struct Window *w, short toggle);
+short window_get_wbwin(struct Window *w);
+void window_set_ws_num(struct Window *w, int ws);
+int window_get_ws_num(struct Window *w);
+int window_current_ws(int action, int ws);
+void window_set_skip(struct Window *w);
+short window_get_skip(struct Window *w);
+struct Window * window_active(int action, struct Window *w);

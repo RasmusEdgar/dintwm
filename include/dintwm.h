@@ -28,7 +28,6 @@ int swidth;
 
 // Window
 static struct Window *window;
-struct Window *active_win;
 
 // Bar declarations
 static inline void mapws(void);
