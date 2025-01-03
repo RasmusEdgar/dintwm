@@ -30,6 +30,16 @@
 #define INCALLGAPS_ID 405	// increase all gaps identifier
 #define DECALLGAPS_ID 406	// decrease all gaps identifier
 #define GAP_CHANGE_VALUE_ID 407	// decrease all gaps identifier
+#define TOPGAP_GET 0
+#define TOPGAP_SET 1
+#define BOTTOMGAP_GET 2
+#define BOTTOMGAP_SET 3
+#define LEFTGAP_GET 4
+#define LEFTGAP_SET 5
+#define RIGHTGAP_GET 6
+#define RIGHTGAP_SET 7
+#define GAP_CHANGE_VAL_GET 8
+#define GAP_CHANGE_VAL_SET 9
 #define BAR_ID 408		// Bar identifier
 #define BAR_BG_COL_ID 409	// Bar bg color identifier
 #define BAR_FPW_COL_ID 410	// Bar current ws frontpen color identifier
@@ -183,6 +193,14 @@
 #define AW_SET 0
 #define AW_GET 1
 
+#define TL_GET 0
+#define TL_SET 1
+#define TL_INC 2
+#define TL_DEC 3
+
+#define TLOCK 0
+#define TUNLOCK 1
+
 typedef union {
 	int i;
 	unsigned int u;
@@ -215,7 +233,6 @@ int countwindows(int lock);
 void getactive(void);
 int cstring_cmp(const void *a, const void *b);
 short docmd(const Arg * arg);
-int calcgap(void);
 short exit_cxm(const Arg * arg);
 size_t strnlen(const char *s, size_t maxlen);
 short changews(const Arg * arg);
@@ -232,7 +249,6 @@ extern int topgap;
 extern int bottomgap;
 extern int leftgap;
 extern int rightgap;
-extern long int *current_layout;
 extern int exclude_wtype;
 extern int include_wtype;
 extern long unsigned int auto_interval;
@@ -360,6 +376,7 @@ extern void window_set_skip(unsigned long w);
 extern short window_get_skip(unsigned long w);
 extern struct Window * window_active(int action, unsigned long w);*/
 
+// Window functions
 int window_alloc_lut(void);
 void window_free_lut(void);
 int window_index(struct Window *w);
@@ -373,3 +390,12 @@ int window_current_ws(int action, int ws);
 void window_set_skip(struct Window *w);
 short window_get_skip(struct Window *w);
 struct Window * window_active(int action, struct Window *w);
+
+// Tiling functions
+int tiling_layout(int action, int layout);
+struct Screen * tiling_lock(int action);
+int tiling_screen_width(void);
+int tiling_screen_height(void);
+int tiling_calc_menugap(void);
+int tiling_gaps(int action, int amount);
+//int tiling_gap(int action, int tiling_type, int amount);

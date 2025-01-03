@@ -177,22 +177,27 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 
 	switch (dopts[i].cxint) {
 	case TOPGAP_ID:
-		topgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		//topgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		(void)tiling_gaps(TOPGAP_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case DEFAULT_TOPGAP_ID:
-		topgap = calcgap();
+		// FIX LATER
+		//topgap = tiling_calc_menugap();
+		(void)tiling_gaps(TOPGAP_SET, tiling_calc_menugap());
 		break;
 	case BOTTOMGAP_ID:
-		bottomgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		// FIX LATER
+		(void)tiling_gaps(BOTTOMGAP_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
+		//tiling_bottomgap(GAP_SET, bottomgap);
 		break;
 	case LEFTGAP_ID:
-		leftgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		(void)tiling_gaps(LEFTGAP_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case RIGHTGAP_ID:
-		rightgap = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		(void)tiling_gaps(RIGHTGAP_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case GAP_CHANGE_VALUE_ID:
-		gap_change_value = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		(void)tiling_gaps(GAP_CHANGE_VAL_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case BAR_ID:
 		bar_on = TRUE;
@@ -436,7 +441,7 @@ short int commo(void)
 			}
 		}
 		// Initial tile
-		running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+		running = defkeys[0].func(&defkeys[0].arg);
 
 		//Main Loop
 		while (running == TRUE) {
@@ -451,7 +456,8 @@ short int commo(void)
 					continue;
 				}
 				if (tile_off == FALSE) {
-					running = defkeys[*current_layout].func(&defkeys[*current_layout].arg);
+					int t_layout = tiling_layout(TL_SET, 0);
+					running = defkeys[t_layout].func(&defkeys[t_layout].arg);
 					update_wbar();
 					winnum_start = countwindows(NOLOCK);
 				}
@@ -488,7 +494,7 @@ short int commo(void)
 					}
 				} else if (type == (unsigned long)CXM_IEVENT) {
 					if (id <= (TILE_FUNC_LIMIT)) {
-						*current_layout = id;
+						(void)tiling_layout(TL_SET, id);
 					}
 					running = defkeys[id].func(&defkeys[id].arg);
 					if (running == FALSE) {
