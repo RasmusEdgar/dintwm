@@ -428,7 +428,7 @@ short int commo(void)
 			if (wbarheight == 0) {
 				wbarheight = WBAR_HEIGHT;
 			}
-			sheight = sheight - wbarheight;
+			//sheight = sheight - wbarheight;
 
 			if (!wbw) {
 				running = init_wbar();

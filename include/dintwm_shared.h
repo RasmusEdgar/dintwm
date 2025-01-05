@@ -193,6 +193,11 @@
 #define AW_SET 0
 #define AW_GET 1
 
+#define SH_SET 0
+#define SH_GET 1
+#define SW_SET 2
+#define SW_GET 3
+
 #define TL_GET 0
 #define TL_SET 1
 #define TL_INC 2
@@ -396,6 +401,7 @@ int tiling_layout(int action, int layout);
 struct Screen * tiling_lock(int action);
 int tiling_screen_width(void);
 int tiling_screen_height(void);
+int tiling_screen_info(int action, int size);
 int tiling_calc_menugap(void);
 int tiling_gaps(int action, int amount);
 //int tiling_gap(int action, int tiling_type, int amount);

@@ -50,6 +50,32 @@ struct Screen * tiling_lock(int action)
 	return s;
 }
 
+int tiling_screen_info(int action, int size)
+{
+	static int sh = 0;
+	static int sw = 0;
+	int sr = 0;
+
+	switch (action) {
+	case SH_GET:
+		sr = sh;
+		break;
+	case SH_SET:
+		sr = sh = size;
+		break;
+	case SW_GET:
+		sr = sw;
+		break;
+	case SW_SET:
+		sr = sw = size;
+		break;
+	default:
+		// Never reached
+		break;
+	}
+	return sr;
+}
+
 int tiling_screen_width(void)
 {
 	static int sw = 0;
@@ -95,7 +121,7 @@ int tiling_gaps(int action, int amount)
 	static int lgap = 0;
 	static int rgap = 0;
 	static int gcv = GAP_CHANGE_VALUE_DEF;
-	int gap = bgap;
+	int gap = 0;
 	static int sw = 0;
 	sw = sw == 0 ? tiling_screen_width() : sw;
 	sh = sh == 0 ? tiling_screen_height() : sh;
