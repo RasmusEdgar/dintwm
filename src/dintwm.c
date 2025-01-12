@@ -224,12 +224,12 @@ static void initdefaults(void)
 		bar_color[i].color[0] = nil;
 	}
 
-	struct Screen const *scr = tiling_lock(TLOCK);
-
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	(void)tiling_screen_info(SH_SET, scr->Height);
 	(void)tiling_screen_info(SW_SET, scr->Width);
-
-	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
+	sheight = scr->Height;
+	swidth = scr->Width;
+	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		window_set_wptr(window);
 		if (strcmp("Workbench", (const char *)window->Title) == 0) {
 			window_set_wbwin(window, TRUE);
@@ -240,7 +240,7 @@ static void initdefaults(void)
 		}
 		 window_set_ws_num(window, window_current_ws(WS_GET, 0));
 	}
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 }
 
 static short printusage(void)
@@ -334,15 +334,15 @@ short tile(const Arg *arg)
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
-	struct Screen const *scr = tiling_lock(TLOCK);
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	sh = scr->Height - (bgap + tgap);
 	sw = scr->Width - (rgap + lgap);
 
-	wincount = countwindows(NOLOCK);
+	wincount = countwindows_nolock(scr);
 
 	if (wincount == 0) {
-		(void)tiling_lock(TUNLOCK);
+		(void)tiling_lock(TUNLOCK, scr);
 		return TRUE;
 	}
 
@@ -352,7 +352,7 @@ short tile(const Arg *arg)
 		mwinwidth = sw;
 	}
 
-	for (wnr = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
+	for (wnr = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
 		if (skipper(window) == SKIP) {
 			wnr--;
 			continue;
@@ -371,7 +371,7 @@ short tile(const Arg *arg)
 		}
 		cwb(window, wx, wy, ww, wh);
 	}
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 
 	return TRUE;
 }
@@ -388,19 +388,19 @@ short hgrid(const Arg *arg)
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
 
-	struct Screen const *scr = tiling_lock(TLOCK);
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	sh = scr->Height - (bgap + tgap);
 	sw = scr->Width - (rgap + lgap);
 
-	wincount = countwindows(NOLOCK);
+	wincount = countwindows_nolock(scr);
 
 	if (wincount == 0) {
-		(void)tiling_lock(TUNLOCK);
+		(void)tiling_lock(TUNLOCK, scr);
 		return TRUE;
 	}
 
-	for (wnr = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
+	for (wnr = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
 		if (skipper(window) == SKIP) {
 			wnr--;
 			continue;
@@ -428,7 +428,7 @@ short hgrid(const Arg *arg)
 		}
 		cwb(window, wx, wy, ww, wh);
 	}
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 
 	return TRUE;
 }
@@ -443,19 +443,19 @@ short fibonacci(const Arg *arg)
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
 
-	struct Screen const *scr = tiling_lock(TLOCK);
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	sh = scr->Height - (bgap + tgap);
 	sw = scr->Width - (rgap + lgap);
 
-	wincount = countwindows(NOLOCK);
+	wincount = countwindows_nolock(scr);
 
 	wy = tgap;
 	wx = lgap;
 	ww = sw;
 	wh = sh;
 
-	for (wnr = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
+	for (wnr = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wnr++) {
 		if (skipper(window) == SKIP) {
 			wnr--;
 			continue;
@@ -501,7 +501,7 @@ short fibonacci(const Arg *arg)
 		}
 		cwb(window, wx, wy, ww, wh);
 	}
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 
 	return TRUE;
 }
@@ -521,13 +521,12 @@ short switcher(const Arg *arg)
 	return rc;
 }
 
-int countwindows(int lock)
+int countwindows_lock(void)
 {
 	int wincount;
-	if (lock != 0) {
-		(void)tiling_lock(TLOCK);
-	}
-	for (wincount = 0, window = screen->FirstWindow; window != NULL; window = window->NextWindow, wincount++) {
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
+
+	for (wincount = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wincount++) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
 			(void)window_active(AW_SET, window);
 		}
@@ -536,22 +535,39 @@ int countwindows(int lock)
 			continue;
 		}
 	}
-	if (lock != 0) {
-		(void)tiling_lock(TUNLOCK);
+
+	(void)tiling_lock(TUNLOCK, scr);
+
+	return wincount;
+}
+
+int countwindows_nolock(struct Screen const *scr)
+{
+	int wincount;
+
+	for (wincount = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wincount++) {
+		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
+			(void)window_active(AW_SET, window);
+		}
+		if (skipper(window) == SKIP) {
+			wincount--;
+			continue;
+		}
 	}
+
 	return wincount;
 }
 
 void getactive(void)
 {
-	(void)tiling_lock(TLOCK);
-	for (window = screen->FirstWindow; window != NULL; window = window->NextWindow) {
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
+	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
 			(void)window_active(AW_SET, window);
 			break;
 		}
 	}
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 }
 
 short docmd(const Arg *arg)
@@ -809,18 +825,18 @@ short init_wbar(void)
 	int bgap = tiling_gaps(BOTTOMGAP_SET, WBAR_HEIGHT);
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
+	//int sh = tiling_screen_info(SH_GET, 0);
 
 	struct TagItem tagitem[7];
 
-	struct Screen const *scr = tiling_lock(TLOCK);
-	int sh = tiling_screen_info(SH_SET, (scr->Height - WBAR_HEIGHT));
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	tagitem[0].ti_Tag = WA_Width;
 	tagitem[0].ti_Data = (unsigned long)scr->Width - ((unsigned long)lgap + (unsigned long)rgap);
 	tagitem[1].ti_Tag = WA_Height;
 	tagitem[1].ti_Data = (unsigned long)wbarheight;
 	tagitem[2].ti_Tag = WA_Top;
-	tagitem[2].ti_Data = ((unsigned long)sh - (unsigned long)bgap);
+	tagitem[2].ti_Data = ((unsigned long)scr->Height - (unsigned long)bgap);
 	tagitem[3].ti_Tag = WA_Borderless;
 	tagitem[3].ti_Data = 1;
 	tagitem[4].ti_Tag = WA_SmartRefresh;
@@ -832,10 +848,10 @@ short init_wbar(void)
 	wbw = OpenWindowTagList(NULL, tagitem);
 
 	if (!wbw) {
-		(void)tiling_lock(TUNLOCK);
+		(void)tiling_lock(TUNLOCK, scr);
 		return FALSE;
 	}
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 
 	WindowToFront(wbw);
 
@@ -941,7 +957,6 @@ short update_wbar(void)
 {
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
-	int sw = tiling_screen_info(SW_GET, 0);
 
 	if (bar_on == FALSE) {
 		return TRUE;
@@ -950,9 +965,9 @@ short update_wbar(void)
 
 	barbdata[0] = 1;
 	barbdata[1] = 1;
-	barbdata[2] = (short)((sw - (lgap + rgap)) - 1);
+	barbdata[2] = (short)((swidth - (lgap + rgap)) - 1);
 	barbdata[3] = 1;
-	barbdata[4] = (short)((sw - (lgap + rgap)) - 1);
+	barbdata[4] = (short)((swidth - (lgap + rgap)) - 1);
 	barbdata[5] = (short)(wbarheight - 1);
 	barbdata[6] = 1;
 	barbdata[7] = (short)(wbarheight - 1);
@@ -987,11 +1002,11 @@ void wbarcwb(void)
 
 	struct IntuiMessage *msg;
 
-	struct Screen const *scr = tiling_lock(TLOCK);
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	cwb(wbw, lgap, scr->Height - bgap, scr->Width - (lgap + rgap), wbarheight);
 
-	(void)tiling_lock(TUNLOCK);
+	(void)tiling_lock(TUNLOCK, scr);
 
 	(void)WaitPort(wbw->UserPort);
 	while ((msg = (struct IntuiMessage *)GetMsg(wbw->UserPort)) != NULL) {
@@ -1074,7 +1089,6 @@ static inline void mapws(void)
 static inline unsigned char *maptm(void)
 {
 	int t_layout = tiling_layout(TL_GET, 0);
-	//printf("tm layout: %d\n", t_layout);
 	if (t_layout == 0) {
 		return bar_text[mode_tile].text;
 	}
@@ -1098,8 +1112,6 @@ short info_window(const char *info_text)
 	short closewin = FALSE;
 	short info_text_length;
 	unsigned long l, t, w, h, tleft;
-	int sh = tiling_screen_info(SH_GET, 0);
-	int sw = tiling_screen_info(SW_GET, 0);
 	struct IntuiText iitext = {
 		.TopEdge = 0,
 		.LeftEdge = 0,
@@ -1116,7 +1128,7 @@ short info_window(const char *info_text)
 	tagitem[1].ti_Tag = WA_Height;
 	tagitem[1].ti_Data = 50;
 	tagitem[2].ti_Tag = WA_Top;
-	tagitem[2].ti_Data = (unsigned long)((unsigned long)sh / 2UL);
+	tagitem[2].ti_Data = (unsigned long)((unsigned long)sheight / 2UL);
 	tagitem[3].ti_Tag = WA_SimpleRefresh;
 	tagitem[3].ti_Data = 1;
 	tagitem[4].ti_Tag = WA_IDCMP;
@@ -1126,7 +1138,7 @@ short info_window(const char *info_text)
 	tagitem[6].ti_Tag = WA_Title;
 	tagitem[6].ti_Data = (unsigned long)"Dintwm Info";
 	tagitem[7].ti_Tag = WA_Left;
-	tagitem[7].ti_Data = (unsigned long)(((unsigned long)sw / 2UL) - 150UL);
+	tagitem[7].ti_Data = (unsigned long)(((unsigned long)swidth / 2UL) - 150UL);
 	tagitem[8].ti_Tag = TAG_DONE;
 
 	lockbasescreen(&ilock, &screen);
@@ -1142,7 +1154,7 @@ short info_window(const char *info_text)
 	tagitem[0].ti_Tag = WA_Width;
 	tagitem[0].ti_Data = tleft;
 	tagitem[7].ti_Tag = WA_Left;
-	tagitem[7].ti_Data = (unsigned long)((unsigned long)sw / 2UL) - (unsigned long)((unsigned long)tleft / 2UL);
+	tagitem[7].ti_Data = (unsigned long)((unsigned long)swidth / 2UL) - (unsigned long)((unsigned long)tleft / 2UL);
 	CloseWindow(twin);
 	// End hack
 

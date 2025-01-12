@@ -31,13 +31,12 @@ int tiling_layout(int action, int layout)
 	return layout_number;
 }
 
-struct Screen * tiling_lock(int action)
+struct Screen * tiling_lock(int action, struct Screen *s)
 {
 	static unsigned long il = 0;
-	static struct Screen *s = NULL;
 	static int lock_state = 0;
 
-	if (action == TLOCK && lock_state == 0) {
+	if (action == TLOCK && lock_state == 0 && s == NULL) {
 		il = LockIBase(0L);
 		s = LockPubScreen(NULL);
 		lock_state = 1;
@@ -46,6 +45,7 @@ struct Screen * tiling_lock(int action)
 		UnlockPubScreen(NULL, s);
 		UnlockIBase(il);
 		lock_state = 0;
+		il = 0;
 	}
 	return s;
 }
@@ -54,26 +54,27 @@ int tiling_screen_info(int action, int size)
 {
 	static int sh = 0;
 	static int sw = 0;
-	int sr = 0;
 
 	switch (action) {
 	case SH_GET:
-		sr = sh;
+		return sh;
 		break;
 	case SH_SET:
-		sr = sh = size;
+		sh = size;
+		return sh;
 		break;
 	case SW_GET:
-		sr = sw;
+		return sw;
 		break;
 	case SW_SET:
-		sr = sw = size;
+		sw = size;
+		return sw;
 		break;
 	default:
 		// Never reached
 		break;
 	}
-	return sr;
+	return -1;
 }
 
 int tiling_screen_width(void)
@@ -81,9 +82,9 @@ int tiling_screen_width(void)
 	static int sw = 0;
 
 	if (sw == 0) {
-		const struct Screen *scr = tiling_lock(TLOCK);
+		struct Screen *scr = tiling_lock(TLOCK, NULL);
 		sw = (int)scr->Width;
-		(void)tiling_lock(TUNLOCK);
+		(void)tiling_lock(TUNLOCK, scr);
 	}
 	return sw;
 }
@@ -93,9 +94,9 @@ int tiling_screen_height(void)
 	static int sh = 0;
 
 	if (sh == 0) {
-		const struct Screen *scr = tiling_lock(TLOCK);
+		struct Screen *scr = tiling_lock(TLOCK, NULL);
 		sh = (int)scr->Height;
-		(void)tiling_lock(TUNLOCK);
+		(void)tiling_lock(TUNLOCK, scr);
 	}
 	return sh;
 }
@@ -105,9 +106,9 @@ int tiling_calc_menugap(void)
 	static int bheight = 0;
 
 	if (bheight == 0) {
-		const struct Screen *scr = tiling_lock(TLOCK);
+		struct Screen *scr = tiling_lock(TLOCK, NULL);
 		bheight = (int)scr->BarHeight + 1;
-		(void)tiling_lock(TUNLOCK);
+		(void)tiling_lock(TUNLOCK, scr);
 	}
 
 	return bheight;
@@ -121,7 +122,6 @@ int tiling_gaps(int action, int amount)
 	static int lgap = 0;
 	static int rgap = 0;
 	static int gcv = GAP_CHANGE_VALUE_DEF;
-	int gap = 0;
 	static int sw = 0;
 	sw = sw == 0 ? tiling_screen_width() : sw;
 	sh = sh == 0 ? tiling_screen_height() : sh;
@@ -129,65 +129,75 @@ int tiling_gaps(int action, int amount)
 	switch(action) {
 	case TOPGAP_ID:
 		tgap += tgap <= ((sh - GAP_INC_OFFSET) / 2) ? gcv : 0;
-		gap = tgap;
+		return tgap;
 		break;
 	case -TOPGAP_ID:
 		tgap = (tgap - gcv) > 0 ? tgap - gcv : 0;
-		gap = tgap;
+		return tgap;
 		break;
 	case TOPGAP_SET:
-		gap = tgap = amount;
+		tgap = amount;
+		return tgap;
 		break;
 	case TOPGAP_GET:
-		gap = tgap;
+		return tgap;
 		break;
 	case BOTTOMGAP_ID:
-		gap = bgap += bgap <= ((sh - GAP_INC_OFFSET) / 2) ? gcv : 0;
+		bgap += bgap <= ((sh - GAP_INC_OFFSET) / 2) ? gcv : 0;
+		return bgap;
 		break;
 	case -BOTTOMGAP_ID:
-		gap = bgap = (bgap - gcv) > 0 ? bgap - gcv : 0;
+		bgap = (bgap - gcv) > 0 ? bgap - gcv : 0;
+		return bgap;
 		break;
 	case BOTTOMGAP_SET:
-		gap = bgap = amount;
+		bgap = amount;
+		return bgap;
 		break;
 	case BOTTOMGAP_GET:
-		gap = bgap;
+		return bgap;
 		break;
 	case LEFTGAP_ID:
-		gap = lgap += lgap <= ((sw - GAP_INC_OFFSET) / 2) ? gcv : 0;
+		lgap += lgap <= ((sw - GAP_INC_OFFSET) / 2) ? gcv : 0;
+		return lgap;
 		break;
 	case -LEFTGAP_ID:
-		gap = lgap = (lgap - gcv) > 0 ? lgap - gcv : 0;
+		lgap = (lgap - gcv) > 0 ? lgap - gcv : 0;
+		return lgap;
 		break;
 	case LEFTGAP_SET:
-		gap = lgap = amount;
+		lgap = amount;
+		return lgap;
 		break;
 	case LEFTGAP_GET:
-		gap = lgap;
+		return lgap;
 		break;
 	case RIGHTGAP_ID:
-		gap = rgap += rgap <= ((sw - GAP_INC_OFFSET) / 2) ? gcv : 0;
+		rgap += rgap <= ((sw - GAP_INC_OFFSET) / 2) ? gcv : 0;
+		return rgap;
 		break;
 	case -RIGHTGAP_ID:
-		gap = rgap = (rgap - gcv) > 0 ? rgap - gcv : 0;
+		rgap = (rgap - gcv) > 0 ? rgap - gcv : 0;
+		return rgap;
 		break;
 	case RIGHTGAP_SET:
-		gap = rgap = amount;
+		rgap = amount;
+		return rgap;
 		break;
 	case RIGHTGAP_GET:
-		gap = rgap;
-		// Fallthrough
+		return rgap;
 		break;
 	case GAP_CHANGE_VAL_SET:
-		gap = gcv = amount;
+		gcv = amount;
+		return gcv;
 		break;
 	case GAP_CHANGE_VAL_GET:
-		gap = gcv;
+		return gcv;
 		break;
 	default:
 		// Never reached
 		break;
 	}
 
-	return gap;
+	return -1;
 }

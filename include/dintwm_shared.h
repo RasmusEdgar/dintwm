@@ -234,7 +234,9 @@ short spiral(const Arg * arg);
 short dwindle(const Arg * arg);
 short switcher(const Arg * arg);
 short changegaps(const Arg * arg);
-int countwindows(int lock);
+//int countwindows(int lock);
+int countwindows_lock(void);
+int countwindows_nolock(struct Screen const *scr);
 void getactive(void);
 int cstring_cmp(const void *a, const void *b);
 short docmd(const Arg * arg);
@@ -398,7 +400,7 @@ struct Window * window_active(int action, struct Window *w);
 
 // Tiling functions
 int tiling_layout(int action, int layout);
-struct Screen * tiling_lock(int action);
+struct Screen * tiling_lock(int action, struct Screen *s);
 int tiling_screen_width(void);
 int tiling_screen_height(void);
 int tiling_screen_info(int action, int size);

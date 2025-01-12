@@ -393,6 +393,8 @@ short int commo(void)
 	mainsig = 1UL << (unsigned long)cmo.mainsignum;
 	subsig = 1UL << (unsigned long)cmo.subsignum;
 	maintask = FindTask(NULL);
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
+	scr = tiling_lock(TUNLOCK, scr);
 
 	if (running == TRUE) {
 		CxMsg *msg;
@@ -412,7 +414,7 @@ short int commo(void)
 		}
 
 		if (vws_on == TRUE) {
-			(void)countwindows(LOCK);
+			(void)countwindows_nolock(scr);
 			getactive();
 			if (backdropped == TRUE) {
 				if (info_on == TRUE) {
@@ -428,7 +430,7 @@ short int commo(void)
 			if (wbarheight == 0) {
 				wbarheight = WBAR_HEIGHT;
 			}
-			//sheight = sheight - wbarheight;
+			sheight = sheight - wbarheight;
 
 			if (!wbw) {
 				running = init_wbar();
@@ -445,7 +447,8 @@ short int commo(void)
 
 		//Main Loop
 		while (running == TRUE) {
-			winnum_start = countwindows(NOLOCK);
+			winnum_start = countwindows_nolock(scr);
+			printf("winstart: %d\n",  winnum_start);
 
 			wakeupsigs = Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
 
@@ -456,10 +459,11 @@ short int commo(void)
 					continue;
 				}
 				if (tile_off == FALSE) {
-					int t_layout = tiling_layout(TL_SET, 0);
+					int t_layout = tiling_layout(TL_GET, 0);
 					running = defkeys[t_layout].func(&defkeys[t_layout].arg);
 					update_wbar();
-					winnum_start = countwindows(NOLOCK);
+					winnum_start = countwindows_nolock(scr);
+					printf("winstart 466: %d\n",  winnum_start);
 				}
 				Signal(subtask, subsig);
 			}
@@ -569,6 +573,8 @@ static void subactionchk(void)
 {
 	struct timeval currentval;
 	struct timerequest *tr;
+	struct Screen *scr = tiling_lock(TLOCK, NULL);
+	scr = tiling_lock(TUNLOCK, scr);
 
 	if (!(tr = create_timer(UNIT_VBLANK))) {
 		running = FALSE;
@@ -585,7 +591,8 @@ static void subactionchk(void)
 
 	while (running == TRUE) {
 		time_delay(tr, &currentval);
-		int wincnt = countwindows(NOLOCK);
+		int wincnt = countwindows_nolock(scr);
+		//printf("wincnt 595: %d\n",  winnum_start);
 		if (wincnt > (DIVISOR - 2)) {
 			running = FALSE;
 			info_window(warn_messages[WIWARN]);
@@ -609,8 +616,10 @@ static void subactionchk(void)
 				getactive();
 				// Don't retile if workbench screen
 				//struct Window *wb = window_active(AW_GET, 0UL);
-				if ((window_get_wbwin(window_active(AW_GET, 0UL))) == TRUE) {
-					awin_comp = window_active(AW_GET, 0UL);
+				awin_comp = window_active(AW_GET, 0UL);
+				//if ((window_get_wbwin(window_active(AW_GET, 0UL))) == TRUE) {
+				if ((window_get_wbwin(awin_comp)) == TRUE) {
+					//awin_comp = window_active(AW_GET, 0UL);
 					update_wbar();
 					Signal(maintask, mainsig);
 					(void)Wait((subsig));
