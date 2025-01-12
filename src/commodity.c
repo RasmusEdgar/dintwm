@@ -427,16 +427,13 @@ short int commo(void)
 		}
 
 		if (bar_on == TRUE && running == TRUE) {
-			if (wbarheight == 0) {
-				wbarheight = WBAR_HEIGHT;
-			}
-			sheight = sheight - wbarheight;
+			// Ensure wbarheight is settable - FIX
+			//(void)tiling_screen_info(SH_SET, (tiling_screen_info(SH_GET, 0) - WBAR_HEIGHT));
 
-			if (!wbw) {
-				running = init_wbar();
-			}
+			running = init_wbar();
+			struct Window const *wbarw = window_wbar(NULL);
 
-			if (running == TRUE && wbw) {
+			if (running == TRUE && wbarw) {
 				getactive();
 				awin_comp =  window_active(AW_GET, 0UL);
 				update_wbar();
@@ -448,7 +445,6 @@ short int commo(void)
 		//Main Loop
 		while (running == TRUE) {
 			winnum_start = countwindows_nolock(scr);
-			printf("winstart: %d\n",  winnum_start);
 
 			wakeupsigs = Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
 
@@ -463,7 +459,6 @@ short int commo(void)
 					running = defkeys[t_layout].func(&defkeys[t_layout].arg);
 					update_wbar();
 					winnum_start = countwindows_nolock(scr);
-					printf("winstart 466: %d\n",  winnum_start);
 				}
 				Signal(subtask, subsig);
 			}
@@ -592,7 +587,6 @@ static void subactionchk(void)
 	while (running == TRUE) {
 		time_delay(tr, &currentval);
 		int wincnt = countwindows_nolock(scr);
-		//printf("wincnt 595: %d\n",  winnum_start);
 		if (wincnt > (DIVISOR - 2)) {
 			running = FALSE;
 			info_window(warn_messages[WIWARN]);
@@ -731,8 +725,9 @@ static void cleanup(struct Cmo *cmo)
 	free_opts();
 
 	if (bar_on == TRUE) {
-		if (wbw != NULL) {
-			CloseWindow(wbw);
+		struct Window const *wbarw = window_wbar(NULL);
+		if (wbarw != NULL) {
+			CloseWindow(wbarw);
 		}
 		for (int i = 0; i < BAR_LAST_TEXT; i++) {
 			free(bar_text[i].text);

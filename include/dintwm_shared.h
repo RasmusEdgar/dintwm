@@ -262,16 +262,16 @@ extern long unsigned int auto_interval;
 extern short backdropped;
 extern short tile_off;
 extern struct Window *wbw;
-extern int sheight;
-extern int swidth;
-extern struct Screen *screen;
+//extern int sheight;
+//extern int swidth;
+//extern struct Screen *screen;
 extern unsigned char nil;
 
 // Wbar specific vars
 extern short bar_on;
 extern short vws_on;
 extern unsigned int hidewbar;
-extern int wbarheight;
+//extern int wbarheight;
 
 struct Popkeys {
 	char *rawcombo;
@@ -397,6 +397,7 @@ int window_current_ws(int action, int ws);
 void window_set_skip(struct Window *w);
 short window_get_skip(struct Window *w);
 struct Window * window_active(int action, struct Window *w);
+struct Window * window_wbar(struct Window *w);
 
 // Tiling functions
 int tiling_layout(int action, int layout);
