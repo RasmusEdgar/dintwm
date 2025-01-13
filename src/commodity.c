@@ -414,7 +414,7 @@ short int commo(void)
 		}
 
 		if (vws_on == TRUE) {
-			(void)countwindows_nolock(scr);
+			(void)countwindows(scr);
 			getactive();
 			if (backdropped == TRUE) {
 				if (info_on == TRUE) {
@@ -428,7 +428,6 @@ short int commo(void)
 
 		if (bar_on == TRUE && running == TRUE) {
 			// Ensure wbarheight is settable - FIX
-			//(void)tiling_screen_info(SH_SET, (tiling_screen_info(SH_GET, 0) - WBAR_HEIGHT));
 
 			running = init_wbar();
 			struct Window const *wbarw = window_wbar(NULL);
@@ -444,12 +443,11 @@ short int commo(void)
 
 		//Main Loop
 		while (running == TRUE) {
-			winnum_start = countwindows_nolock(scr);
+			winnum_start = countwindows(scr);
 
 			wakeupsigs = Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
 
 			if ((wakeupsigs & mainsig) != 0UL) {
-				//struct Window *wb = window_active(AW_GET, 0UL);
 				if ((window_get_wbwin(window_active(AW_GET, 0UL))) == TRUE) {
 					Signal(subtask, subsig);
 					continue;
@@ -458,7 +456,7 @@ short int commo(void)
 					int t_layout = tiling_layout(TL_GET, 0);
 					running = defkeys[t_layout].func(&defkeys[t_layout].arg);
 					update_wbar();
-					winnum_start = countwindows_nolock(scr);
+					winnum_start = countwindows(scr);
 				}
 				Signal(subtask, subsig);
 			}
@@ -586,7 +584,7 @@ static void subactionchk(void)
 
 	while (running == TRUE) {
 		time_delay(tr, &currentval);
-		int wincnt = countwindows_nolock(scr);
+		int wincnt = countwindows(scr);
 		if (wincnt > (DIVISOR - 2)) {
 			running = FALSE;
 			info_window(warn_messages[WIWARN]);
@@ -609,11 +607,8 @@ static void subactionchk(void)
 			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 				getactive();
 				// Don't retile if workbench screen
-				//struct Window *wb = window_active(AW_GET, 0UL);
 				awin_comp = window_active(AW_GET, 0UL);
-				//if ((window_get_wbwin(window_active(AW_GET, 0UL))) == TRUE) {
 				if ((window_get_wbwin(awin_comp)) == TRUE) {
-					//awin_comp = window_active(AW_GET, 0UL);
 					update_wbar();
 					Signal(maintask, mainsig);
 					(void)Wait((subsig));

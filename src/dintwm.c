@@ -214,6 +214,7 @@ static void initdefaults(void)
 {
 	fact = TILE_FACT_DEF;
 	backdropped = FALSE;
+	struct Window *window = NULL;
 
 	if ((window_alloc_lut()) != 0) {
 		printf("allocation failed\n");
@@ -227,8 +228,7 @@ static void initdefaults(void)
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	(void)tiling_screen_info(SH_SET, scr->Height);
 	(void)tiling_screen_info(SW_SET, scr->Width);
-	//sheight = scr->Height;
-	//swidth = scr->Width;
+
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		window_set_wptr(window);
 		if (strcmp("Workbench", (const char *)window->Title) == 0) {
@@ -262,8 +262,8 @@ static short printusage(void)
 
 static short skipper(struct Window *w)
 {
-	if (!window_check_wptr(window)) {
-		window_set_wptr(window);
+	if (!window_check_wptr(w)) {
+		window_set_wptr(w);
 		window_set_ws_num(w, window_current_ws(WS_GET, 0));
 	}
 
@@ -334,12 +334,13 @@ short tile(const Arg *arg)
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
 
+	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	sh = scr->Height - (bgap + tgap);
 	sw = scr->Width - (rgap + lgap);
 
-	wincount = countwindows_nolock(scr);
+	wincount = countwindows(scr);
 
 	if (wincount == 0) {
 		(void)tiling_lock(TUNLOCK, scr);
@@ -388,12 +389,13 @@ short hgrid(const Arg *arg)
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
 
+	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	sh = scr->Height - (bgap + tgap);
 	sw = scr->Width - (rgap + lgap);
 
-	wincount = countwindows_nolock(scr);
+	wincount = countwindows(scr);
 
 	if (wincount == 0) {
 		(void)tiling_lock(TUNLOCK, scr);
@@ -443,12 +445,13 @@ short fibonacci(const Arg *arg)
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
 
+	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
 	sh = scr->Height - (bgap + tgap);
 	sw = scr->Width - (rgap + lgap);
 
-	wincount = countwindows_nolock(scr);
+	wincount = countwindows(scr);
 
 	wy = tgap;
 	wx = lgap;
@@ -521,29 +524,10 @@ short switcher(const Arg *arg)
 	return rc;
 }
 
-int countwindows_lock(void)
+int countwindows(struct Screen const *scr)
 {
 	int wincount;
-	struct Screen *scr = tiling_lock(TLOCK, NULL);
-
-	for (wincount = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wincount++) {
-		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
-			(void)window_active(AW_SET, window);
-		}
-		if (skipper(window) == SKIP) {
-			wincount--;
-			continue;
-		}
-	}
-
-	(void)tiling_lock(TUNLOCK, scr);
-
-	return wincount;
-}
-
-int countwindows_nolock(struct Screen const *scr)
-{
-	int wincount;
+	struct Window *window = NULL;
 
 	for (wincount = 0, window = scr->FirstWindow; window != NULL; window = window->NextWindow, wincount++) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
@@ -560,6 +544,7 @@ int countwindows_nolock(struct Screen const *scr)
 
 void getactive(void)
 {
+	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		if ((window->Flags & (unsigned long)WFLG_WINDOWACTIVE) != 0UL) {
@@ -692,6 +677,7 @@ size_t strnlen(const char *s, size_t maxlen)
 static void moveallwin(int m)
 {
 	int countw = 0;
+	struct Window *window = NULL;
 	struct Window *wbarw = window_wbar(NULL);
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
@@ -742,6 +728,7 @@ short changews(const Arg *arg)
 
 static struct Window *findfirstwin(struct Screen const *scr)
 {
+	struct Window *window = NULL;
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		if (skipper(window) == SKIP) {
 			continue;
@@ -761,6 +748,7 @@ short movetows(const Arg *arg)
 
 	int t_layout = tiling_layout(TL_GET, 0);
 
+	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		if (skipper(window) == SKIP) {
@@ -780,6 +768,7 @@ short movetows(const Arg *arg)
 short tabnextwin(const Arg *arg)
 {
 	(void)arg;
+	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		if ((window->Flags & (unsigned long)WINDOWACTIVE) != 0UL) {

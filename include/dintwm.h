@@ -18,26 +18,13 @@ static int dintwmrun(int argc, char **argv);
 static void initdefaults(void);
 static struct Window *findfirstwin(struct Screen const *scr);
 
-// Screen
-//struct Screen *screen;
-//int sheight;
-//int swidth;
-
-// Window
-static struct Window *window;
-
 // Bar declarations
 static inline void mapws(void);
 static inline unsigned char *maptm(void);
 static unsigned char *padwbartext(Bar_Text * b, enum bar_texts x);
 static short int wbartextwidth(int lei, unsigned char *it);
-//struct Window *wbw = NULL;
 
 // Global tiling variables declaration
-int topgap;
-int bottomgap;
-int leftgap;
-int rightgap;
 int exclude_wtype;
 int include_wtype;
 short backdropped;
