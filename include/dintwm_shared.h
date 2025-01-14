@@ -206,6 +206,24 @@
 #define TLOCK 0
 #define TUNLOCK 1
 
+#define BACKDROP_SET 0
+#define BACKDROP_GET 1
+#define TILE_OFF_SET 2
+#define TILE_OFF_GET 3
+#define BAR_ON_SET 4
+#define BAR_ON_GET 5
+#define VWS_ON_SET 6
+#define VWS_ON_GET 7
+#define INFO_ON_SET 8
+#define INFO_ON_GET 9
+#define FIRST_RUN_GET 10
+#define FIRST_RUN_SET 11
+#define AUTOTILE_SET 12
+#define AUTOTILE_GET 13
+
+#define WBAR_HEIGHT_SET 0
+#define WBAR_HEIGHT_GET 1
+
 typedef union {
 	int i;
 	unsigned int u;
@@ -253,8 +271,8 @@ short tabnextwin(const Arg * arg);
 extern int exclude_wtype;
 extern int include_wtype;
 extern long unsigned int auto_interval;
-extern short backdropped;
-extern short tile_off;
+//extern short backdropped;
+//extern short tile_off;
 //extern struct Window *wbw;
 //extern int sheight;
 //extern int swidth;
@@ -262,10 +280,9 @@ extern short tile_off;
 extern unsigned char nil;
 
 // Wbar specific vars
-extern short bar_on;
-extern short vws_on;
+//extern short bar_on;
+//extern short vws_on;
 extern unsigned int hidewbar;
-//extern int wbarheight;
 
 struct Popkeys {
 	char *rawcombo;
@@ -396,9 +413,14 @@ struct Window * window_wbar(struct Window *w);
 // Tiling functions
 int tiling_layout(int action, int layout);
 struct Screen * tiling_lock(int action, struct Screen *s);
+struct Screen * tiling_screen_light(void);
 int tiling_screen_width(void);
 int tiling_screen_height(void);
 int tiling_screen_info(int action, int size);
 int tiling_calc_menugap(void);
 int tiling_gaps(int action, int amount);
 //int tiling_gap(int action, int tiling_type, int amount);
+
+// Options functions
+short option_bool(int action, short b);
+int option(int action, int amount);

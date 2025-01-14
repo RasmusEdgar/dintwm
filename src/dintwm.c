@@ -8,9 +8,6 @@ short tile_off = FALSE;
 // Bar definitions
 unsigned int hidewbar = 0U;
 unsigned char nil = (unsigned char)'\0';
-int wbarheight = 0;
-short bar_on = FALSE;
-short vws_on = FALSE;
 
 int main(int argc, char **argv)
 {
@@ -213,7 +210,7 @@ static int dintwmrun(int argc, char **argv)
 static void initdefaults(void)
 {
 	fact = TILE_FACT_DEF;
-	backdropped = FALSE;
+	(void)option_bool(BACKDROP_SET, FALSE);
 	struct Window *window = NULL;
 
 	if ((window_alloc_lut()) != 0) {
@@ -224,6 +221,9 @@ static void initdefaults(void)
 	for (int i = 0; i < BAR_LAST_COLOR; ++i) {
 		bar_color[i].color[0] = nil;
 	}
+
+	// Set reusable screen pointer for later usage
+	(void)tiling_screen_light();
 
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 	(void)tiling_screen_info(SH_SET, scr->Height);
@@ -272,7 +272,8 @@ static short skipper(struct Window *w)
 	}
 
 	if ((w->Flags & (unsigned long)WFLG_BACKDROP) != 0UL) {
-		backdropped = TRUE;
+		//backdropped = TRUE;
+		(void)option_bool(BACKDROP_SET, TRUE);
 		window_set_skip(w);
 		return SKIP;
 	}
@@ -708,7 +709,8 @@ short changews(const Arg *arg)
 {
 	int t_layout = tiling_layout(TL_GET, 0);
 
-	if (vws_on == FALSE) {
+	//if (vws_on == FALSE) {
+	if ((option_bool(VWS_ON_GET, TRUE)) == FALSE) {
 		return TRUE;
 	}
 
@@ -742,7 +744,8 @@ static struct Window *findfirstwin(struct Screen const *scr)
 
 short movetows(const Arg *arg)
 {
-	if (vws_on == FALSE) {
+	//if (vws_on == FALSE) {
+	if ((option_bool(VWS_ON_GET, TRUE)) == FALSE) {
 		return TRUE;
 	}
 
@@ -804,7 +807,9 @@ short init_wbar(void)
 	int bgap = tiling_gaps(BOTTOMGAP_SET, WBAR_HEIGHT);
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
+	int wbar_height = option(WBAR_HEIGHT_GET, 0);
 	//int sh = tiling_screen_info(SH_GET, 0);
+	short vws_on = option_bool(VWS_ON_GET, TRUE);
 
 	struct TagItem tagitem[7];
 
@@ -813,7 +818,7 @@ short init_wbar(void)
 	tagitem[0].ti_Tag = WA_Width;
 	tagitem[0].ti_Data = (unsigned long)scr->Width - ((unsigned long)lgap + (unsigned long)rgap);
 	tagitem[1].ti_Tag = WA_Height;
-	tagitem[1].ti_Data = (unsigned long)wbarheight;
+	tagitem[1].ti_Data = (unsigned long)wbar_height;
 	tagitem[2].ti_Tag = WA_Top;
 	tagitem[2].ti_Data = ((unsigned long)scr->Height - (unsigned long)bgap);
 	tagitem[3].ti_Tag = WA_Borderless;
@@ -835,7 +840,7 @@ short init_wbar(void)
 
 	WindowToFront(wbarw);
 
-	if (vws_on != 0) {
+	if (vws_on == TRUE) {
 		wstext_five = wbartext;
 		wstext_five.IText = padwbartext(bar_text, ws_five);
 
@@ -882,7 +887,7 @@ short init_wbar(void)
 	wbarwtitle.FrontPen = *bar_color[fp_ti].color;
 	wbarwtitle.BackPen = *bar_color[bp_ti].color;
 
-	if (vws_on != 0) {
+	if (vws_on == TRUE) {
 		wstext_zero.NextText = &wstext_one;
 		wstext_one.NextText = &wstext_two;
 		wstext_two.NextText = &wstext_three;
@@ -899,7 +904,7 @@ short init_wbar(void)
 		wbarsep_two.NextText = &wbarwtitle;
 	}
 
-	if (vws_on != 0) {
+	if (vws_on == TRUE) {
 		wstext_one.LeftEdge = wbartextwidth(0, wstext_zero.IText);
 		wstext_two.LeftEdge = wbartextwidth(wstext_one.LeftEdge, wstext_one.IText);
 		wstext_three.LeftEdge = wbartextwidth(wstext_two.LeftEdge, wstext_two.IText);
@@ -939,9 +944,11 @@ short update_wbar(void)
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
 	int swidth = tiling_screen_info(SW_GET, 0);
+	int wbar_height = option(WBAR_HEIGHT_GET, 0);
 	struct Window *wbarw = window_wbar(NULL);
 
-	if (bar_on == FALSE) {
+	//if (bar_on == FALSE) {
+	if ((option_bool(BAR_ON_GET, TRUE)) == FALSE) {
 		return TRUE;
 	}
 	static short barbdata[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -951,9 +958,9 @@ short update_wbar(void)
 	barbdata[2] = (short)((swidth - (lgap + rgap)) - 1);
 	barbdata[3] = 1;
 	barbdata[4] = (short)((swidth - (lgap + rgap)) - 1);
-	barbdata[5] = (short)(wbarheight - 1);
+	barbdata[5] = (short)(wbar_height - 1);
 	barbdata[6] = 1;
-	barbdata[7] = (short)(wbarheight - 1);
+	barbdata[7] = (short)(wbar_height - 1);
 	barbdata[8] = 1;
 	barbdata[9] = 1;
 
@@ -978,9 +985,11 @@ void wbarcwb(void)
 	int bgap = tiling_gaps(BOTTOMGAP_GET, 0);
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
+	int wbar_height = option(WBAR_HEIGHT_GET, 0);
 	struct Window *wbarw = window_wbar(NULL);
 
-	if (bar_on == FALSE) {
+	//if (bar_on == FALSE) {
+	if ((option_bool(BAR_ON_GET, TRUE)) == FALSE) {
 		return;
 	}
 
@@ -988,9 +997,7 @@ void wbarcwb(void)
 
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
 
-	//cwb(wbw, lgap, scr->Height - bgap, scr->Width - (lgap + rgap), wbarheight);
-	//cwb(wbw, lgap, scr->Height - bgap, scr->Width - (lgap + rgap), bgap);
-	cwb(wbarw, lgap, scr->Height - bgap, scr->Width - (lgap + rgap), bgap);
+	cwb(wbarw, lgap, scr->Height - bgap, scr->Width - (lgap + rgap), wbar_height);
 
 	(void)tiling_lock(TUNLOCK, scr);
 
@@ -1004,6 +1011,8 @@ void wbarcwb(void)
 
 static inline void mapws(void)
 {
+	short vws_on = option_bool(VWS_ON_GET, TRUE);
+
 	if (vws_on == FALSE) {
 		wstext_zero.FrontPen = *bar_color[fp_ws].color;
 		wstext_zero.BackPen = *bar_color[bp_ws].color;

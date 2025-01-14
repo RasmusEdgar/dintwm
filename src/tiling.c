@@ -50,6 +50,17 @@ struct Screen * tiling_lock(int action, struct Screen *s)
 	return s;
 }
 
+struct Screen * tiling_screen_light(void)
+{
+	static struct Screen *s = NULL;
+
+	if (s == NULL) {
+		s = tiling_lock(TLOCK, NULL);
+		s = tiling_lock(TUNLOCK, s);
+	}
+	return s;
+}
+
 int tiling_screen_info(int action, int size)
 {
 	static int sh = 0;

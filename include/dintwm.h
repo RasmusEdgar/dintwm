@@ -27,4 +27,4 @@ static short int wbartextwidth(int lei, unsigned char *it);
 // Global tiling variables declaration
 int exclude_wtype;
 int include_wtype;
-short backdropped;
+//short backdropped;

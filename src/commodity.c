@@ -53,7 +53,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 		}
 	}
 
-	if (rc == TRUE && bar_on == TRUE) {
+	if (rc == TRUE && option_bool(BAR_ON_GET, TRUE)) {
 		for (int i = 0; i < BAR_LAST_TEXT; i++) {
 			if (bar_text[i].text[0] != nil) {
 				continue;
@@ -200,7 +200,8 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		(void)tiling_gaps(GAP_CHANGE_VAL_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case BAR_ID:
-		bar_on = TRUE;
+		//bar_on = TRUE;
+		(void)option_bool(BAR_ON_SET, TRUE);
 		break;
 	case BAR_BG_COL_ID:
 		bar_color[bg].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
@@ -284,7 +285,8 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		rc = rc == TRUE ? assign_bar_item(bar_text, space, tt_optvalue) : FALSE;
 		break;
 	case AUTO_ID:
-		autotile = TRUE;
+		//autotile = TRUE;
+		(void)option_bool(AUTOTILE_SET, TRUE);
 		break;
 	case AUTO_INTERVAL_DELAY_ID:
 		auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
@@ -293,10 +295,12 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		fact = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
 		break;
 	case INFO_OFF_ID:
-		info_on = FALSE;
+		//info_on = FALSE;
+		(void)option_bool(INFO_ON_SET, TRUE);
 		break;
 	case VWS_ON_ID:
-		vws_on = TRUE;
+		//vws_on = TRUE;
+		(void)option_bool(VWS_ON_SET, TRUE);
 		break;
 	default:
 		// Do nothing
@@ -393,8 +397,9 @@ short int commo(void)
 	mainsig = 1UL << (unsigned long)cmo.mainsignum;
 	subsig = 1UL << (unsigned long)cmo.subsignum;
 	maintask = FindTask(NULL);
-	struct Screen *scr = tiling_lock(TLOCK, NULL);
-	scr = tiling_lock(TUNLOCK, scr);
+	struct Screen const *scr = tiling_screen_light();
+	/*struct Screen *scr = tiling_lock(TLOCK, NULL);
+	scr = tiling_lock(TUNLOCK, scr);*/
 
 	if (running == TRUE) {
 		CxMsg *msg;
@@ -413,22 +418,24 @@ short int commo(void)
 			running = FALSE;
 		}
 
-		if (vws_on == TRUE) {
+		//if (vws_on == TRUE) {
+		if ((option_bool(VWS_ON_GET, TRUE)) == TRUE) {
 			(void)countwindows(scr);
 			getactive();
-			if (backdropped == TRUE) {
-				if (info_on == TRUE) {
+			//if (backdropped == TRUE) {
+			if (option_bool(BACKDROP_GET, TRUE)) {
+				//if (info_on == TRUE) {
+				if (option_bool(INFO_ON_GET, TRUE)) {
 					info_window(warn_messages[BDWARN]);
 				}
-				bar_on = FALSE;
+				//bar_on = FALSE;
+				(void)option_bool(BAR_ON_SET, FALSE);
 				cleanup(&cmo);
 				return EXIT_FAILURE;
 			}
 		}
 
-		if (bar_on == TRUE && running == TRUE) {
-			// Ensure wbarheight is settable - FIX
-
+		if ((option_bool(BAR_ON_GET, TRUE)) && running == TRUE) {
 			running = init_wbar();
 			struct Window const *wbarw = window_wbar(NULL);
 
@@ -452,7 +459,8 @@ short int commo(void)
 					Signal(subtask, subsig);
 					continue;
 				}
-				if (tile_off == FALSE) {
+				//if (tile_off == FALSE) {
+				if ((option_bool(TILE_OFF_GET, TRUE)) == FALSE) {
 					int t_layout = tiling_layout(TL_GET, 0);
 					running = defkeys[t_layout].func(&defkeys[t_layout].arg);
 					update_wbar();
@@ -498,7 +506,8 @@ short int commo(void)
 						Signal(subtask, subsig);
 						(void)Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
 					}
-					if (bar_on == TRUE && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
+					//if (bar_on == TRUE && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
+					if ((option_bool(BAR_ON_GET, TRUE)) && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
 						wbarcwb();
 						update_wbar();
 					}
@@ -566,8 +575,9 @@ static void subactionchk(void)
 {
 	struct timeval currentval;
 	struct timerequest *tr;
-	struct Screen *scr = tiling_lock(TLOCK, NULL);
-	scr = tiling_lock(TUNLOCK, scr);
+	/*struct Screen *scr = tiling_lock(TLOCK, NULL);
+	scr = tiling_lock(TUNLOCK, scr);*/
+	struct Screen const *scr = tiling_screen_light();
 
 	if (!(tr = create_timer(UNIT_VBLANK))) {
 		running = FALSE;
@@ -590,7 +600,8 @@ static void subactionchk(void)
 			info_window(warn_messages[WIWARN]);
 			continue;
 		}
-		if (tile_off == FALSE && autotile == TRUE) {
+		//if (tile_off == FALSE && autotile == TRUE) {
+		if ((option_bool(TILE_OFF_GET, TRUE)) == FALSE && (option_bool(AUTOTILE_GET, TRUE)) == TRUE) {
 			if (winnum_start != wincnt) {
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
@@ -719,10 +730,11 @@ static void cleanup(struct Cmo *cmo)
 
 	free_opts();
 
-	if (bar_on == TRUE) {
+	//if (bar_on == TRUE) {
+	if (option_bool(BAR_ON_GET, TRUE)) {
 		struct Window const *wbarw = window_wbar(NULL);
 		if (wbarw != NULL) {
-			CloseWindow(wbarw);
+			CloseWindow((struct Window *)wbarw);
 		}
 		for (int i = 0; i < BAR_LAST_TEXT; i++) {
 			free(bar_text[i].text);

@@ -216,7 +216,7 @@ static struct Task *maintask = NULL, *subtask = NULL;
 static short first_run = TRUE;
 static struct Window *awin_comp;
 static short running = TRUE;
-static short autotile = FALSE;
+//static short autotile = FALSE;
 
 Ostore cmds[] = { 0 };
 Ostore cons[] = { 0 };
