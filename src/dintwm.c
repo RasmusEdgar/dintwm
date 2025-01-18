@@ -3,7 +3,6 @@
 #include "../include/dintwm.h"
 
 int main(int argc, char **argv);
-short tile_off = FALSE;
 
 // Bar definitions
 unsigned int hidewbar = 0U;
@@ -209,7 +208,8 @@ static int dintwmrun(int argc, char **argv)
 
 static void initdefaults(void)
 {
-	fact = TILE_FACT_DEF;
+	//fact = TILE_FACT_DEF;
+	(void)option(TILE_FACT_GET, 0);
 	(void)option_bool(BACKDROP_SET, FALSE);
 	struct Window *window = NULL;
 
@@ -331,6 +331,7 @@ short tile(const Arg *arg)
 	int bgap = tiling_gaps(BOTTOMGAP_GET, 0);
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
+	int fact = option(TILE_FACT_GET, 0);
 
 	int wincount = 0, wnr = 0, mwinwidth = 0, nwiny = 0;
 	int wx = 0, wy = 0, ww = 0, wh = 0, sh = 0, sw = 0;
@@ -445,6 +446,7 @@ short fibonacci(const Arg *arg)
 	int bgap = tiling_gaps(BOTTOMGAP_GET, 0);
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
+	int fact = option(TILE_FACT_GET, 0);
 
 	struct Window *window = NULL;
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
@@ -1188,6 +1190,8 @@ short info_window(const char *info_text)
 short tileoff(const Arg *arg)
 {
 	(void)arg;
-	tile_off = tile_off == FALSE ? TRUE : FALSE;
+	option_bool(TILE_OFF_GET, TRUE) == FALSE ?
+		(void)option_bool(TILE_OFF_SET, TRUE) :
+		(void)option_bool(TILE_OFF_SET, FALSE);
 	return TRUE;
 }

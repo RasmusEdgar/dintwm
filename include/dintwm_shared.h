@@ -221,8 +221,11 @@
 #define AUTOTILE_SET 12
 #define AUTOTILE_GET 13
 
+#define AUTO_INTERVAL_DELAY_GET 0
+
 #define WBAR_HEIGHT_SET 0
 #define WBAR_HEIGHT_GET 1
+#define TILE_FACT_GET 2
 
 typedef union {
 	int i;
@@ -314,8 +317,8 @@ extern Ostore excls[];
 extern Keys defkeys[];
 extern Opts defopts[];
 
-extern int fact;
-extern int gap_change_value;
+//extern int fact;
+//extern int gap_change_value;
 
 enum bar_texts {
 	// text items
@@ -423,4 +426,5 @@ int tiling_gaps(int action, int amount);
 
 // Options functions
 short option_bool(int action, short b);
+unsigned long option_ul(int action, unsigned long amount);
 int option(int action, int amount);

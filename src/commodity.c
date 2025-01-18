@@ -1,5 +1,7 @@
 // Copyright 2024 Rasmus Edgar
 #include "../include/dintwm_shared.h"
+#include "../include/commodity_types.h"
+#include "../include/rawkey_combos.h"
 #include "../include/commodity.h"
 // initialize commodity options and keycombos
 #include "../include/key_txts.h"
@@ -285,17 +287,16 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		rc = rc == TRUE ? assign_bar_item(bar_text, space, tt_optvalue) : FALSE;
 		break;
 	case AUTO_ID:
-		//autotile = TRUE;
 		(void)option_bool(AUTOTILE_SET, TRUE);
 		break;
 	case AUTO_INTERVAL_DELAY_ID:
-		auto_interval = strtoul((const char *)tt_optvalue, (char **)NULL, 10);
+		(void)option_ul(AUTO_INTERVAL_DELAY_ID, strtoul((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case TILE_FACT_ID:
-		fact = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		//fact = (int)strtol((const char *)tt_optvalue, (char **)NULL, 10);
+		(void)option(TILE_FACT_ID, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case INFO_OFF_ID:
-		//info_on = FALSE;
 		(void)option_bool(INFO_ON_SET, TRUE);
 		break;
 	case VWS_ON_ID:
@@ -383,7 +384,6 @@ short int commo(void)
 {
 	struct Cmo cmo = { 0, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 }};
 	init_cmo(&cmo);
-	auto_interval = (unsigned long)AUTO_INTERVAL_DELAY_DEF;
 	size_t cmo_arr_length = sizeof(cmo.failarr) / sizeof(cmo.failarr[0]);
 
 	for (size_t i = 0; i < cmo_arr_length; i++) {
@@ -398,8 +398,6 @@ short int commo(void)
 	subsig = 1UL << (unsigned long)cmo.subsignum;
 	maintask = FindTask(NULL);
 	struct Screen const *scr = tiling_screen_light();
-	/*struct Screen *scr = tiling_lock(TLOCK, NULL);
-	scr = tiling_lock(TUNLOCK, scr);*/
 
 	if (running == TRUE) {
 		CxMsg *msg;
@@ -478,7 +476,7 @@ short int commo(void)
 				if (type == (unsigned long)CXM_COMMAND) {
 					switch (id) {
 					case CXCMD_UNIQUE:
-						if (info_on == TRUE) {
+						if (option_bool(INFO_ON_GET, TRUE)) {
 							info_window(warn_messages[UQWARN]);
 						}
 						running = FALSE;
@@ -575,8 +573,6 @@ static void subactionchk(void)
 {
 	struct timeval currentval;
 	struct timerequest *tr;
-	/*struct Screen *scr = tiling_lock(TLOCK, NULL);
-	scr = tiling_lock(TUNLOCK, scr);*/
 	struct Screen const *scr = tiling_screen_light();
 
 	if (!(tr = create_timer(UNIT_VBLANK))) {
@@ -584,23 +580,19 @@ static void subactionchk(void)
 	}
 
 	currentval.tv_secs = 0UL;
-	currentval.tv_micro = auto_interval;
-
-	if (first_run == TRUE) {
-		Signal(maintask, mainsig);
-		first_run = FALSE;
-		(void)Wait((subsig));
-	}
+	//currentval.tv_micro = auto_interval;
+	currentval.tv_micro = option_ul(AUTO_INTERVAL_DELAY_GET, 0);
 
 	while (running == TRUE) {
 		time_delay(tr, &currentval);
 		int wincnt = countwindows(scr);
+
 		if (wincnt > (DIVISOR - 2)) {
 			running = FALSE;
 			info_window(warn_messages[WIWARN]);
 			continue;
 		}
-		//if (tile_off == FALSE && autotile == TRUE) {
+
 		if ((option_bool(TILE_OFF_GET, TRUE)) == FALSE && (option_bool(AUTOTILE_GET, TRUE)) == TRUE) {
 			if (winnum_start != wincnt) {
 				Signal(maintask, mainsig);
@@ -614,6 +606,7 @@ static void subactionchk(void)
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
 			}
+
 			// If previous active window is no longer active, refresh bar
 			if ((awin_comp->Flags & (unsigned long)WFLG_WINDOWACTIVE) == 0U) {
 				getactive();
@@ -730,7 +723,6 @@ static void cleanup(struct Cmo *cmo)
 
 	free_opts();
 
-	//if (bar_on == TRUE) {
 	if (option_bool(BAR_ON_GET, TRUE)) {
 		struct Window const *wbarw = window_wbar(NULL);
 		if (wbarw != NULL) {
