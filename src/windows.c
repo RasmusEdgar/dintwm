@@ -95,11 +95,12 @@ struct Window * window_active(int action, struct Window *w)
 
 struct Window * window_wbar(struct Window *w)
 {
+// TODO(blah): Fix
 	static int windex = 0;
 
 	if (windex == 0 && w != NULL) {
 		window_set_wptr(w);
-		windex  = window_index(w);
+		windex = window_index(w);
 	}
 
 	return wlut[windex].wptr;

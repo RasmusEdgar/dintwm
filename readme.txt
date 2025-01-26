@@ -223,8 +223,6 @@ Tooltype Options Table
 
   BAR_TEXT_SEP_2        |                                              Dintwm bar text for sepator one                                                           BAR
 
-  BAR_HIDE_EMPTY        empty                                          Hide bar if workspace is empty                                                            BAR
-
   INFO_OFF              empty                                          Supress info windows - not recommended                                                    NA
 
   VWS_ON                FALSE                                          Enable virtual workspaces                                                                 NA

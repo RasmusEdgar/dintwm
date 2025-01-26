@@ -1,9 +1,9 @@
 // Copyright 2024 Rasmus Edgar
 #include "../include/dintwm_shared.h"
+// initialize commodity options and keycombos
 #include "../include/commodity_types.h"
 #include "../include/rawkey_combos.h"
 #include "../include/commodity.h"
-// initialize commodity options and keycombos
 #include "../include/key_txts.h"
 #include "../include/key_defs.h"
 #include "../include/opt_defs.h"
@@ -11,6 +11,7 @@
 static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj)
 {
 	short rc = TRUE;
+	unsigned char nil = '\0';
 	size_t keyarrsize;
 	size_t optarrsize;
 	struct Popkeys *keys;
@@ -30,9 +31,6 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	bar_default_text[sep_two] = DEF_BAR_TEXT_SEP_TWO;
 	bar_default_text[space] = DEF_BAR_TEXT_SPACE;
 	bar_default_text[err] = DEF_BAR_TEXT_ERR;
-
-	exclude_wtype = 0;
-	include_wtype = 0;
 
 	optarrsize = sizeof(defopts) / sizeof(*defopts);
 	keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
@@ -111,11 +109,11 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 		return rc;
 	}
 
-	if (exclude_wtype != 0) {
+	if (option_bool(EXCLUDE_WTYPE_GET, TRUE)) {
 		qsort(excls->strings, WTYPE_MAX, sizeof(*excls->strings), cstring_cmp);
 	}
 
-	if (include_wtype != 0) {
+	if (option_bool(INCLUDE_WTYPE_GET, TRUE)) {
 		qsort(incls->strings, WTYPE_MAX, sizeof(*incls->strings), cstring_cmp);
 	}
 
@@ -155,17 +153,20 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 {
 	short rc = TRUE;
+
 	if (dopts[i].cxint >= EXCL_WTYPE_ID_0 && dopts[i].cxint <= (WTYPE_MAX + EXCL_WTYPE_ID_0)) {
 		rc = alloc_opts(tt_optvalue, excls, i, EXCL_WTYPE_ID_0);
-		if (exclude_wtype == 0) {
-			exclude_wtype = 1;
+		//if (exclude_wtype == FALSE) {
+		if (!option_bool(EXCLUDE_WTYPE_GET, TRUE)) {
+			(void)option_bool(EXCLUDE_WTYPE_SET, TRUE);
 		}
 	}
 
 	if (dopts[i].cxint >= INCL_WTYPE_ID_0 && dopts[i].cxint <= (WTYPE_MAX + INCL_WTYPE_ID_0)) {
 		rc = alloc_opts(tt_optvalue, incls, i, INCL_WTYPE_ID_0);
-		if (include_wtype == 0) {
-			include_wtype = 1;
+		//if (include_wtype == FALSE) {
+		if (!option_bool(INCLUDE_WTYPE_GET, TRUE)) {
+			(void)option_bool(INCLUDE_WTYPE_SET, TRUE);
 		}
 	}
 
@@ -202,7 +203,6 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		(void)tiling_gaps(GAP_CHANGE_VAL_SET, (int)strtol((const char *)tt_optvalue, (char **)NULL, 10));
 		break;
 	case BAR_ID:
-		//bar_on = TRUE;
 		(void)option_bool(BAR_ON_SET, TRUE);
 		break;
 	case BAR_BG_COL_ID:
@@ -243,9 +243,6 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		break;
 	case BAR_BPSEP_TWO_COL_ID:
 		bar_color[bp_sep_two].color[0] = (unsigned char)strtoul((const char *)tt_optvalue, (char **)NULL, 10);
-		break;
-	case BAR_HIDE_EMPTY_ID:
-		hidewbar |= BAR_HIDE_ON;
 		break;
 	case BAR_TEXT_WS0_ID:
 		rc = rc == TRUE ? assign_bar_item(bar_text, ws_zero, tt_optvalue) : FALSE;
@@ -504,8 +501,7 @@ short int commo(void)
 						Signal(subtask, subsig);
 						(void)Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
 					}
-					//if (bar_on == TRUE && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
-					if ((option_bool(BAR_ON_GET, TRUE)) && (hidewbar & BAR_HIDE_TOGGLE) == 0U) {
+					if (option_bool(BAR_ON_GET, TRUE)) {
 						wbarcwb();
 						update_wbar();
 					}

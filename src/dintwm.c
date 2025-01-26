@@ -2,12 +2,6 @@
 #include "../include/dintwm_shared.h"
 #include "../include/dintwm.h"
 
-int main(int argc, char **argv);
-
-// Bar definitions
-unsigned int hidewbar = 0U;
-unsigned char nil = (unsigned char)'\0';
-
 int main(int argc, char **argv)
 {
 	static int dint_exit_state = EXIT_SUCCESS;
@@ -208,7 +202,7 @@ static int dintwmrun(int argc, char **argv)
 
 static void initdefaults(void)
 {
-	//fact = TILE_FACT_DEF;
+	unsigned char nil = '\0';
 	(void)option(TILE_FACT_GET, 0);
 	(void)option_bool(BACKDROP_SET, FALSE);
 	struct Window *window = NULL;
@@ -272,7 +266,6 @@ static short skipper(struct Window *w)
 	}
 
 	if ((w->Flags & (unsigned long)WFLG_BACKDROP) != 0UL) {
-		//backdropped = TRUE;
 		(void)option_bool(BACKDROP_SET, TRUE);
 		window_set_skip(w);
 		return SKIP;
@@ -294,7 +287,8 @@ static short skipper(struct Window *w)
 	}
 
 	if (window_get_ws_num(w) == window_current_ws(WS_GET, 0)) {
-		if (include_wtype != 0 && exclude_wtype == 0) {
+		//if (include_wtype != 0 && exclude_wtype == 0) {
+		if (option_bool(INCLUDE_WTYPE_GET, TRUE) && !option_bool(EXCLUDE_WTYPE_GET, TRUE)) {
 			if (bsearch(&w->Title, incls->strings, WTYPE_MAX, sizeof(char *), cstring_cmp) != NULL) {
 				return NOSKIP;
 			} else {
@@ -303,7 +297,8 @@ static short skipper(struct Window *w)
 			}
 		}
 
-		if (exclude_wtype != 0 && include_wtype == 0) {
+		//if (exclude_wtype != 0 && include_wtype == 0) {
+		if (option_bool(EXCLUDE_WTYPE_GET, TRUE) && !option_bool(INCLUDE_WTYPE_GET, TRUE)) {
 			if (bsearch(&w->Title, excls->strings, WTYPE_MAX, sizeof(char *), cstring_cmp) != NULL) {
 				window_set_skip(w);
 				return SKIP;
@@ -679,10 +674,9 @@ size_t strnlen(const char *s, size_t maxlen)
 
 static void moveallwin(int m)
 {
-	int countw = 0;
 	struct Window *window = NULL;
-	struct Window *wbarw = window_wbar(NULL);
 	struct Screen *scr = tiling_lock(TLOCK, NULL);
+
 	for (window = scr->FirstWindow; window != NULL; window = window->NextWindow) {
 		if (skipper(window) == SKIP) {
 			continue;
@@ -693,17 +687,8 @@ static void moveallwin(int m)
 		if (m == BACK) {
 			WindowToBack(window);
 		}
-		countw++;
 	}
-	if (m == FRONT && hidewbar != 0U) {
-		if (countw == 0) {
-			WindowToBack(wbarw);
-			hidewbar |= BAR_HIDE_TOGGLE;
-		} else {
-			WindowToFront(wbarw);
-			hidewbar &= ~(BAR_HIDE_TOGGLE);
-		}
-	}
+
 	(void)tiling_lock(TUNLOCK, scr);
 }
 
@@ -711,7 +696,6 @@ short changews(const Arg *arg)
 {
 	int t_layout = tiling_layout(TL_GET, 0);
 
-	//if (vws_on == FALSE) {
 	if ((option_bool(VWS_ON_GET, TRUE)) == FALSE) {
 		return TRUE;
 	}
@@ -746,7 +730,6 @@ static struct Window *findfirstwin(struct Screen const *scr)
 
 short movetows(const Arg *arg)
 {
-	//if (vws_on == FALSE) {
 	if ((option_bool(VWS_ON_GET, TRUE)) == FALSE) {
 		return TRUE;
 	}
@@ -810,7 +793,6 @@ short init_wbar(void)
 	int lgap = tiling_gaps(LEFTGAP_GET, 0);
 	int rgap = tiling_gaps(RIGHTGAP_GET, 0);
 	int wbar_height = option(WBAR_HEIGHT_GET, 0);
-	//int sh = tiling_screen_info(SH_GET, 0);
 	short vws_on = option_bool(VWS_ON_GET, TRUE);
 
 	struct TagItem tagitem[7];
@@ -832,7 +814,6 @@ short init_wbar(void)
 	tagitem[6].ti_Tag = TAG_DONE;
 
 	struct Window *wbarw = window_wbar(OpenWindowTagList(NULL, tagitem));
-	//(void)window_wbar(wbw);
 
 	if (!wbarw) {
 		(void)tiling_lock(TUNLOCK, scr);
@@ -949,7 +930,6 @@ short update_wbar(void)
 	int wbar_height = option(WBAR_HEIGHT_GET, 0);
 	struct Window *wbarw = window_wbar(NULL);
 
-	//if (bar_on == FALSE) {
 	if ((option_bool(BAR_ON_GET, TRUE)) == FALSE) {
 		return TRUE;
 	}
@@ -990,7 +970,6 @@ void wbarcwb(void)
 	int wbar_height = option(WBAR_HEIGHT_GET, 0);
 	struct Window *wbarw = window_wbar(NULL);
 
-	//if (bar_on == FALSE) {
 	if ((option_bool(BAR_ON_GET, TRUE)) == FALSE) {
 		return;
 	}

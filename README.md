@@ -177,7 +177,6 @@ EXCL_WTYPE_0=CX V2.3.0: Hot Key = <ctrl alt help>
 | BAR\_TEXT\_SPIRAL | FibS | Dintwm bar text for spiral mode | BAR |
 | BAR\_TEXT\_SEP\_1 | \| | Dintwm bar text for sepator one | BAR |
 | BAR\_TEXT\_SEP\_2 | \| | Dintwm bar text for sepator one | BAR |
-| BAR\_HIDE\_EMPTY | empty | Hide bar if workspace is empty | BAR |
 | INFO\_OFF | empty | Supress info windows - not recommended | NA |
 | VWS\_ON | FALSE | Enable virtual workspaces | NA |
 

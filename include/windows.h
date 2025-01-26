@@ -5,10 +5,10 @@
 #define WS_GET 1
 
 typedef struct {
-        short wbwin;
-        enum ws_num workspace;
-        short skip;
         struct Window *wptr;
+        enum ws_num workspace;
+        short wbwin;
+        short skip;
 } Wlut;
 
 static Wlut *wlut;
