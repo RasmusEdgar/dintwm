@@ -13,7 +13,7 @@
 #include <exec/lists.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
-#include <devices/timer.h>
+//#include <devices/timer.h>
 #include "../include/shared_defs.h"
 #ifdef FORTIFY
 #include "../fortify.h"
@@ -146,9 +146,9 @@ Bar_Text *bar_text;
 Bar_Color bar_color[BAR_LAST_COLOR];
 
 // timer stuff
-void delete_timer(struct timerequest *tr);
-struct timerequest *create_timer(unsigned long unit);
-void time_delay(struct timerequest *tr, const struct timeval *tv);
+//void delete_timer(struct timerequest *tr);
+//struct timerequest *create_timer(unsigned long unit);
+//void time_delay(struct timerequest *tr, const struct timeval *tv);
 
 typedef struct {
 	short wbwin;
@@ -162,7 +162,7 @@ Winfo *winfo;
 // Window functions
 int window_alloc_lut(void);
 void window_free_lut(void);
-int window_index(struct Window *w);
+//int window_index(struct Window *w);
 void window_set_wptr(struct Window *w);
 short window_check_wptr(struct Window *w);
 void window_set_wbwin(struct Window *w, short toggle);
@@ -179,7 +179,7 @@ struct Window * window_wbar(struct Window *w);
 int tiling_layout(int action, int layout);
 struct Screen * tiling_lock(int action, struct Screen *s);
 struct Screen * tiling_screen_light(void);
-int tiling_screen_width(void);
+//int tiling_screen_width(void);
 int tiling_screen_height(void);
 int tiling_screen_info(int action, int size);
 int tiling_calc_menugap(void);
@@ -190,3 +190,5 @@ int tiling_gaps(int action, int amount);
 short option_bool(int action, short b);
 unsigned long option_ul(int action, unsigned long amount);
 int option(int action, int amount);
+short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i);
+short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);

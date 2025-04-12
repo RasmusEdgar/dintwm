@@ -150,7 +150,7 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	return rc;
 }
 
-static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
+/*static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 {
 	short rc = TRUE;
 
@@ -305,9 +305,9 @@ static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i)
 		break;
 	}
 	return rc;
-}
+}*/
 
-void init_cmo(struct Cmo *cmo)
+static void init_cmo(struct Cmo *cmo)
 {
 	static unsigned char COMMODITY_NAME[] = "DintWM commodity";
 	static unsigned char COMMODITY_TITLE[] = "DintWM - a tiling window manager";
@@ -515,7 +515,7 @@ short int commo(void)
 	return EXIT_SUCCESS;
 }
 
-static short alloc_opts(const char *t, Ostore *s, size_t i, int subtract)
+/*static short alloc_opts(const char *t, Ostore *s, size_t i, int subtract)
 {
 	int cxint = defopts[i].cxint - subtract;
 
@@ -527,7 +527,7 @@ static short alloc_opts(const char *t, Ostore *s, size_t i, int subtract)
 	} else {
 		return (FALSE);
 	}
-}
+}*/
 
 static void free_opts(void)
 {
@@ -556,14 +556,14 @@ static void free_opts(void)
 	}
 }
 
-static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c)
+/*static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c)
 {
 	int res = snprintf((char *)b[x].text, TT_MAX_LENGTH, "%s", c);
 	if (res < 0) {
 		return FALSE;
 	}
 	return TRUE;
-}
+}*/
 
 static void subactionchk(void)
 {
@@ -624,7 +624,7 @@ static void subactionchk(void)
 	}
 }
 
-struct timerequest *create_timer(unsigned long unit)
+static struct timerequest *create_timer(unsigned long unit)
 {
 	/* return a pointer to a timer request.  If any problem, return NULL */
 	struct MsgPort *timerport;
@@ -654,7 +654,7 @@ struct timerequest *create_timer(unsigned long unit)
 	return TimerIO;
 }
 
-void time_delay(struct timerequest *tr, const struct timeval *tv)
+static void time_delay(struct timerequest *tr, const struct timeval *tv)
 {
 	unsigned short traddreq = TR_ADDREQUEST;
 	tr->tr_node.io_Command = traddreq;	/* add a new timer request */
@@ -666,7 +666,7 @@ void time_delay(struct timerequest *tr, const struct timeval *tv)
 	(void)DoIO((struct IORequest *)tr);
 }
 
-void delete_timer(struct timerequest *tr)
+static void delete_timer(struct timerequest *tr)
 {
 	if (tr != 0) {
 		struct MsgPort *tp;

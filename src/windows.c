@@ -16,7 +16,7 @@ void window_free_lut(void)
 	free(wlut);
 }
 
-int window_index(struct Window *w)
+static int window_index(struct Window *w)
 {
 	unsigned long uw = (unsigned long)w;
         return (int)uw % DIVISOR;

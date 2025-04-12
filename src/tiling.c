@@ -88,7 +88,7 @@ int tiling_screen_info(int action, int size)
 	return -1;
 }
 
-int tiling_screen_width(void)
+static int tiling_screen_width(void)
 {
 	static int sw = 0;
 
