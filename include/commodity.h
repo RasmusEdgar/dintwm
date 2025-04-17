@@ -35,11 +35,8 @@ const char *cmo_fail_msgs[] = {
 };
 
 static short attachtooltypes(CxObj * broker, struct MsgPort *port, struct DiskObject *diskobj);
-//static short alloc_opts(const char *tt_optvalue, Ostore * s, size_t i, int subtract);
 static void free_opts(void);
-//static short assign_bar_item(Bar_Text * b, enum bar_texts x, const char *c);
 static void cleanup(struct Cmo *cmo);
-//static short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i);
 
 static void subactionchk(void);
 static int winnum_start;

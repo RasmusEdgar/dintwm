@@ -13,7 +13,6 @@
 #include <exec/lists.h>
 #include <clib/alib_protos.h>
 #include <stdio.h>
-//#include <devices/timer.h>
 #include "../include/shared_defs.h"
 #ifdef FORTIFY
 #include "../fortify.h"
@@ -61,6 +60,7 @@ void wbarcwb(void);
 short info_window(const char *info_text);
 short tileoff(const Arg * arg);
 short tabnextwin(const Arg * arg);
+
 
 // Make file static at least TODO
 // extern int exclude_wtype;
@@ -134,6 +134,8 @@ enum bar_colors {
 	BAR_LAST_COLOR
 };
 
+unsigned char awintitle[TT_MAX_LENGTH];
+
 typedef struct {
 	unsigned char *text;
 } Bar_Text;
@@ -145,10 +147,8 @@ typedef struct {
 Bar_Text *bar_text;
 Bar_Color bar_color[BAR_LAST_COLOR];
 
-// timer stuff
-//void delete_timer(struct timerequest *tr);
-//struct timerequest *create_timer(unsigned long unit);
-//void time_delay(struct timerequest *tr, const struct timeval *tv);
+// bar
+short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
 
 typedef struct {
 	short wbwin;
@@ -162,7 +162,6 @@ Winfo *winfo;
 // Window functions
 int window_alloc_lut(void);
 void window_free_lut(void);
-//int window_index(struct Window *w);
 void window_set_wptr(struct Window *w);
 short window_check_wptr(struct Window *w);
 void window_set_wbwin(struct Window *w, short toggle);
@@ -174,21 +173,19 @@ void window_set_skip(struct Window *w);
 short window_get_skip(struct Window *w);
 struct Window * window_active(int action, struct Window *w);
 struct Window * window_wbar(struct Window *w);
+void cwb(struct Window *w, int wx, int wy, int ww, int wh);
 
 // Tiling functions
 int tiling_layout(int action, int layout);
 struct Screen * tiling_lock(int action, struct Screen *s);
 struct Screen * tiling_screen_light(void);
-//int tiling_screen_width(void);
 int tiling_screen_height(void);
 int tiling_screen_info(int action, int size);
 int tiling_calc_menugap(void);
 int tiling_gaps(int action, int amount);
-//int tiling_gap(int action, int tiling_type, int amount);
 
 // Options functions
 short option_bool(int action, short b);
 unsigned long option_ul(int action, unsigned long amount);
 int option(int action, int amount);
 short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i);
-short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);

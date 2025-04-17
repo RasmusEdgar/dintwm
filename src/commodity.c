@@ -1,6 +1,7 @@
 // Copyright 2024 Rasmus Edgar
 #include "../include/dintwm_shared.h"
 // initialize commodity options and keycombos
+//#include "../include/wbar_config.h"
 #include "../include/commodity_types.h"
 #include "../include/rawkey_combos.h"
 #include "../include/commodity.h"

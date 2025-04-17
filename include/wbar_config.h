@@ -42,4 +42,5 @@ static struct Border barb = {
 	.Count = 5
 };
 
-static unsigned char awintitle[TT_MAX_LENGTH];
+static unsigned char *padwbartext(Bar_Text * b, enum bar_texts x);
+static short int wbartextwidth(int lei, unsigned char *it);
