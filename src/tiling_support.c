@@ -1,5 +1,5 @@
 // Copyright 2024 Rasmus Edgar
-#include "../include/tiling.h"
+#include "../include/tiling_support.h"
 
 int tiling_layout(int action, int layout)
 {
@@ -211,4 +211,13 @@ int tiling_gaps(int action, int amount)
 	}
 
 	return -1;
+}
+
+short tileoff(const Arg *arg)
+{
+	(void)arg;
+	option_bool(TILE_OFF_GET, TRUE) == FALSE ?
+		(void)option_bool(TILE_OFF_SET, TRUE) :
+		(void)option_bool(TILE_OFF_SET, FALSE);
+	return TRUE;
 }

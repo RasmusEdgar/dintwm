@@ -60,6 +60,7 @@ void wbarcwb(void);
 short info_window(const char *info_text);
 short tileoff(const Arg * arg);
 short tabnextwin(const Arg * arg);
+short skipper(struct Window *w);
 
 
 // Make file static at least TODO
@@ -163,14 +164,14 @@ Winfo *winfo;
 int window_alloc_lut(void);
 void window_free_lut(void);
 void window_set_wptr(struct Window *w);
-short window_check_wptr(struct Window *w);
+//short window_check_wptr(struct Window *w);
 void window_set_wbwin(struct Window *w, short toggle);
 short window_get_wbwin(struct Window *w);
 void window_set_ws_num(struct Window *w, int ws);
-int window_get_ws_num(struct Window *w);
+//int window_get_ws_num(struct Window *w);
 int window_current_ws(int action, int ws);
-void window_set_skip(struct Window *w);
-short window_get_skip(struct Window *w);
+//void window_set_skip(struct Window *w);
+//short window_get_skip(struct Window *w);
 struct Window * window_active(int action, struct Window *w);
 struct Window * window_wbar(struct Window *w);
 void cwb(struct Window *w, int wx, int wy, int ww, int wh);
