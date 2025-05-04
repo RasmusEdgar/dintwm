@@ -52,17 +52,13 @@ short int commo(void)
 			running = FALSE;
 		}
 
-		//if (vws_on == TRUE) {
 		if ((option_bool(VWS_ON_GET, TRUE)) == TRUE) {
 			(void)countwindows(scr);
 			getactive();
-			//if (backdropped == TRUE) {
 			if (option_bool(BACKDROP_GET, TRUE)) {
-				//if (info_on == TRUE) {
 				if (option_bool(INFO_ON_GET, TRUE)) {
 					info_window(warn_messages[BDWARN]);
 				}
-				//bar_on = FALSE;
 				(void)option_bool(BAR_ON_SET, FALSE);
 				cleanup(&cmo);
 				return EXIT_FAILURE;
@@ -84,7 +80,6 @@ short int commo(void)
 
 		//Main Loop
 		while (running == TRUE) {
-			//winnum_start = countwindows(scr);
 			(void)win_start(WIN_START_SET, scr);
 
 			wakeupsigs = Wait((mainsig) | (1UL << cmo.mp->mp_SigBit));
@@ -94,12 +89,10 @@ short int commo(void)
 					Signal(subtask, subsig);
 					continue;
 				}
-				//if (tile_off == FALSE) {
 				if ((option_bool(TILE_OFF_GET, TRUE)) == FALSE) {
 					int t_layout = tiling_layout(TL_GET, 0);
 					running = defkeys[t_layout].func(&defkeys[t_layout].arg);
 					update_wbar();
-					//winnum_start = countwindows(scr);
 					(void)win_start(WIN_START_SET, scr);
 				}
 				Signal(subtask, subsig);

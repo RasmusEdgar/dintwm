@@ -5,7 +5,6 @@
 // initialize commodity options and keycombos
 #include "../include/commodity_types.h"
 #include "../include/rawkey_combos.h"
-//#include "../include/commodity.h"
 #include "../include/key_txts.h"
 #include "../include/key_defs.h"
 #include "../include/opt_defs.h"
@@ -38,8 +37,14 @@ static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObj
 	keyarrsize = sizeof(defkeys) / sizeof(*defkeys);
 
 	bar_text = (Bar_Text *) malloc(BAR_LAST_TEXT * sizeof(*bar_text));
+	if (bar_text == NULL) {
+		exit(EXIT_FAILURE);
+	}
 	for (int i = 0; i < BAR_LAST_TEXT; i++) {
 		bar_text[i].text = malloc(TT_MAX_LENGTH * 2);
+		if (bar_text[i].text == NULL) {
+			exit(EXIT_FAILURE);
+		}
 		bar_text[i].text[0] = nil;
 	}
 
@@ -279,7 +284,6 @@ void subactionchk(void)
 		}
 
 		if ((option_bool(TILE_OFF_GET, TRUE)) == FALSE && (option_bool(AUTOTILE_GET, TRUE)) == TRUE) {
-			//if (winnum_start != wincnt) {
 			if (win_start(WIN_START_GET, scr) != wincnt) {
 				Signal(maintask, mainsig);
 				(void)Wait((subsig));
