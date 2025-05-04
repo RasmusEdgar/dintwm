@@ -440,3 +440,14 @@ int countwindows(struct Screen const *scr)
 
 	return wincount;
 }
+
+int win_start(int action, const struct Screen *scr)
+{
+	static int wc = 0;
+
+	if (action == WIN_START_SET) {
+		return wc = countwindows(scr);
+	}
+
+	return wc;
+}

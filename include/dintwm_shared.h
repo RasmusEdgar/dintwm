@@ -160,6 +160,10 @@ typedef struct {
 
 Winfo *winfo;
 
+// Dintwm run functions
+int dintwmrun(int argc, char **argv);
+void initdefaults(void);
+
 // Window functions
 int window_alloc_lut(void);
 void window_free_lut(void);
@@ -175,6 +179,7 @@ int window_current_ws(int action, int ws);
 struct Window * window_active(int action, struct Window *w);
 struct Window * window_wbar(struct Window *w);
 void cwb(struct Window *w, int wx, int wy, int ww, int wh);
+int win_start(int action, const struct Screen *scr);
 
 // Tiling functions
 int tiling_layout(int action, int layout);

@@ -9,5 +9,3 @@
 //VERCUT
 
 static short printusage(void);
-static int dintwmrun(int argc, char **argv);
-static void initdefaults(void);
