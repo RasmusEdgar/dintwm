@@ -21,7 +21,7 @@ short int commo(void)
 	for (size_t i = 0; i < cmo_arr_length; i++) {
 		if (cmo.failarr[i] == -1) {
 			info_window(cmo_fail_msgs[i]);
-			cleanup(&cmo);
+			cleanup_cxm(&cmo);
 			return EXIT_FAILURE;
 		}
 	}
@@ -60,7 +60,7 @@ short int commo(void)
 					info_window(warn_messages[BDWARN]);
 				}
 				(void)option_bool(BAR_ON_SET, FALSE);
-				cleanup(&cmo);
+				cleanup_cxm(&cmo);
 				return EXIT_FAILURE;
 			}
 		}
@@ -144,7 +144,7 @@ short int commo(void)
 		}
 	}
 
-	cleanup(&cmo);
+	cleanup_cxm(&cmo);
 
 	return EXIT_SUCCESS;
 }

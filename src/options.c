@@ -1,74 +1,106 @@
 // Copyright 2025 Rasmus Edgar
 #include "../include/dintwm_shared.h"
 
+typedef struct {
+	unsigned long int autointerval;
+	int wbar_height;
+	int factor;
+	short bdropped;
+	short tiling_off;
+	short baron;
+	short vwson;
+	short infoon;
+	short firstrun;
+	short auto_tile;
+	short exc_wtype;
+	short inc_wtype;
+} Misc_opts;
+
+static Misc_opts *misc_opts;
+
 static short alloc_opts(const char *t, Ostore *s, size_t i, int subtract);
+
+short init_misc_opts(void)
+{
+	if ((misc_opts = (Misc_opts *) malloc(sizeof(Misc_opts))) == NULL) {
+		return FALSE;
+	}
+	misc_opts->autointerval = AUTO_INTERVAL_DELAY_DEF;
+	misc_opts->wbar_height = WBAR_HEIGHT;
+	misc_opts->factor = TILE_FACT_DEF;
+	misc_opts->bdropped = FALSE;
+	misc_opts->tiling_off = FALSE;
+	misc_opts->baron = FALSE;
+	misc_opts->vwson = FALSE;
+	misc_opts->infoon = TRUE;
+	misc_opts->firstrun = TRUE;
+	misc_opts->auto_tile = FALSE;
+	misc_opts->exc_wtype = FALSE;
+	misc_opts->inc_wtype = FALSE;
+	return TRUE;
+}
+
+void free_misc_opts(void)
+{
+	free(misc_opts);
+}
 
 short option_bool(int action, short b)
 {
-	static short bdropped = FALSE;
-	static short tiling_off = FALSE;
-	static short baron = FALSE;
-	static short vwson = FALSE;
-	static short infoon = TRUE;
-	static short firstrun = TRUE;
-	static short auto_tile = FALSE;
-	static short exc_wtype = FALSE;
-	static short inc_wtype = FALSE;
-
 	switch(action) {
 	case BACKDROP_SET:
-		return bdropped = b;
+		return misc_opts->bdropped = b;
 		break;
 	case BACKDROP_GET:
-		return bdropped;
+		return misc_opts->bdropped;
 		break;
 	case TILE_OFF_SET:
-		return tiling_off = b;
+		return misc_opts->tiling_off = b;
 		break;
 	case TILE_OFF_GET:
-		return tiling_off;
+		return misc_opts->tiling_off;
 		break;
 	case BAR_ON_SET:
-		return baron = b;
+		return misc_opts->baron = b;
 		break;
 	case BAR_ON_GET:
-		return baron;
+		return misc_opts->baron;
 		break;
 	case VWS_ON_SET:
-		return vwson = b;
+		return misc_opts->vwson = b;
 		break;
 	case VWS_ON_GET:
-		return vwson;
+		return misc_opts->vwson;
 		break;
 	case INFO_ON_SET:
-		return infoon = b;
+		return misc_opts->infoon = b;
 		break;
 	case INFO_ON_GET:
-		return infoon;
+		return misc_opts->infoon;
 		break;
 	case FIRST_RUN_GET:
-		return firstrun = b;
+		return misc_opts->firstrun = b;
 		break;
 	case FIRST_RUN_SET:
-		return firstrun;
+		return misc_opts->firstrun;
 		break;
 	case AUTOTILE_SET:
-		return auto_tile = b;
+		return misc_opts->auto_tile = b;
 		break;
 	case AUTOTILE_GET:
-		return auto_tile;
+		return misc_opts->auto_tile;
 		break;
 	case EXCLUDE_WTYPE_SET:
-		return exc_wtype = b;
+		return misc_opts->exc_wtype = b;
 		break;
 	case EXCLUDE_WTYPE_GET:
-		return exc_wtype;
+		return misc_opts->exc_wtype;
 		break;
 	case INCLUDE_WTYPE_SET:
-		return inc_wtype = b;
+		return misc_opts->inc_wtype = b;
 		break;
 	case INCLUDE_WTYPE_GET:
-		return inc_wtype;
+		return misc_opts->inc_wtype;
 		break;
 	default:
 		// Never reached
@@ -79,14 +111,12 @@ short option_bool(int action, short b)
 
 unsigned long option_ul(int action, unsigned long amount)
 {
-	static unsigned long int autointerval = AUTO_INTERVAL_DELAY_DEF;
-
 	switch(action) {
 	case AUTO_INTERVAL_DELAY_ID:
-		return  autointerval = (unsigned long)amount;
+		return misc_opts->autointerval = (unsigned long)amount;
 		break;
 	case AUTO_INTERVAL_DELAY_GET:
-		return autointerval;
+		return misc_opts->autointerval;
 		break;
 	default:
 		// Never reached
@@ -97,21 +127,18 @@ unsigned long option_ul(int action, unsigned long amount)
 
 int option(int action, int amount)
 {
-	static int wbar_height = WBAR_HEIGHT;
-	static int factor = TILE_FACT_DEF;
-
 	switch(action) {
 	case WBAR_HEIGHT_SET:
-		return wbar_height = amount;
+		return misc_opts->wbar_height = amount;
 		break;
 	case WBAR_HEIGHT_GET:
-		return wbar_height;
+		return misc_opts->wbar_height;
 		break;
 	case TILE_FACT_ID:
-		return factor = amount;
+		return misc_opts->factor = amount;
 		break;
 	case TILE_FACT_GET:
-		return factor;
+		return misc_opts->factor;
 		break;
 	default:
 		// Never reached

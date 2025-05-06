@@ -10,7 +10,7 @@ FTFYFLAG ="-DFORTIFY "
 FTFYLINTEXCL = --exclude=fortify.*
 endif
 
-SOURCES = src/supplemental.c src/bar.c src/options.c src/tiling.c src/tiling_support.c src/windows.c src/dintwm.c src/dintwm_startup.c src/commodity.c src/commodity_support.c $(FTFYSRC)
+SOURCES = src/supplemental.c src/bar.c src/options.c src/tiling.c src/tiling_support.c src/windows.c src/dintwm.c src/dintwm_startup.c src/dintwm_shutdown.c src/commodity.c src/commodity_support.c $(FTFYSRC)
 OBJECTS = $(SOURCES:.c=.o)
 CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 $(FTFYFLAG)-O2 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps=obj
 CC = m68k-amigaos-gcc

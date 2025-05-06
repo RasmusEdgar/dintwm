@@ -1,8 +1,5 @@
 // Copyright 2024 Rasmus Edgar
 #include "../include/dintwm_shared.h"
-#ifdef FORTIFY
-#include "../fortify.h"
-#endif
 
 int main(int argc, char **argv)
 {
@@ -16,7 +13,7 @@ int main(int argc, char **argv)
 
 	dint_exit_state = dintwmrun(argc, argv);
 
-	window_free_lut();
+	cleanup_dintwm();
 
 #ifdef FORTIFY
 	Fortify_LeaveScope();

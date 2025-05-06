@@ -16,12 +16,10 @@ struct Cmo {
 
 
 unsigned long mainsig, wakeupsigs, subsig;
-//struct Task *maintask = NULL, *subtask = NULL;
 struct Task *maintask, *subtask;
 struct Window *awin_comp;
-//extern short running = TRUE;
 short running;
 
 void init_cmo(struct Cmo *cmo);
 void subactionchk(void);
-void cleanup(struct Cmo *cmo);
+void cleanup_cxm(struct Cmo *cmo);

@@ -1,5 +1,7 @@
 // Copyright 2024 Rasmus Edgar
-#include "../include/tiling_support.h"
+#include "../include/dintwm_shared.h"
+
+static int tiling_screen_width(void);
 
 int tiling_layout(int action, int layout)
 {
@@ -18,7 +20,7 @@ int tiling_layout(int action, int layout)
 		if (layout_number > TILE_FUNC_LIMIT) {
 			layout_number = LAYOUT_START;
 		}
-		return layout_number++;
+		return ++layout_number;
 	}
 	if (action == TL_DEC) {
 		layout_number--;

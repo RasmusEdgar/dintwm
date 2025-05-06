@@ -230,7 +230,7 @@ void init_cmo(struct Cmo *cmo)
 	return;
 }
 
-static void free_opts(void)
+void free_opts(void)
 {
 	int i;
 
@@ -379,7 +379,7 @@ static void delete_timer(struct timerequest *tr)
 	}
 }
 
-void cleanup(struct Cmo *cmo)
+void cleanup_cxm(struct Cmo *cmo)
 {
 	if (cmo->mp != NULL) {
 		CxMsg *msg;
@@ -409,18 +409,5 @@ void cleanup(struct Cmo *cmo)
 	}
 	if (cmo->broker != NULL) {
 		DeleteCxObjAll(cmo->broker);
-	}
-
-	free_opts();
-
-	if (option_bool(BAR_ON_GET, TRUE)) {
-		struct Window const *wbarw = window_wbar(NULL);
-		if (wbarw != NULL) {
-			CloseWindow((struct Window *)wbarw);
-		}
-		for (int i = 0; i < BAR_LAST_TEXT; i++) {
-			free(bar_text[i].text);
-		}
-		free(bar_text);
 	}
 }

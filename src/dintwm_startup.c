@@ -186,7 +186,12 @@ void initdefaults(void)
 	struct Window *window = NULL;
 
 	if ((window_alloc_lut()) != 0) {
-		printf("allocation failed\n");
+		printf("window lut allocation failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if ((init_misc_opts()) != TRUE) {
+		printf("misc_opts allocation failed\n");
 		exit(EXIT_FAILURE);
 	}
 

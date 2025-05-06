@@ -157,6 +157,8 @@ Winfo *winfo;
 // Dintwm run functions
 int dintwmrun(int argc, char **argv);
 void initdefaults(void);
+void cleanup_dintwm(void);
+void free_opts(void);
 
 // Window functions
 int window_alloc_lut(void);
@@ -185,3 +187,5 @@ short option_bool(int action, short b);
 unsigned long option_ul(int action, unsigned long amount);
 int option(int action, int amount);
 short apply_options(Opts const *dopts, const char *tt_optvalue, size_t i);
+short init_misc_opts(void);
+void free_misc_opts(void);
