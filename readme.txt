@@ -2,9 +2,24 @@ dintwm
 
 Tiling window "manager" for AmigaOS 3.1.x.
 
-NOTE Dintwm is under rather heavy development, it is a hobby project and breakage may occur.
+NOTE
+Dintwm is a hobby project.
 
 Changelog
+
+-   v1.1 - WIP
+
+    -   Make window handling proper by not manipulating bits in windows not owned by dintwm
+        -   Keep track of windows in ptr indexed LUT instead
+    -   Fix memory leak in commodity code
+    -   Remove ketopt dependency
+    -   Cleanup of code
+    -   Major refactor getting rid of most globals
+        -   Putting functions in properly named translation units
+
+-   v1.0-rc1
+
+    -   Interim release candidate
 
 -   v0.6
 
@@ -210,8 +225,6 @@ Tooltype Options Table
 
   BAR_TEXT_SEP_2        |                                              Dintwm bar text for sepator one                                                           BAR
 
-  BAR_HIDE_EMPTY        empty                                          Hide bar if workspace is empty                                                            BAR
-
   INFO_OFF              empty                                          Supress info windows - not recommended                                                    NA
 
   VWS_ON                FALSE                                          Enable virtual workspaces                                                                 NA
@@ -316,8 +329,6 @@ Note on licensing
 
 Some parts of the code (tile and fibonacci functions) are adapted from dwm, a DWM-LICENSE is therefore included.
 
-Ketopt.h from https://github.com/attractivechaos/klib is licensed under the MIT/X11 license.
-
 SAST Tools
 
 Static analyzers used are: splint flawfinder cppcheck
@@ -326,7 +337,7 @@ Check out the Makefile on how this project uses them.
 
 Memleak checker
 
-This part I find difficult to check for when compiling for a m68k target (no valgrind).
+This part I find difficult to check for, when compiling for a m68k target (no valgrind).
 
 Settled on fortify which helped me identify a memory leak.
 

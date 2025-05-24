@@ -1,4 +1,4 @@
-// Copyright 2021 Rasmus Edgar
+// Copyright 2024 Rasmus Edgar
 #define TYPE_TILE "POPKEY_TILE"
 #define TYPE_HGRID "POPKEY_HGRID"
 #define TYPE_SPIRAL "POPKEY_SPIRAL"
@@ -119,60 +119,3 @@
 #define TYPE_CMD_9 "CMD_9"
 #define TYPE_INFO_OFF "INFO_OFF"
 #define TYPE_VWS_ON "VWS_ON"
-
-// Change default rawkey combos from here. Leave above alone.
-#define KEY_TILE_TXT "rawkey " MOD1 " " MOD2 " t"
-#define KEY_HGRID_TXT "rawkey " MOD1 " " MOD2 " g"
-#define KEY_SPIRAL_TXT "rawkey " MOD1 " " MOD2 " f"
-#define KEY_DWINDLE_TXT "rawkey " MOD1 " " MOD2 " d"
-#define KEY_SWITCHF_TXT "rawkey " MOD1 " " MOD2 " s"
-#define KEY_SWITCHB_TXT "rawkey " MOD1 " " MOD2 " x"
-#define KEY_INCTOPGAP_TXT "rawkey " MOD1 " " MOD2 " cursor_up"
-#define KEY_INCBOTTOMGAP_TXT "rawkey " MOD1 " " MOD2 " cursor_down"
-#define KEY_INCLEFTGAP_TXT "rawkey " MOD1 " " MOD2 " cursor_left"
-#define KEY_INCRIGHTGAP_TXT "rawkey " MOD1 " " MOD2 " cursor_right"
-#define KEY_DECTOPGAP_TXT "rawkey " MOD1 " " MOD3 " cursor_up"
-#define KEY_DECBOTTOMGAP_TXT "rawkey " MOD1 " " MOD3 " cursor_down"
-#define KEY_DECLEFTGAP_TXT "rawkey " MOD1 " " MOD3 " cursor_left"
-#define KEY_DECRIGHTGAP_TXT "rawkey " MOD1 " " MOD3 " cursor_right"
-#define KEY_INCALLGAPS_TXT "rawkey " MOD1 " " MOD2 " numericpad +"
-#define KEY_DECALLGAPS_TXT "rawkey " MOD1 " " MOD2 " numericpad --"
-#define KEY_TILE_OFF_TXT "rawkey " MOD1 " " MOD2 " o"
-#define KEY_CMD_0_TXT "rawkey " MOD1 " " MOD2 " 0"
-#define KEY_CMD_1_TXT "rawkey " MOD1 " " MOD2 " 1"
-#define KEY_CMD_2_TXT "rawkey " MOD1 " " MOD2 " 2"
-#define KEY_CMD_3_TXT "rawkey " MOD1 " " MOD2 " 3"
-#define KEY_CMD_4_TXT "rawkey " MOD1 " " MOD2 " 4"
-#define KEY_CMD_5_TXT "rawkey " MOD1 " " MOD2 " 5"
-#define KEY_CMD_6_TXT "rawkey " MOD1 " " MOD2 " 6"
-#define KEY_CMD_7_TXT "rawkey " MOD1 " " MOD2 " 7"
-#define KEY_CMD_8_TXT "rawkey " MOD1 " " MOD2 " 8"
-#define KEY_CMD_9_TXT "rawkey " MOD1 " " MOD2 " 9"
-#define KEY_WS_0_TXT "rawkey " MOD1 " " MOD2 " numericpad 0"
-#define KEY_WS_1_TXT "rawkey " MOD1 " " MOD2 " numericpad 1"
-#define KEY_WS_2_TXT "rawkey " MOD1 " " MOD2 " numericpad 2"
-#define KEY_WS_3_TXT "rawkey " MOD1 " " MOD2 " numericpad 3"
-#define KEY_WS_4_TXT "rawkey " MOD1 " " MOD2 " numericpad 4"
-#define KEY_WS_5_TXT "rawkey " MOD1 " " MOD2 " numericpad 5"
-#define KEY_CWS_0_TXT "rawkey " MOD1 " " MOD3 " numericpad 0"
-#define KEY_CWS_1_TXT "rawkey " MOD1 " " MOD3 " numericpad 1"
-#define KEY_CWS_2_TXT "rawkey " MOD1 " " MOD3 " numericpad 2"
-#define KEY_CWS_3_TXT "rawkey " MOD1 " " MOD3 " numericpad 3"
-#define KEY_CWS_4_TXT "rawkey " MOD1 " " MOD3 " numericpad 4"
-#define KEY_CWS_5_TXT "rawkey " MOD1 " " MOD3 " numericpad 5"
-#define KEY_CXM_EXIT_TXT "rawkey " MOD1 " " MOD2 " q"
-#define KEY_TAB_NEXT_TXT "rawkey " MOD1 " " MOD2 " tab"
-
-#define BDWARN_TXT "Virtual WSs are incompatible with backdropped WB. Unbackdrop WB or remove TT VWS_ON. Quitting."
-#define UQWARN_TXT "Commodity is already running. Quitting."
-
-static short attachtooltypes(CxObj *broker, struct MsgPort *port, struct DiskObject *diskobj);
-static short alloc_opts(const char *tt_optvalue, Ostore *s, size_t i, int subtract);
-static void free_opts(void);
-static short assign_bar_item(Bar_Text *b, enum bar_texts x, const char *c);
-static void cleanup(void);
-
-static struct Library *iconbase;
-static void subactionchk(void);
-static int winnum_start;
-long unsigned int auto_interval;

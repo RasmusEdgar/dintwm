@@ -10,17 +10,16 @@ FTFYFLAG ="-DFORTIFY "
 FTFYLINTEXCL = --exclude=fortify.*
 endif
 
-SOURCES = src/dintwm.c src/commodity.c $(FTFYSRC)
+SOURCES = src/supplemental.c src/bar.c src/options.c src/tiling.c src/tiling_support.c src/windows.c src/dintwm.c src/dintwm_startup.c src/dintwm_shutdown.c src/commodity.c src/commodity_support.c $(FTFYSRC)
 OBJECTS = $(SOURCES:.c=.o)
 CFLAGSSTRICT =-pedantic -std=c11 -ggdb3 $(FTFYFLAG)-O2 -Wall -Wextra -Wformat=2 -Wmissing-include-dirs -Winit-self -Wswitch-default -Wswitch-enum -Wunused-parameter -Wfloat-equal -Wundef -Wshadow -Wlarger-than-1000 -Wunsafe-loop-optimizations -Wbad-function-cast -Wcast-align -Wconversion -Wlogical-op -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wpacked -Wpadded -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Winvalid-pch -Wvolatile-register-var -Wstrict-aliasing=2 -Wstrict-overflow=2 -Wtraditional-conversion -Wwrite-strings -noixemul -save-temps=obj
 CC = m68k-amigaos-gcc
-CFLAGS =-std=c11 -Ofast -Wall -Wextra -s -fomit-frame-pointer -noixemul
-MAINHEADER = include/dintwm.h include/dintwm_shared.h
-CONFHEADER = include/commodity.h
-EXTHEADERS = include/ketopt.h include/wbar_config.h $(FTFYHDRS)
-HEADERS = $(MAINHEADER) $(CONFHEADER) $(EXTHEADERS) 
+CFLAGS =-std=c11 -O3 -Wall -Wextra -s -fomit-frame-pointer -noixemul
+MAINHEADER = include/tiling_support.h include/windows.h include/dintwm.h include/dintwm_shared.h include/commodity_shared.h include/commodity_support.h
+CONFHEADER = include/shared_defs.h include/commodity_types.h include/rawkey_combos.h include/key_txts.h include/key_defs.h include/opt_defs.h include/wbar_config.h
+HEADERS = $(MAINHEADER) $(CONFHEADER) $(FTFYHDRS)
 CPPLINTCMD = cpplint
-CPPLINTOPTS = --linelength 150 --filter=-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard $(FTFYLINTEXCL)
+CPPLINTOPTS = --linelength 150 --filter=-build/include_what_you_use,-whitespace/tab,-whitespace/comments,-whitespace/braces,-whitespace/indent,-readability/casting,-runtime/int,-build/header_guard $(FTFYLINTEXCL)
 CPPCHECKCMD = cppcheck
 CPPCHECKOPTS = --check-level=exhaustive --enable=warning,style,performance,portability,unusedFunction -DFORTIFY
 FLAWCMD = flawfinder
@@ -37,7 +36,7 @@ CLRVER = $(shell gawk -i inplace -v RS='//VERCUT.*VERCUT' -v ORS= '1;NR==1{print
 ifdef strict
 CFLAGS = $(CFLAGSSTRICT)
 TEMPS = $(SOURCES:.c=.i) $(SOURCES:.c=.s)
-PEXCL = --exclude-path */opt/amiga/* --exclude-path ./include/ketopt.h
+PEXCL = --exclude-path */opt/amiga/*
 endif
 
 .PHONY: setver
@@ -48,15 +47,12 @@ all : $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
 	$(PANDOC)
 ifdef strict
-	$(CPPLINTCMD) $(CPPLINTOPTS) $(SOURCES) $(filter-out $(EXTHEADERS),$(HEADERS))
+	$(CPPLINTCMD) $(CPPLINTOPTS) $(SOURCES) $(filter-out $(FTFYHDRS),$(HEADERS))
 	$(CPPCHECKCMD) $(CPPCHECKOPTS) $(filter-out $(FTFYSRC),$(SOURCES))
 	$(FLAWCMD) $(FLAWOPTS) $(HEADERS) $(filter-out $(FTFYSRC),$(SOURCES))
 	$(SPLINTCMD) $(SOURCES) $(SPLINTARGS)
 endif
 
-
-dintwm.o : $(MAINHEADER) $(EXTHEADERS)
-commodity.o : $(MAINHEADER) $(CONFHEADER)
 
 .PHONY : clean
 clean :

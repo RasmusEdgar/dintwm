@@ -1,7 +1,6 @@
-// Copyright 2021 Rasmus Edgar
+// Copyright 2024 Rasmus Edgar
 
-static struct TextExtent teinit =
-{
+static struct TextExtent teinit = {
 	.te_Width = 0,
 	.te_Height = 0,
 	.te_Extent.MinY = 0,
@@ -10,8 +9,7 @@ static struct TextExtent teinit =
 	.te_Extent.MaxX = 0
 };
 
-static struct IntuiText wbartext =
-{
+static struct IntuiText wbartext = {
 	.TopEdge = 4,
 	.LeftEdge = 0,
 	.ITextFont = NULL,
@@ -33,8 +31,7 @@ static struct IntuiText wbarsep_two;
 static struct IntuiText wbarwtitle;
 static struct IntuiText wbarmodetext;
 
-static struct Border barb =
-{
+static struct Border barb = {
 	.TopEdge = 0,
 	.LeftEdge = 0,
 	.FrontPen = 1,
@@ -45,4 +42,5 @@ static struct Border barb =
 	.Count = 5
 };
 
-static unsigned char awintitle[TT_MAX_LENGTH];
+static unsigned char *padwbartext(Bar_Text * b, enum bar_texts x);
+static short int wbartextwidth(int lei, unsigned char *it);
