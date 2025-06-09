@@ -15,11 +15,11 @@ jobs:
         username: rasmusedgar
         password: ${{ secrets.EDGAR_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build dintwm
         run: make all
       - name: Upload artifact 
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: dintwm
           path: dintwm
