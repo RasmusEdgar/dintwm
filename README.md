@@ -7,17 +7,15 @@ Dintwm is a hobby project.
 
 ## Changelog
 
-* v1.1 - WIP
+* v1.1
   - Make window handling proper by not manipulating bits in windows not owned by dintwm
       - Keep track of windows in ptr indexed LUT instead
   - Fix memory leak in commodity code
+  - Store options in heap allocated structs
   - Remove ketopt dependency
   - Cleanup of code
   - Major refactor getting rid of most globals
-      - Putting functions in properly named translation units 
-
-* v1.0-rc1
-  - Interim release candidate
+      - Putting functions in distinct translation units 
 
 * v0.6
   - Fixed bug launching Dintwm from workbench introduced in v0.5
